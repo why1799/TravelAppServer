@@ -8,6 +8,8 @@ using TravelAppModels;
 using TravelAppStorage.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using System.Data.Entity;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace TravelAppStorage.Implementations
 {
@@ -65,7 +67,8 @@ namespace TravelAppStorage.Implementations
                         .SetSerializer(new GuidSerializer(BsonType.String))
                         .SetElementName("UserId");
                     entity.MapProperty(e => e.Token)
-                        .SetIsRequired(true);
+                        .SetIsRequired(true)
+                        .SetElementName("Token");
                     entity.SetIdMember(entity.GetMemberMap(e => e.Token));
                 });
             }
@@ -113,7 +116,7 @@ namespace TravelAppStorage.Implementations
             UserToken token = new UserToken()
             {
                 UserId = gotusers[0].Id,
-                Token = Convert.ToBase64String(Guid.NewGuid().ToByteArray())
+                Token = TokenGenerator()
             };
 
             await tokens.InsertOneAsync(token);
@@ -126,6 +129,22 @@ namespace TravelAppStorage.Implementations
             var count = await users.CountDocumentsAsync(filter);
 
             return !(count == 0);
+        }
+
+        private string TokenGenerator()
+        {
+            var list = new List<byte>();
+            list.AddRange(GuidToList());
+            list.AddRange(GuidToList());
+            list.AddRange(GuidToList());
+
+            return Convert.ToBase64String(list.ToArray());
+        }
+
+        private List<byte> GuidToList()
+        {
+            var guid = Guid.NewGuid();
+            return guid.ToByteArray().ToList();
         }
     }
 }
