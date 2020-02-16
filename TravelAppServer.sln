@@ -3,7 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29409.12
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TravelAppServer", "TravelAppServer\TravelAppServer.csproj", "{AA177425-F545-40A4-B1DC-66F3488CDDFE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TravelAppServer", "TravelAppServer\TravelAppServer.csproj", "{AA177425-F545-40A4-B1DC-66F3488CDDFE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TravelAppStorage", "TravelAppStorage\TravelAppStorage.csproj", "{1F0AD661-62AC-44DF-A3FB-A27BD1D600CC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TravelAppModels", "TravelAppModels\TravelAppModels.csproj", "{B5CE995A-42FD-4946-AA42-533E27A874DF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +19,14 @@ Global
 		{AA177425-F545-40A4-B1DC-66F3488CDDFE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AA177425-F545-40A4-B1DC-66F3488CDDFE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AA177425-F545-40A4-B1DC-66F3488CDDFE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1F0AD661-62AC-44DF-A3FB-A27BD1D600CC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1F0AD661-62AC-44DF-A3FB-A27BD1D600CC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1F0AD661-62AC-44DF-A3FB-A27BD1D600CC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1F0AD661-62AC-44DF-A3FB-A27BD1D600CC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B5CE995A-42FD-4946-AA42-533E27A874DF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B5CE995A-42FD-4946-AA42-533E27A874DF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B5CE995A-42FD-4946-AA42-533E27A874DF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B5CE995A-42FD-4946-AA42-533E27A874DF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
