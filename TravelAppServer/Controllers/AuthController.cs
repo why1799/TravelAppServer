@@ -24,7 +24,7 @@ namespace TravelAppServer.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<UserToken>> Login([FromQuery] string email, [FromQuery] string password)
+        public async Task<ActionResult> Login([FromQuery] string email, [FromQuery] string password)
         {
             try
             {
@@ -34,15 +34,15 @@ namespace TravelAppServer.Controllers
                 }
 
                 var token = await Storage.FindUser(email, password);
-                return token;
+                return StatusCode(StatusCodes.Status200OK, token);
             }
             catch (ArgumentException exeption)
             {
-                return StatusCode(StatusCodes.Status404NotFound, exeption);
+                return StatusCode(StatusCodes.Status404NotFound, exeption.Message);
             }
             catch (Exception exeption)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, exeption);
+                return StatusCode(StatusCodes.Status500InternalServerError, exeption.Message);
             }
         }
 
@@ -50,7 +50,7 @@ namespace TravelAppServer.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<UserToken>> Register([FromQuery] string username, [FromQuery] string email, [FromQuery] string password)
+        public async Task<ActionResult> Register([FromQuery] string username, [FromQuery] string email, [FromQuery] string password)
         {
             try
             {
@@ -64,11 +64,11 @@ namespace TravelAppServer.Controllers
             }
             catch(ArgumentException exeption)
             {
-                return StatusCode(StatusCodes.Status404NotFound, exeption);
+                return StatusCode(StatusCodes.Status404NotFound, exeption.Message);
             }
             catch(Exception exeption)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, exeption);
+                return StatusCode(StatusCodes.Status500InternalServerError, exeption.Message);
             }
         }
     }
