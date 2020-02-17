@@ -34,6 +34,8 @@ namespace TravelAppServer
         {
             services.AddControllers();
 
+            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
+
             services.AddSingleton<IStorage>(new MongoStorage(new MongoClient("mongodb+srv://travelapp:travelapp@cluster0-txcfj.mongodb.net/test?retryWrites=true&w=majority")));
         }
 

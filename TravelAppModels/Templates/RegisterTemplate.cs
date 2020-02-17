@@ -2,11 +2,10 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace TravelAppModels
+namespace TravelAppModels.Templates
 {
-    public class User
+    public class RegisterTemplate
     {
-        public Guid Id { get; set; }
         public string Username { get; set; }
         public string Email { get; set; }
         public string Password { get; set; }

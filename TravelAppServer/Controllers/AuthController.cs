@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using TravelAppModels;
+using TravelAppModels.Templates;
 using TravelAppStorage.Interfaces;
 
 namespace TravelAppServer.Controllers
@@ -20,12 +21,14 @@ namespace TravelAppServer.Controllers
             Storage = storage;
         }
 
-        [HttpGet("[action]")]
+        [HttpPost("[action]")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult> Login([FromQuery] string email, [FromQuery] string password)
+        public async Task<ActionResult> Login([FromBody] LoginTemplate loginTemplate)
         {
+            var email = loginTemplate.Email;
+            var password = loginTemplate.Password;
             try
             {
                 if (email == null || password == null || email == "" || password == "")
@@ -46,12 +49,16 @@ namespace TravelAppServer.Controllers
             }
         }
 
-        [HttpGet("[action]")]
+        [HttpPost("[action]")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult> Register([FromQuery] string username, [FromQuery] string email, [FromQuery] string password)
+        public async Task<ActionResult> Register([FromBody] RegisterTemplate registerTemplate)
         {
+            var username = registerTemplate.Username;
+            var email = registerTemplate.Email;
+            var password = registerTemplate.Password;
+
             try
             {
                 if(username == null || email == null || password == null || username == "" || email == "" || password == "")

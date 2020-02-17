@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace TravelAppModels
+namespace TravelAppModels.Models
 {
     public class UserToken
     {
