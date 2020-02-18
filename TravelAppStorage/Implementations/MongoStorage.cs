@@ -16,17 +16,21 @@ namespace TravelAppStorage.Implementations
 {
     public class MongoStorage : IStorage
     {
+        #region Data
         private IMongoClient client;
         private IMongoCollection<UserToken> tokens;
         private IMongoCollection<User> users;
+        #endregion
 
-
+        #region Constructors
         public MongoStorage(IMongoClient client)
         {
             this.client = client;
             InitCollections();
         }
+        #endregion
 
+        #region Service Methods
         private void InitCollections()
         {
             var database = client.GetDatabase("test");
@@ -74,7 +78,9 @@ namespace TravelAppStorage.Implementations
                 });
             }
         }
+        #endregion
 
+        #region Auth
         public async Task<UserToken> AddUser(string username, string email, string password)
         {
             User user = new User()
@@ -147,5 +153,7 @@ namespace TravelAppStorage.Implementations
             var guid = Guid.NewGuid();
             return guid.ToByteArray().ToList();
         }
+
+        #endregion
     }
 }
