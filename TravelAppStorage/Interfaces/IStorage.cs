@@ -24,5 +24,14 @@ namespace TravelAppStorage.Interfaces
 
         Task<Photo> GetPhoto(Guid Id);
         #endregion
+
+        #region Trip
+
+        Task<Trip> UpsertTrip(Trip trip);
+        Task<Trip> ReadTrip(Guid Id);
+        Task<Guid> DeleteTrip(Guid Id);
+        Task<Guid[]> GetAllTrips(Guid UserId);
+
+        #endregion
     }
 }

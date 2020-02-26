@@ -21,6 +21,7 @@ namespace TravelAppStorage.Implementations
         private IMongoCollection<UserToken> tokens;
         private IMongoCollection<User> users;
         private IMongoCollection<Photo> photos;
+        private IMongoCollection<Trip> trips;
         #endregion
 
         #region Constructors
@@ -40,6 +41,7 @@ namespace TravelAppStorage.Implementations
             tokens = database.GetCollection<UserToken>("Tokens");
             users = database.GetCollection<User>("Users");
             photos = database.GetCollection<Photo>("Photos");
+            trips = database.GetCollection<Trip>("Trips");
             //CreateIndexes();
         }
 
@@ -91,6 +93,30 @@ namespace TravelAppStorage.Implementations
                     entity.MapIdProperty(e => e.Base64)
                         .SetIsRequired(true)
                         .SetElementName("Base64");
+                    entity.MapIdProperty(e => e.Id)
+                        .SetIsRequired(true)
+                        .SetSerializer(new GuidSerializer(BsonType.String));
+                    entity.SetIdMember(entity.GetMemberMap(e => e.Id));
+                });
+            }
+
+            if (BsonClassMap.IsClassMapRegistered(typeof(Trip)) == false)
+            {
+                BsonClassMap.RegisterClassMap<Trip>(entity =>
+                {
+                    entity.MapIdProperty(e => e.Name)
+                        .SetIsRequired(true)
+                        .SetElementName("Name");
+                    entity.MapIdProperty(e => e.TextField)
+                        .SetIsRequired(false)
+                        .SetElementName("TextField");
+                    entity.MapIdProperty(e => e.Photos)
+                        .SetIsRequired(false)
+                        .SetElementName("Photos");
+                    entity.MapIdProperty(e => e.UserId)
+                        .SetIsRequired(true)
+                        .SetElementName("UserId")
+                        .SetSerializer(new GuidSerializer(BsonType.String));
                     entity.MapIdProperty(e => e.Id)
                         .SetIsRequired(true)
                         .SetSerializer(new GuidSerializer(BsonType.String));
@@ -216,6 +242,59 @@ namespace TravelAppStorage.Implementations
             }
 
             return null;
+        }
+
+        #endregion
+
+        #region Trip
+
+        public async Task<Trip> UpsertTrip(Trip trip)
+        {
+            if (trip == null) return null;
+
+            var filter = Builders<Trip>.Filter
+                .Eq(entity => entity.Id, trip.Id);
+            var definition = Builders<Trip>.Update
+                .Combine(
+                Builders<Trip>.Update.Set(e => e.Name, trip.Name),
+                Builders<Trip>.Update.Set(e => e.Photos, trip.Photos),
+                Builders<Trip>.Update.Set(e => e.TextField, trip.TextField),
+                Builders<Trip>.Update.Set(e => e.UserId, trip.UserId));
+            var options = new FindOneAndUpdateOptions<Trip, Trip>()
+            {
+                IsUpsert = true,
+                ReturnDocument = ReturnDocument.After
+            };
+            return await trips.FindOneAndUpdateAsync(filter, definition, options).ConfigureAwait(false);
+
+        }
+
+        public async Task<Trip> ReadTrip(Guid Id)
+        {
+            var filter = Builders<Trip>.Filter.Eq(x => x.Id, Id);
+            var gottrips = await trips.Find(filter).ToListAsync();
+
+            if (gottrips.Count == 1)
+            {
+                return gottrips[0];
+            }
+
+            return null;
+        }
+
+        public async Task<Guid> DeleteTrip(Guid Id)
+        {
+            var filter = Builders<Trip>.Filter.Eq(ed => ed.Id, Id);
+            await trips.DeleteOneAsync(filter).ConfigureAwait(false);
+            return Id;
+        }
+
+        public async Task<Guid[]> GetAllTrips(Guid UserId)
+        {
+            var filter = Builders<Trip>.Filter.Eq(x => x.UserId, UserId);
+            var gotids = (await trips.Find(filter).ToListAsync()).Select(x => x.Id).ToList();
+
+            return gotids.ToArray();
         }
 
         #endregion
