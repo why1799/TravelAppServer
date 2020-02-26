@@ -49,7 +49,7 @@ namespace TravelAppStorage.Implementations
                 {
                     entity.MapProperty(e => e.Email)
                         .SetIsRequired(true)
-                        .SetElementName("Email");
+                        .SetElementName("Email");   
                     entity.MapProperty(e => e.Password)
                         .SetIsRequired(true)
                         .SetElementName("Password");
