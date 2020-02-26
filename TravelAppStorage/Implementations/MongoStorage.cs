@@ -204,7 +204,7 @@ namespace TravelAppStorage.Implementations
             list.AddRange(GuidToList());
             list.AddRange(GuidToList());
 
-            return Convert.ToBase64String(list.ToArray());
+            return new string(Convert.ToBase64String(list.ToArray()).Where(x => x >= '0' && x <= '9' || x >= 'a' && x <= 'z' || x >= 'A' && x <= 'Z').Select(y => y).ToList().ToArray()) ;
         }
 
         private List<byte> GuidToList()
