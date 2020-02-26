@@ -20,6 +20,7 @@ namespace TravelAppStorage.Implementations
         private IMongoClient client;
         private IMongoCollection<UserToken> tokens;
         private IMongoCollection<User> users;
+        private IMongoCollection<Photo> photos;
         #endregion
 
         #region Constructors
@@ -38,6 +39,7 @@ namespace TravelAppStorage.Implementations
             Register();
             tokens = database.GetCollection<UserToken>("Tokens");
             users = database.GetCollection<User>("Users");
+            photos = database.GetCollection<Photo>("Photos");
             //CreateIndexes();
         }
 
@@ -77,8 +79,39 @@ namespace TravelAppStorage.Implementations
                     entity.SetIdMember(entity.GetMemberMap(e => e.Token));
                 });
             }
+
+            if (BsonClassMap.IsClassMapRegistered(typeof(Photo)) == false)
+            {
+                BsonClassMap.RegisterClassMap<Photo>(entity =>
+                {
+                    entity.MapIdProperty(e => e.UserId)
+                        .SetIsRequired(true)
+                        .SetSerializer(new GuidSerializer(BsonType.String))
+                        .SetElementName("UserId");
+                    entity.MapIdProperty(e => e.Base64)
+                        .SetIsRequired(true)
+                        .SetElementName("Base64");
+                    entity.MapIdProperty(e => e.Id)
+                        .SetIsRequired(true)
+                        .SetSerializer(new GuidSerializer(BsonType.String));
+                    entity.SetIdMember(entity.GetMemberMap(e => e.Id));
+                });
+            }
         }
         #endregion
+
+        public async Task<UserToken> FindUserByToken(string token)
+        {
+            var filter = Builders<UserToken>.Filter.Eq(x => x.Token, token);
+            var gottokens = await tokens.Find(filter).ToListAsync();
+
+            if (gottokens.Count != 1)
+            {
+                throw new ArgumentException("Such account doesn't exist!");
+            }
+
+            return gottokens[0];
+        }
 
         #region Auth
         public async Task<UserToken> AddUser(string username, string email, string password)
@@ -152,6 +185,37 @@ namespace TravelAppStorage.Implementations
         {
             var guid = Guid.NewGuid();
             return guid.ToByteArray().ToList();
+        }
+
+
+        #endregion
+
+        #region Photo
+
+        public async Task<Photo> UploadPhoto(string Base64, Guid UserId)
+        {
+            Photo photo = new Photo()
+            {
+                UserId = UserId,
+                Base64 = Base64,
+                Id = Guid.NewGuid()
+            };
+
+            await photos.InsertOneAsync(photo);
+            return photo;
+        }
+
+        public async Task<Photo> GetPhoto(Guid Id)
+        {
+            var filter = Builders<Photo>.Filter.Eq(x => x.Id, Id);
+            var gottokens = await photos.Find(filter).ToListAsync();
+
+            if(gottokens.Count == 1)
+            {
+                return gottokens[0];
+            }
+
+            return null;
         }
 
         #endregion

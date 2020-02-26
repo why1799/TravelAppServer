@@ -9,10 +9,20 @@ namespace TravelAppStorage.Interfaces
 {
     public interface IStorage
     {
+        Task<UserToken> FindUserByToken(string token);
+
+        #region Auth
         Task<UserToken> FindUser(string email, string password);
 
         Task<bool> FindUserEmail(string email);
 
-        Task<UserToken> AddUser(string username, string email, string password); 
+        Task<UserToken> AddUser(string username, string email, string password);
+        #endregion
+
+        #region Photo
+        Task<Photo> UploadPhoto(string Base64, Guid UserId);
+
+        Task<Photo> GetPhoto(Guid Id);
+        #endregion
     }
 }
