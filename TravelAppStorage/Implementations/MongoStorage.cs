@@ -22,6 +22,7 @@ namespace TravelAppStorage.Implementations
         private IMongoCollection<User> users;
         private IMongoCollection<Photo> photos;
         private IMongoCollection<Trip> trips;
+        private IMongoCollection<Place> places;
         #endregion
 
         #region Constructors
@@ -42,6 +43,7 @@ namespace TravelAppStorage.Implementations
             users = database.GetCollection<User>("Users");
             photos = database.GetCollection<Photo>("Photos");
             trips = database.GetCollection<Trip>("Trips");
+            places = database.GetCollection<Place>("Places");
             //CreateIndexes();
         }
 
@@ -110,6 +112,37 @@ namespace TravelAppStorage.Implementations
                     entity.MapIdProperty(e => e.TextField)
                         .SetIsRequired(false)
                         .SetElementName("TextField");
+                    entity.MapIdProperty(e => e.Photos)
+                        .SetIsRequired(false)
+                        .SetElementName("Photos");
+                    entity.MapIdProperty(e => e.Places)
+                        .SetIsRequired(false)
+                        .SetElementName("Places");
+                    entity.MapIdProperty(e => e.UserId)
+                        .SetIsRequired(true)
+                        .SetElementName("UserId")
+                        .SetSerializer(new GuidSerializer(BsonType.String));
+                    entity.MapIdProperty(e => e.Id)
+                        .SetIsRequired(true)
+                        .SetSerializer(new GuidSerializer(BsonType.String));
+                    entity.SetIdMember(entity.GetMemberMap(e => e.Id));
+                });
+            }
+
+
+            if (BsonClassMap.IsClassMapRegistered(typeof(Place)) == false)
+            {
+                BsonClassMap.RegisterClassMap<Place>(entity =>
+                {
+                    entity.MapIdProperty(e => e.Name)
+                        .SetIsRequired(true)
+                        .SetElementName("Name");
+                    entity.MapIdProperty(e => e.Description)
+                        .SetIsRequired(false)
+                        .SetElementName("Description");
+                    entity.MapIdProperty(e => e.Adress)
+                        .SetIsRequired(true)
+                        .SetElementName("Adress");
                     entity.MapIdProperty(e => e.Photos)
                         .SetIsRequired(false)
                         .SetElementName("Photos");
@@ -258,6 +291,7 @@ namespace TravelAppStorage.Implementations
                 .Combine(
                 Builders<Trip>.Update.Set(e => e.Name, trip.Name),
                 Builders<Trip>.Update.Set(e => e.Photos, trip.Photos),
+                Builders<Trip>.Update.Set(e => e.Places, trip.Places),
                 Builders<Trip>.Update.Set(e => e.TextField, trip.TextField),
                 Builders<Trip>.Update.Set(e => e.UserId, trip.UserId));
             var options = new FindOneAndUpdateOptions<Trip, Trip>()
@@ -297,6 +331,57 @@ namespace TravelAppStorage.Implementations
             return gotids.ToArray();
         }
 
+        #endregion
+
+        #region Place
+        public async Task<Place> UpsertPlace(Place place)
+        {
+            if (place == null) return null;
+
+            var filter = Builders<Place>.Filter
+                .Eq(entity => entity.Id, place.Id);
+            var definition = Builders<Place>.Update
+                .Combine(
+                Builders<Place>.Update.Set(e => e.Name, place.Name),
+                Builders<Place>.Update.Set(e => e.Photos, place.Photos),
+                Builders<Place>.Update.Set(e => e.Adress, place.Adress),
+                Builders<Place>.Update.Set(e => e.Description, place.Description),
+                Builders<Place>.Update.Set(e => e.UserId, place.UserId));
+            var options = new FindOneAndUpdateOptions<Place, Place>()
+            {
+                IsUpsert = true,
+                ReturnDocument = ReturnDocument.After
+            };
+            return await places.FindOneAndUpdateAsync(filter, definition, options).ConfigureAwait(false);
+        }
+
+        public async Task<Place> ReadPlace(Guid Id)
+        {
+            var filter = Builders<Place>.Filter.Eq(x => x.Id, Id);
+            var gotplaces = await places.Find(filter).ToListAsync();
+
+            if (gotplaces.Count == 1)
+            {
+                return gotplaces[0];
+            }
+
+            return null;
+        }
+
+        public async Task<Guid> DeletePlace(Guid Id)
+        {
+            var filter = Builders<Place>.Filter.Eq(ed => ed.Id, Id);
+            await places.DeleteOneAsync(filter).ConfigureAwait(false);
+            return Id;
+        }
+
+        public async Task<Guid[]> GetAllPlaces(Guid UserId)
+        {
+            var filter = Builders<Place>.Filter.Eq(x => x.UserId, UserId);
+            var gotids = (await places.Find(filter).ToListAsync()).Select(x => x.Id).ToList();
+
+            return gotids.ToArray();
+        }
         #endregion
     }
 }

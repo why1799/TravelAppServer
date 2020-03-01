@@ -11,11 +11,11 @@ namespace TravelAppServer.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class TripController : ControllerBase
+    public class PlaceController : ControllerBase
     {
         private readonly IStorage Storage;
 
-        public TripController(IStorage storage)
+        public PlaceController(IStorage storage)
         {
             Storage = storage;
         }
@@ -24,38 +24,38 @@ namespace TravelAppServer.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult> Upsert([FromBody] Trip trip, string token)
+        public async Task<ActionResult> Upsert([FromBody] Place place, string token)
         {
             try
             {
-                if(trip == null)
+                if (place == null)
                 {
-                    throw new ArgumentException("Trip can't be null");
+                    throw new ArgumentException("Place can't be null");
                 }
 
                 var usertoken = await Storage.FindUserByToken(token);
-                
-                if(trip.Id == Guid.Empty)
+
+                if (place.Id == Guid.Empty)
                 {
-                    trip.Id = Guid.NewGuid();
+                    place.Id = Guid.NewGuid();
                 }
 
-                var readresponse = await Storage.ReadTrip(trip.Id);
+                var readresponse = await Storage.ReadPlace(place.Id);
 
-                if(readresponse != null)
+                if (readresponse != null)
                 {
-                    if(readresponse.UserId != usertoken.UserId)
+                    if (readresponse.UserId != usertoken.UserId)
                     {
-                        throw new ArgumentException("You don't have permission to this trip");
+                        throw new ArgumentException("You don't have permission to this place");
                     }
-                    trip.UserId = readresponse.UserId;
+                    place.UserId = readresponse.UserId;
                 }
                 else
                 {
-                    trip.UserId = usertoken.UserId;
+                    place.UserId = usertoken.UserId;
                 }
 
-                var response = await Storage.UpsertTrip(trip);
+                var response = await Storage.UpsertPlace(place);
 
                 return StatusCode(StatusCodes.Status200OK, response);
             }
@@ -79,16 +79,16 @@ namespace TravelAppServer.Controllers
             {
                 var usertoken = await Storage.FindUserByToken(token);
 
-                var response = await Storage.ReadTrip(id);
+                var response = await Storage.ReadPlace(id);
 
-                if(response == null)
+                if (response == null)
                 {
-                    throw new ArgumentException("Such trip doesn't exist");
+                    throw new ArgumentException("Such place doesn't exist");
                 }
 
-                if(response.UserId != usertoken.UserId)
+                if (response.UserId != usertoken.UserId)
                 {
-                    throw new ArgumentException("You don't have permission to this trip");
+                    throw new ArgumentException("You don't have permission to this place");
                 }
 
                 return StatusCode(StatusCodes.Status200OK, response);
@@ -113,19 +113,19 @@ namespace TravelAppServer.Controllers
             {
                 var usertoken = await Storage.FindUserByToken(token);
 
-                var readresponse = await Storage.ReadTrip(id);
+                var readresponse = await Storage.ReadPlace(id);
 
                 if (readresponse == null)
                 {
-                    throw new ArgumentException("Such trip doesn't exist");
+                    throw new ArgumentException("Such place doesn't exist");
                 }
 
                 if (readresponse.UserId != usertoken.UserId)
                 {
-                    throw new ArgumentException("You don't have permission to this trip");
+                    throw new ArgumentException("You don't have permission to this place");
                 }
 
-                var response = await Storage.DeleteTrip(id);
+                var response = await Storage.DeletePlace(id);
 
                 return StatusCode(StatusCodes.Status200OK, response);
             }
@@ -149,7 +149,7 @@ namespace TravelAppServer.Controllers
             {
                 var usertoken = await Storage.FindUserByToken(token);
 
-                var response = await Storage.GetAllTrips(usertoken.UserId);
+                var response = await Storage.GetAllPlaces(usertoken.UserId);
 
                 return StatusCode(StatusCodes.Status200OK, response);
             }
