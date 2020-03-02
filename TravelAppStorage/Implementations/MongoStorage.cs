@@ -118,6 +118,12 @@ namespace TravelAppStorage.Implementations
                     entity.MapIdProperty(e => e.Places)
                         .SetIsRequired(false)
                         .SetElementName("Places");
+                    entity.MapIdProperty(e => e.ToDate)
+                        .SetIsRequired(false)
+                        .SetElementName("ToDate");
+                    entity.MapIdProperty(e => e.FromDate)
+                        .SetIsRequired(false)
+                        .SetElementName("FromDate");
                     entity.MapIdProperty(e => e.UserId)
                         .SetIsRequired(true)
                         .SetElementName("UserId")
@@ -293,7 +299,9 @@ namespace TravelAppStorage.Implementations
                 Builders<Trip>.Update.Set(e => e.Photos, trip.Photos),
                 Builders<Trip>.Update.Set(e => e.Places, trip.Places),
                 Builders<Trip>.Update.Set(e => e.TextField, trip.TextField),
-                Builders<Trip>.Update.Set(e => e.UserId, trip.UserId));
+                Builders<Trip>.Update.Set(e => e.UserId, trip.UserId),
+                Builders<Trip>.Update.Set(e => e.FromDate, trip.FromDate),
+                Builders<Trip>.Update.Set(e => e.ToDate, trip.ToDate));
             var options = new FindOneAndUpdateOptions<Trip, Trip>()
             {
                 IsUpsert = true,

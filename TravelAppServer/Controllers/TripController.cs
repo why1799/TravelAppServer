@@ -33,6 +33,14 @@ namespace TravelAppServer.Controllers
                     throw new ArgumentException("Trip can't be null");
                 }
 
+                if(trip.FromDate != null && trip.ToDate != null)
+                {
+                    if(trip.FromDate.Value > trip.ToDate.Value)
+                    {
+                        throw new ArgumentException("From date can't be after to date");
+                    }
+                }
+
                 var usertoken = await Storage.FindUserByToken(token);
                 
                 if(trip.Id == Guid.Empty)
