@@ -49,13 +49,41 @@ namespace TravelAppStorage.Implementations
 
         private void Register()
         {
+            RegisterUserModels();
+
+            RegisterPhotoModel();
+
+            RegisterTripModel();
+
+            RegisterPlaceModel();
+
+        }
+        #endregion
+
+        public async Task<UserToken> FindUserByToken(string token)
+        {
+            var filter = Builders<UserToken>.Filter.Eq(x => x.Token, token);
+            var gottokens = await tokens.Find(filter).ToListAsync();
+
+            if (gottokens.Count != 1)
+            {
+                throw new ArgumentException("Such account doesn't exist!");
+            }
+
+            return gottokens[0];
+        }
+
+        #region Auth
+
+        public void RegisterUserModels()
+        {
             if (BsonClassMap.IsClassMapRegistered(typeof(User)) == false)
             {
                 BsonClassMap.RegisterClassMap<User>(entity =>
                 {
                     entity.MapProperty(e => e.Email)
                         .SetIsRequired(true)
-                        .SetElementName("Email");   
+                        .SetElementName("Email");
                     entity.MapProperty(e => e.Password)
                         .SetIsRequired(true)
                         .SetElementName("Password");
@@ -83,102 +111,8 @@ namespace TravelAppStorage.Implementations
                     entity.SetIdMember(entity.GetMemberMap(e => e.Token));
                 });
             }
-
-            if (BsonClassMap.IsClassMapRegistered(typeof(Photo)) == false)
-            {
-                BsonClassMap.RegisterClassMap<Photo>(entity =>
-                {
-                    entity.MapIdProperty(e => e.UserId)
-                        .SetIsRequired(true)
-                        .SetSerializer(new GuidSerializer(BsonType.String))
-                        .SetElementName("UserId");
-                    entity.MapIdProperty(e => e.Base64)
-                        .SetIsRequired(true)
-                        .SetElementName("Base64");
-                    entity.MapIdProperty(e => e.Id)
-                        .SetIsRequired(true)
-                        .SetSerializer(new GuidSerializer(BsonType.String));
-                    entity.SetIdMember(entity.GetMemberMap(e => e.Id));
-                });
-            }
-
-            if (BsonClassMap.IsClassMapRegistered(typeof(Trip)) == false)
-            {
-                BsonClassMap.RegisterClassMap<Trip>(entity =>
-                {
-                    entity.MapIdProperty(e => e.Name)
-                        .SetIsRequired(true)
-                        .SetElementName("Name");
-                    entity.MapIdProperty(e => e.TextField)
-                        .SetIsRequired(false)
-                        .SetElementName("TextField");
-                    entity.MapIdProperty(e => e.Photos)
-                        .SetIsRequired(false)
-                        .SetElementName("Photos");
-                    entity.MapIdProperty(e => e.Places)
-                        .SetIsRequired(false)
-                        .SetElementName("Places");
-                    entity.MapIdProperty(e => e.ToDate)
-                        .SetIsRequired(false)
-                        .SetElementName("ToDate");
-                    entity.MapIdProperty(e => e.FromDate)
-                        .SetIsRequired(false)
-                        .SetElementName("FromDate");
-                    entity.MapIdProperty(e => e.UserId)
-                        .SetIsRequired(true)
-                        .SetElementName("UserId")
-                        .SetSerializer(new GuidSerializer(BsonType.String));
-                    entity.MapIdProperty(e => e.Id)
-                        .SetIsRequired(true)
-                        .SetSerializer(new GuidSerializer(BsonType.String));
-                    entity.SetIdMember(entity.GetMemberMap(e => e.Id));
-                });
-            }
-
-
-            if (BsonClassMap.IsClassMapRegistered(typeof(Place)) == false)
-            {
-                BsonClassMap.RegisterClassMap<Place>(entity =>
-                {
-                    entity.MapIdProperty(e => e.Name)
-                        .SetIsRequired(true)
-                        .SetElementName("Name");
-                    entity.MapIdProperty(e => e.Description)
-                        .SetIsRequired(false)
-                        .SetElementName("Description");
-                    entity.MapIdProperty(e => e.Adress)
-                        .SetIsRequired(true)
-                        .SetElementName("Adress");
-                    entity.MapIdProperty(e => e.Photos)
-                        .SetIsRequired(false)
-                        .SetElementName("Photos");
-                    entity.MapIdProperty(e => e.UserId)
-                        .SetIsRequired(true)
-                        .SetElementName("UserId")
-                        .SetSerializer(new GuidSerializer(BsonType.String));
-                    entity.MapIdProperty(e => e.Id)
-                        .SetIsRequired(true)
-                        .SetSerializer(new GuidSerializer(BsonType.String));
-                    entity.SetIdMember(entity.GetMemberMap(e => e.Id));
-                });
-            }
-        }
-        #endregion
-
-        public async Task<UserToken> FindUserByToken(string token)
-        {
-            var filter = Builders<UserToken>.Filter.Eq(x => x.Token, token);
-            var gottokens = await tokens.Find(filter).ToListAsync();
-
-            if (gottokens.Count != 1)
-            {
-                throw new ArgumentException("Such account doesn't exist!");
-            }
-
-            return gottokens[0];
         }
 
-        #region Auth
         public async Task<UserToken> AddUser(string username, string email, string password)
         {
             User user = new User()
@@ -257,6 +191,27 @@ namespace TravelAppStorage.Implementations
 
         #region Photo
 
+        public void RegisterPhotoModel()
+        {
+            if (BsonClassMap.IsClassMapRegistered(typeof(Photo)) == false)
+            {
+                BsonClassMap.RegisterClassMap<Photo>(entity =>
+                {
+                    entity.MapIdProperty(e => e.UserId)
+                        .SetIsRequired(true)
+                        .SetSerializer(new GuidSerializer(BsonType.String))
+                        .SetElementName("UserId");
+                    entity.MapIdProperty(e => e.Base64)
+                        .SetIsRequired(true)
+                        .SetElementName("Base64");
+                    entity.MapIdProperty(e => e.Id)
+                        .SetIsRequired(true)
+                        .SetSerializer(new GuidSerializer(BsonType.String));
+                    entity.SetIdMember(entity.GetMemberMap(e => e.Id));
+                });
+            }
+        }
+
         public async Task<Photo> UploadPhoto(string Base64, Guid UserId)
         {
             Photo photo = new Photo()
@@ -286,6 +241,42 @@ namespace TravelAppStorage.Implementations
         #endregion
 
         #region Trip
+
+        public void RegisterTripModel()
+        {
+            if (BsonClassMap.IsClassMapRegistered(typeof(Trip)) == false)
+            {
+                BsonClassMap.RegisterClassMap<Trip>(entity =>
+                {
+                    entity.MapIdProperty(e => e.Name)
+                        .SetIsRequired(true)
+                        .SetElementName("Name");
+                    entity.MapIdProperty(e => e.TextField)
+                        .SetIsRequired(false)
+                        .SetElementName("TextField");
+                    entity.MapIdProperty(e => e.Photos)
+                        .SetIsRequired(false)
+                        .SetElementName("Photos");
+                    entity.MapIdProperty(e => e.Places)
+                        .SetIsRequired(false)
+                        .SetElementName("Places");
+                    entity.MapIdProperty(e => e.ToDate)
+                        .SetIsRequired(false)
+                        .SetElementName("ToDate");
+                    entity.MapIdProperty(e => e.FromDate)
+                        .SetIsRequired(false)
+                        .SetElementName("FromDate");
+                    entity.MapIdProperty(e => e.UserId)
+                        .SetIsRequired(true)
+                        .SetElementName("UserId")
+                        .SetSerializer(new GuidSerializer(BsonType.String));
+                    entity.MapIdProperty(e => e.Id)
+                        .SetIsRequired(true)
+                        .SetSerializer(new GuidSerializer(BsonType.String));
+                    entity.SetIdMember(entity.GetMemberMap(e => e.Id));
+                });
+            }
+        }
 
         public async Task<Trip> UpsertTrip(Trip trip)
         {
@@ -342,6 +333,37 @@ namespace TravelAppStorage.Implementations
         #endregion
 
         #region Place
+
+        public void RegisterPlaceModel()
+        {
+            if (BsonClassMap.IsClassMapRegistered(typeof(Place)) == false)
+            {
+                BsonClassMap.RegisterClassMap<Place>(entity =>
+                {
+                    entity.MapIdProperty(e => e.Name)
+                        .SetIsRequired(true)
+                        .SetElementName("Name");
+                    entity.MapIdProperty(e => e.Description)
+                        .SetIsRequired(false)
+                        .SetElementName("Description");
+                    entity.MapIdProperty(e => e.Adress)
+                        .SetIsRequired(true)
+                        .SetElementName("Adress");
+                    entity.MapIdProperty(e => e.Photos)
+                        .SetIsRequired(false)
+                        .SetElementName("Photos");
+                    entity.MapIdProperty(e => e.UserId)
+                        .SetIsRequired(true)
+                        .SetElementName("UserId")
+                        .SetSerializer(new GuidSerializer(BsonType.String));
+                    entity.MapIdProperty(e => e.Id)
+                        .SetIsRequired(true)
+                        .SetSerializer(new GuidSerializer(BsonType.String));
+                    entity.SetIdMember(entity.GetMemberMap(e => e.Id));
+                });
+            }
+        }
+
         public async Task<Place> UpsertPlace(Place place)
         {
             if (place == null) return null;
