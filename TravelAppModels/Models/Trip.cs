@@ -12,6 +12,8 @@ namespace TravelAppModels.Models
         public string TextField { get; set; }
         public Guid[] Photos {get;set;}
         public Guid[] Places { get; set; }
+        public Guid[] Goods { get; set; }
+        public Guid[] Goals { get; set; }
         public long? FromDate { get; set; }
         public long? ToDate { get; set; }
     }

@@ -42,5 +42,23 @@ namespace TravelAppStorage.Interfaces
         Task<Guid[]> GetAllPlaces(Guid UserId);
 
         #endregion
+
+        #region Goal
+
+        Task<Goal> UpsertGoal(Goal goal);
+        Task<Goal> ReadGoal(Guid Id);
+        Task<Guid> DeleteGoal(Guid Id);
+        Task<Guid[]> GetAllGoals(Guid UserId);
+
+        #endregion
+
+        #region Good
+
+        Task<Good> UpsertGood(Good good);
+        Task<Good> ReadGood(Guid Id);
+        Task<Guid> DeleteGood(Guid Id);
+        Task<Guid[]> GetAllGoods(Guid UserId);
+
+        #endregion
     }
 }

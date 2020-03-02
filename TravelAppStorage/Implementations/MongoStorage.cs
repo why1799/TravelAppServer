@@ -23,6 +23,8 @@ namespace TravelAppStorage.Implementations
         private IMongoCollection<Photo> photos;
         private IMongoCollection<Trip> trips;
         private IMongoCollection<Place> places;
+        private IMongoCollection<Good> goods;
+        private IMongoCollection<Goal> goals;
         #endregion
 
         #region Constructors
@@ -44,6 +46,8 @@ namespace TravelAppStorage.Implementations
             photos = database.GetCollection<Photo>("Photos");
             trips = database.GetCollection<Trip>("Trips");
             places = database.GetCollection<Place>("Places");
+            goods = database.GetCollection<Good>("Goods");
+            goals = database.GetCollection<Goal>("Goals");
             //CreateIndexes();
         }
 
@@ -56,6 +60,10 @@ namespace TravelAppStorage.Implementations
             RegisterTripModel();
 
             RegisterPlaceModel();
+
+            RegisterGoodModel();
+
+            RegisterGoalModel();
 
         }
         #endregion
@@ -260,6 +268,12 @@ namespace TravelAppStorage.Implementations
                     entity.MapIdProperty(e => e.Places)
                         .SetIsRequired(false)
                         .SetElementName("Places");
+                    entity.MapIdProperty(e => e.Goods)
+                        .SetIsRequired(false)
+                        .SetElementName("Goods");
+                    entity.MapIdProperty(e => e.Goals)
+                        .SetIsRequired(false)
+                        .SetElementName("Goals");
                     entity.MapIdProperty(e => e.ToDate)
                         .SetIsRequired(false)
                         .SetElementName("ToDate");
@@ -289,6 +303,8 @@ namespace TravelAppStorage.Implementations
                 Builders<Trip>.Update.Set(e => e.Name, trip.Name),
                 Builders<Trip>.Update.Set(e => e.Photos, trip.Photos),
                 Builders<Trip>.Update.Set(e => e.Places, trip.Places),
+                Builders<Trip>.Update.Set(e => e.Goals, trip.Goals),
+                Builders<Trip>.Update.Set(e => e.Goods, trip.Goods),
                 Builders<Trip>.Update.Set(e => e.TextField, trip.TextField),
                 Builders<Trip>.Update.Set(e => e.UserId, trip.UserId),
                 Builders<Trip>.Update.Set(e => e.FromDate, trip.FromDate),
@@ -412,6 +428,163 @@ namespace TravelAppStorage.Implementations
 
             return gotids.ToArray();
         }
+
+
         #endregion
+
+        #region Goal
+
+        public void RegisterGoalModel()
+        {
+            if (BsonClassMap.IsClassMapRegistered(typeof(Goal)) == false)
+            {
+                BsonClassMap.RegisterClassMap<Goal>(entity =>
+                {
+                    entity.MapIdProperty(e => e.Name)
+                        .SetIsRequired(true)
+                        .SetElementName("Name");
+                    entity.MapIdProperty(e => e.Description)
+                        .SetIsRequired(false)
+                        .SetElementName("Description");
+                    entity.MapIdProperty(e => e.IsDone)
+                        .SetIsRequired(true)
+                        .SetElementName("IsDone");
+                    entity.MapIdProperty(e => e.UserId)
+                        .SetIsRequired(true)
+                        .SetElementName("UserId")
+                        .SetSerializer(new GuidSerializer(BsonType.String));
+                    entity.MapIdProperty(e => e.Id)
+                        .SetIsRequired(true)
+                        .SetSerializer(new GuidSerializer(BsonType.String));
+                    entity.SetIdMember(entity.GetMemberMap(e => e.Id));
+                });
+            }
+        }
+
+        public async Task<Goal> UpsertGoal(Goal goal)
+        {
+            if (goal == null) return null;
+
+            var filter = Builders<Goal>.Filter
+                .Eq(entity => entity.Id, goal.Id);
+            var definition = Builders<Goal>.Update
+                .Combine(
+                Builders<Goal>.Update.Set(e => e.Name, goal.Name),
+                Builders<Goal>.Update.Set(e => e.IsDone, goal.IsDone),
+                Builders<Goal>.Update.Set(e => e.Description, goal.Description),
+                Builders<Goal>.Update.Set(e => e.UserId, goal.UserId));
+            var options = new FindOneAndUpdateOptions<Goal, Goal>()
+            {
+                IsUpsert = true,
+                ReturnDocument = ReturnDocument.After
+            };
+            return await goals.FindOneAndUpdateAsync(filter, definition, options).ConfigureAwait(false);
+        }
+
+        public async Task<Goal> ReadGoal(Guid Id)
+        {
+            var filter = Builders<Goal>.Filter.Eq(x => x.Id, Id);
+            var gotgoals = await goals.Find(filter).ToListAsync();
+
+            if (gotgoals.Count == 1)
+            {
+                return gotgoals[0];
+            }
+
+            return null;
+        }
+
+        public async Task<Guid> DeleteGoal(Guid Id)
+        {
+            var filter = Builders<Goal>.Filter.Eq(ed => ed.Id, Id);
+            await goals.DeleteOneAsync(filter).ConfigureAwait(false);
+            return Id;
+        }
+
+        public async Task<Guid[]> GetAllGoals(Guid UserId)
+        {
+            var filter = Builders<Goal>.Filter.Eq(x => x.UserId, UserId);
+            var gotids = (await goals.Find(filter).ToListAsync()).Select(x => x.Id).ToList();
+
+            return gotids.ToArray();
+        }
+        #endregion
+
+        #region Good
+        public void RegisterGoodModel()
+        {
+            if (BsonClassMap.IsClassMapRegistered(typeof(Good)) == false)
+            {
+                BsonClassMap.RegisterClassMap<Good>(entity =>
+                {
+                    entity.MapIdProperty(e => e.Name)
+                        .SetIsRequired(true)
+                        .SetElementName("Name");
+                    entity.MapIdProperty(e => e.Description)
+                        .SetIsRequired(false)
+                        .SetElementName("Description");
+                    entity.MapIdProperty(e => e.IsTook)
+                        .SetIsRequired(true)
+                        .SetElementName("IsTook");
+                    entity.MapIdProperty(e => e.UserId)
+                        .SetIsRequired(true)
+                        .SetElementName("UserId")
+                        .SetSerializer(new GuidSerializer(BsonType.String));
+                    entity.MapIdProperty(e => e.Id)
+                        .SetIsRequired(true)
+                        .SetSerializer(new GuidSerializer(BsonType.String));
+                    entity.SetIdMember(entity.GetMemberMap(e => e.Id));
+                });
+            }
+        }
+        public async Task<Good> UpsertGood(Good good)
+        {
+            if (good == null) return null;
+
+            var filter = Builders<Good>.Filter
+                .Eq(entity => entity.Id, good.Id);
+            var definition = Builders<Good>.Update
+                .Combine(
+                Builders<Good>.Update.Set(e => e.Name, good.Name),
+                Builders<Good>.Update.Set(e => e.IsTook, good.IsTook),
+                Builders<Good>.Update.Set(e => e.Description, good.Description),
+                Builders<Good>.Update.Set(e => e.UserId, good.UserId));
+            var options = new FindOneAndUpdateOptions<Good, Good>()
+            {
+                IsUpsert = true,
+                ReturnDocument = ReturnDocument.After
+            };
+            return await goods.FindOneAndUpdateAsync(filter, definition, options).ConfigureAwait(false);
+        }
+
+        public async Task<Good> ReadGood(Guid Id)
+        {
+            var filter = Builders<Good>.Filter.Eq(x => x.Id, Id);
+            var gotgoods = await goods.Find(filter).ToListAsync();
+
+            if (gotgoods.Count == 1)
+            {
+                return gotgoods[0];
+            }
+
+            return null;
+        }
+
+        public async Task<Guid> DeleteGood(Guid Id)
+        {
+            var filter = Builders<Good>.Filter.Eq(ed => ed.Id, Id);
+            await goods.DeleteOneAsync(filter).ConfigureAwait(false);
+            return Id;
+        }
+
+        public async Task<Guid[]> GetAllGoods(Guid UserId)
+        {
+            var filter = Builders<Good>.Filter.Eq(x => x.UserId, UserId);
+            var gotids = (await goods.Find(filter).ToListAsync()).Select(x => x.Id).ToList();
+
+            return gotids.ToArray();
+        }
+        #endregion
+
     }
 }
