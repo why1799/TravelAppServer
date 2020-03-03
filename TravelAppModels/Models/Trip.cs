@@ -10,10 +10,10 @@ namespace TravelAppModels.Models
         public Guid UserId { get; set; }
         public string Name { get; set; }
         public string TextField { get; set; }
-        public Guid[] Photos {get;set;}
-        public Guid[] Places { get; set; }
-        public Guid[] Goods { get; set; }
-        public Guid[] Goals { get; set; }
+        public Guid[] PhotoIds {get;set;}
+        public Guid[] PlaceIds { get; set; }
+        public Guid[] GoodIds { get; set; }
+        public Guid[] GoalIds { get; set; }
         public long? FromDate { get; set; }
         public long? ToDate { get; set; }
     }

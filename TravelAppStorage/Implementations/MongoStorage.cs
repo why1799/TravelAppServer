@@ -262,18 +262,18 @@ namespace TravelAppStorage.Implementations
                     entity.MapIdProperty(e => e.TextField)
                         .SetIsRequired(false)
                         .SetElementName("TextField");
-                    entity.MapIdProperty(e => e.Photos)
+                    entity.MapIdProperty(e => e.PhotoIds)
                         .SetIsRequired(false)
-                        .SetElementName("Photos");
-                    entity.MapIdProperty(e => e.Places)
+                        .SetElementName("PhotoIds");
+                    entity.MapIdProperty(e => e.PlaceIds)
                         .SetIsRequired(false)
-                        .SetElementName("Places");
-                    entity.MapIdProperty(e => e.Goods)
+                        .SetElementName("PlaceIds");
+                    entity.MapIdProperty(e => e.GoodIds)
                         .SetIsRequired(false)
-                        .SetElementName("Goods");
-                    entity.MapIdProperty(e => e.Goals)
+                        .SetElementName("GoodIds");
+                    entity.MapIdProperty(e => e.GoalIds)
                         .SetIsRequired(false)
-                        .SetElementName("Goals");
+                        .SetElementName("GoalIds");
                     entity.MapIdProperty(e => e.ToDate)
                         .SetIsRequired(false)
                         .SetElementName("ToDate");
@@ -301,10 +301,10 @@ namespace TravelAppStorage.Implementations
             var definition = Builders<Trip>.Update
                 .Combine(
                 Builders<Trip>.Update.Set(e => e.Name, trip.Name),
-                Builders<Trip>.Update.Set(e => e.Photos, trip.Photos),
-                Builders<Trip>.Update.Set(e => e.Places, trip.Places),
-                Builders<Trip>.Update.Set(e => e.Goals, trip.Goals),
-                Builders<Trip>.Update.Set(e => e.Goods, trip.Goods),
+                Builders<Trip>.Update.Set(e => e.PhotoIds, trip.PhotoIds),
+                Builders<Trip>.Update.Set(e => e.PlaceIds, trip.PlaceIds),
+                Builders<Trip>.Update.Set(e => e.GoalIds, trip.GoalIds),
+                Builders<Trip>.Update.Set(e => e.GoodIds, trip.GoodIds),
                 Builders<Trip>.Update.Set(e => e.TextField, trip.TextField),
                 Builders<Trip>.Update.Set(e => e.UserId, trip.UserId),
                 Builders<Trip>.Update.Set(e => e.FromDate, trip.FromDate),
