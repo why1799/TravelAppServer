@@ -25,6 +25,7 @@ namespace TravelAppStorage.Implementations
         private IMongoCollection<Place> places;
         private IMongoCollection<Good> goods;
         private IMongoCollection<Goal> goals;
+        private IMongoCollection<Category> categories;
         #endregion
 
         #region Constructors
@@ -48,6 +49,7 @@ namespace TravelAppStorage.Implementations
             places = database.GetCollection<Place>("Places");
             goods = database.GetCollection<Good>("Goods");
             goals = database.GetCollection<Goal>("Goals");
+            categories = database.GetCollection<Category>("Categories");
             //CreateIndexes();
         }
 
@@ -64,6 +66,8 @@ namespace TravelAppStorage.Implementations
             RegisterGoodModel();
 
             RegisterGoalModel();
+
+            RegisterCategoryModel();
 
         }
         #endregion
@@ -583,6 +587,81 @@ namespace TravelAppStorage.Implementations
             var gotids = (await goods.Find(filter).ToListAsync()).Select(x => x.Id).ToList();
 
             return gotids.ToArray();
+        }
+        #endregion
+
+        #region Category
+        public void RegisterCategoryModel()
+        {
+            if (BsonClassMap.IsClassMapRegistered(typeof(Category)) == false)
+            {
+                BsonClassMap.RegisterClassMap<Category>(entity =>
+                {
+                    entity.MapIdProperty(e => e.Name)
+                        .SetIsRequired(true)
+                        .SetElementName("Name");
+                    entity.MapIdProperty(e => e.Description)
+                        .SetIsRequired(false)
+                        .SetElementName("Description");
+                    entity.MapIdProperty(e => e.Id)
+                        .SetIsRequired(true)
+                        .SetSerializer(new GuidSerializer(BsonType.String));
+                    entity.SetIdMember(entity.GetMemberMap(e => e.Id));
+                });
+            }
+        }
+        public async Task<Category> UpsertCategory(Category category)
+        {
+            if (category == null) return null;
+
+            var filter = Builders<Category>.Filter
+                .Eq(entity => entity.Id, category.Id);
+            var definition = Builders<Category>.Update
+                .Combine(
+                Builders<Category>.Update.Set(e => e.Name, category.Name),
+                Builders<Category>.Update.Set(e => e.Description, category.Description));
+            var options = new FindOneAndUpdateOptions<Category, Category>()
+            {
+                IsUpsert = true,
+                ReturnDocument = ReturnDocument.After
+            };
+            return await categories.FindOneAndUpdateAsync(filter, definition, options).ConfigureAwait(false);
+        }
+
+        public async Task<Category> ReadCategory(Guid Id)
+        {
+            var filter = Builders<Category>.Filter.Eq(x => x.Id, Id);
+            var gotcategories = await categories.Find(filter).ToListAsync();
+
+            if (gotcategories.Count == 1)
+            {
+                return gotcategories[0];
+            }
+
+            return null;
+        }
+
+        public async Task<Guid> DeleteCategory(Guid Id)
+        {
+            var filter = Builders<Category>.Filter.Eq(ed => ed.Id, Id);
+            await categories.DeleteOneAsync(filter).ConfigureAwait(false);
+            return Id;
+        }
+
+        public async Task<Guid[]> GetAllCategoryIds()
+        {
+            var filter = Builders<Category>.Filter.Empty;
+            var gotids = (await categories.Find(filter).ToListAsync()).Select(x => x.Id).ToList();
+
+            return gotids.ToArray();
+        }
+
+        public async Task<Category[]> GetAllCategories()
+        {
+            var filter = Builders<Category>.Filter.Empty;
+            var gotcategories = (await categories.Find(filter).ToListAsync());
+
+            return gotcategories.ToArray();
         }
         #endregion
 

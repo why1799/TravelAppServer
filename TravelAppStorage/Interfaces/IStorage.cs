@@ -60,5 +60,15 @@ namespace TravelAppStorage.Interfaces
         Task<Guid[]> GetAllGoods(Guid UserId);
 
         #endregion
+
+        #region Category
+
+        Task<Category> UpsertCategory(Category category);
+        Task<Category> ReadCategory(Guid Id);
+        Task<Guid> DeleteCategory(Guid Id);
+        Task<Guid[]> GetAllCategoryIds();
+        Task<Category[]> GetAllCategories();
+
+        #endregion
     }
 }
