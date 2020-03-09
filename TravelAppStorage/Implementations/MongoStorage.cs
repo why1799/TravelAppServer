@@ -26,6 +26,7 @@ namespace TravelAppStorage.Implementations
         private IMongoCollection<Good> goods;
         private IMongoCollection<Goal> goals;
         private IMongoCollection<Category> categories;
+        private IMongoCollection<Purchase> purchases;
         #endregion
 
         #region Constructors
@@ -50,25 +51,20 @@ namespace TravelAppStorage.Implementations
             goods = database.GetCollection<Good>("Goods");
             goals = database.GetCollection<Goal>("Goals");
             categories = database.GetCollection<Category>("Categories");
+            purchases = database.GetCollection<Purchase>("Purchases");
             //CreateIndexes();
         }
 
         private void Register()
         {
             RegisterUserModels();
-
             RegisterPhotoModel();
-
             RegisterTripModel();
-
             RegisterPlaceModel();
-
             RegisterGoodModel();
-
             RegisterGoalModel();
-
             RegisterCategoryModel();
-
+            RegisterPurchaseModel();
         }
         #endregion
 
@@ -278,6 +274,9 @@ namespace TravelAppStorage.Implementations
                     entity.MapIdProperty(e => e.GoalIds)
                         .SetIsRequired(false)
                         .SetElementName("GoalIds");
+                    entity.MapIdProperty(e => e.PurchaseIds)
+                        .SetIsRequired(false)
+                        .SetElementName("PurchaseIds");
                     entity.MapIdProperty(e => e.ToDate)
                         .SetIsRequired(false)
                         .SetElementName("ToDate");
@@ -309,6 +308,7 @@ namespace TravelAppStorage.Implementations
                 Builders<Trip>.Update.Set(e => e.PlaceIds, trip.PlaceIds),
                 Builders<Trip>.Update.Set(e => e.GoalIds, trip.GoalIds),
                 Builders<Trip>.Update.Set(e => e.GoodIds, trip.GoodIds),
+                Builders<Trip>.Update.Set(e => e.PurchaseIds, trip.PurchaseIds),
                 Builders<Trip>.Update.Set(e => e.TextField, trip.TextField),
                 Builders<Trip>.Update.Set(e => e.UserId, trip.UserId),
                 Builders<Trip>.Update.Set(e => e.FromDate, trip.FromDate),
@@ -665,5 +665,91 @@ namespace TravelAppStorage.Implementations
         }
         #endregion
 
+        #region Purchase
+
+        public void RegisterPurchaseModel()
+        {
+            if (BsonClassMap.IsClassMapRegistered(typeof(Purchase)) == false)
+            {
+                BsonClassMap.RegisterClassMap<Purchase>(entity =>
+                {
+                    entity.MapIdProperty(e => e.Name)
+                        .SetIsRequired(true)
+                        .SetElementName("Name");
+                    entity.MapIdProperty(e => e.Description)
+                        .SetIsRequired(false)
+                        .SetElementName("Description");
+                    entity.MapIdProperty(e => e.IsBought)
+                        .SetIsRequired(true)
+                        .SetElementName("IsBought");
+                    entity.MapIdProperty(e => e.Price)
+                        .SetIsRequired(true)
+                        .SetElementName("Price");
+                    entity.MapIdProperty(e => e.CategoryId)
+                        .SetIsRequired(true)
+                        .SetElementName("CategoryId")
+                        .SetSerializer(new GuidSerializer(BsonType.String));
+                    entity.MapIdProperty(e => e.UserId)
+                        .SetIsRequired(true)
+                        .SetElementName("UserId")
+                        .SetSerializer(new GuidSerializer(BsonType.String));
+                    entity.MapIdProperty(e => e.Id)
+                        .SetIsRequired(true)
+                        .SetSerializer(new GuidSerializer(BsonType.String));
+                    entity.SetIdMember(entity.GetMemberMap(e => e.Id));
+                });
+            }
+        }
+
+        public async Task<Purchase> UpsertPurchase(Purchase purchase)
+        {
+            if (purchase == null) return null;
+
+            var filter = Builders<Purchase>.Filter
+                .Eq(entity => entity.Id, purchase.Id);
+            var definition = Builders<Purchase>.Update
+                .Combine(
+                Builders<Purchase>.Update.Set(e => e.Name, purchase.Name),
+                Builders<Purchase>.Update.Set(e => e.Description, purchase.Description),
+                Builders<Purchase>.Update.Set(e => e.CategoryId, purchase.CategoryId),
+                Builders<Purchase>.Update.Set(e => e.Price, purchase.Price),
+                Builders<Purchase>.Update.Set(e => e.IsBought, purchase.IsBought),
+                Builders<Purchase>.Update.Set(e => e.UserId, purchase.UserId));
+            var options = new FindOneAndUpdateOptions<Purchase, Purchase>()
+            {
+                IsUpsert = true,
+                ReturnDocument = ReturnDocument.After
+            };
+            return await purchases.FindOneAndUpdateAsync(filter, definition, options).ConfigureAwait(false);
+        }
+
+        public async Task<Purchase> ReadPurchase(Guid Id)
+        {
+            var filter = Builders<Purchase>.Filter.Eq(x => x.Id, Id);
+            var gotpurchases = await purchases.Find(filter).ToListAsync();
+
+            if (gotpurchases.Count == 1)
+            {
+                return gotpurchases[0];
+            }
+
+            return null;
+        }
+
+        public async Task<Guid> DeletePurchase(Guid Id)
+        {
+            var filter = Builders<Purchase>.Filter.Eq(ed => ed.Id, Id);
+            await purchases.DeleteOneAsync(filter).ConfigureAwait(false);
+            return Id;
+        }
+
+        public async Task<Guid[]> GetAllPurchases(Guid UserId)
+        {
+            var filter = Builders<Purchase>.Filter.Eq(x => x.UserId, UserId);
+            var gotids = (await purchases.Find(filter).ToListAsync()).Select(x => x.Id).ToList();
+
+            return gotids.ToArray();
+        }
+        #endregion
     }
 }

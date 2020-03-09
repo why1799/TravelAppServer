@@ -70,5 +70,14 @@ namespace TravelAppStorage.Interfaces
         Task<Category[]> GetAllCategories();
 
         #endregion
+
+        #region Purchase
+
+        Task<Purchase> UpsertPurchase(Purchase purchase);
+        Task<Purchase> ReadPurchase(Guid Id);
+        Task<Guid> DeletePurchase(Guid Id);
+        Task<Guid[]> GetAllPurchases(Guid UserId);
+
+        #endregion
     }
 }

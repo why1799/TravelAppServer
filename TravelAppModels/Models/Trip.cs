@@ -14,6 +14,7 @@ namespace TravelAppModels.Models
         public Guid[] PlaceIds { get; set; }
         public Guid[] GoodIds { get; set; }
         public Guid[] GoalIds { get; set; }
+        public Guid[] PurchaseIds { get; set; }
         public long? FromDate { get; set; }
         public long? ToDate { get; set; }
     }
