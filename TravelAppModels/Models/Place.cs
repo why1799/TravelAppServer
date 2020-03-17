@@ -11,6 +11,8 @@ namespace TravelAppModels.Models
         public string Name { get; set; }
         public string Adress { get; set; }
         public string Description { get; set; }
+        public bool IsVisited { get; set; }
+        public long? Date { get; set; }
         public Guid[] Photos { get; set; }
     }
 }

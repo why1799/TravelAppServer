@@ -372,6 +372,12 @@ namespace TravelAppStorage.Implementations
                     entity.MapIdProperty(e => e.Photos)
                         .SetIsRequired(false)
                         .SetElementName("Photos");
+                    entity.MapIdProperty(e => e.IsVisited)
+                       .SetIsRequired(true)
+                       .SetElementName("IsVisited");
+                    entity.MapIdProperty(e => e.Date)
+                       .SetIsRequired(false)
+                       .SetElementName("Date");
                     entity.MapIdProperty(e => e.UserId)
                         .SetIsRequired(true)
                         .SetElementName("UserId")
@@ -396,6 +402,8 @@ namespace TravelAppStorage.Implementations
                 Builders<Place>.Update.Set(e => e.Photos, place.Photos),
                 Builders<Place>.Update.Set(e => e.Adress, place.Adress),
                 Builders<Place>.Update.Set(e => e.Description, place.Description),
+                Builders<Place>.Update.Set(e => e.Date, place.Date),
+                Builders<Place>.Update.Set(e => e.IsVisited, place.IsVisited),
                 Builders<Place>.Update.Set(e => e.UserId, place.UserId));
             var options = new FindOneAndUpdateOptions<Place, Place>()
             {
