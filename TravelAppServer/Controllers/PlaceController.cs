@@ -69,6 +69,76 @@ namespace TravelAppServer.Controllers
             }
         }
 
+        [HttpPost("[action]")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult> UpsertWithTripId([FromBody] TravelAppModels.ModelsWithTripId.Place place, string token)
+        {
+            try
+            {
+                if (place == null)
+                {
+                    throw new ArgumentException("Place can't be null");
+                }
+
+                var usertoken = await Storage.FindUserByToken(token);
+
+                if (place.Id == Guid.Empty)
+                {
+                    place.Id = Guid.NewGuid();
+                }
+
+                var readresponse = await Storage.ReadPlace(place.Id);
+
+                if (readresponse != null)
+                {
+                    if (readresponse.UserId != usertoken.UserId)
+                    {
+                        throw new ArgumentException("You don't have permission to this place");
+                    }
+                    place.UserId = readresponse.UserId;
+                }
+                else
+                {
+                    place.UserId = usertoken.UserId;
+                }
+
+                var responsetrip = await Storage.ReadTrip(place.TripId);
+
+                if (responsetrip == null)
+                {
+                    throw new ArgumentException("Such trip doesn't exist");
+                }
+
+                if (responsetrip.UserId != usertoken.UserId)
+                {
+                    throw new ArgumentException("You don't have permission to this trip");
+                }
+
+
+                if(!responsetrip.PlaceIds.Contains(place.Id))
+                {
+                    var placeids = responsetrip.PlaceIds.ToList();
+                    placeids.Add(place.Id);
+                    responsetrip.PlaceIds = placeids.ToArray();
+                    await Storage.UpsertTrip(responsetrip);
+                }
+
+                var response = await Storage.UpsertPlace(place);
+
+                return StatusCode(StatusCodes.Status200OK, response);
+            }
+            catch (ArgumentException exeption)
+            {
+                return StatusCode(StatusCodes.Status404NotFound, exeption.Message);
+            }
+            catch (Exception exeption)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, exeption.Message);
+            }
+        }
+
         [HttpGet("[action]")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
