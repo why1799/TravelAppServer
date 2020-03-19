@@ -69,6 +69,76 @@ namespace TravelAppServer.Controllers
             }
         }
 
+        [HttpPost("[action]")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult> UpsertWithTripId([FromBody] TravelAppModels.ModelsWithTripId.Goal goal, string token)
+        {
+            try
+            {
+                if (goal == null)
+                {
+                    throw new ArgumentException("Goal can't be null");
+                }
+
+                var usertoken = await Storage.FindUserByToken(token);
+
+                if (goal.Id == Guid.Empty)
+                {
+                    goal.Id = Guid.NewGuid();
+                }
+
+                var readresponse = await Storage.ReadGoal(goal.Id);
+
+                if (readresponse != null)
+                {
+                    if (readresponse.UserId != usertoken.UserId)
+                    {
+                        throw new ArgumentException("You don't have permission to this goal");
+                    }
+                    goal.UserId = readresponse.UserId;
+                }
+                else
+                {
+                    goal.UserId = usertoken.UserId;
+                }
+
+                var responsetrip = await Storage.ReadTrip(goal.TripId);
+
+                if (responsetrip == null)
+                {
+                    throw new ArgumentException("Such trip doesn't exist");
+                }
+
+                if (responsetrip.UserId != usertoken.UserId)
+                {
+                    throw new ArgumentException("You don't have permission to this trip");
+                }
+
+
+                if (!responsetrip.GoalIds.Contains(goal.Id))
+                {
+                    var goalids = responsetrip.GoalIds.ToList();
+                    goalids.Add(goal.Id);
+                    responsetrip.GoalIds = goalids.ToArray();
+                    await Storage.UpsertTrip(responsetrip);
+                }
+
+                var response = await Storage.UpsertGoal(goal);
+
+                return StatusCode(StatusCodes.Status200OK, response);
+            }
+            catch (ArgumentException exeption)
+            {
+                return StatusCode(StatusCodes.Status404NotFound, exeption.Message);
+            }
+            catch (Exception exeption)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, exeption.Message);
+            }
+        }
+
         [HttpGet("[action]")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]

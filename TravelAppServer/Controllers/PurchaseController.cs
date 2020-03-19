@@ -69,6 +69,76 @@ namespace TravelAppServer.Controllers
             }
         }
 
+        [HttpPost("[action]")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult> UpsertWithTripId([FromBody] TravelAppModels.ModelsWithTripId.Purchase purchase, string token)
+        {
+            try
+            {
+                if (purchase == null)
+                {
+                    throw new ArgumentException("Purchase can't be null");
+                }
+
+                var usertoken = await Storage.FindUserByToken(token);
+
+                if (purchase.Id == Guid.Empty)
+                {
+                    purchase.Id = Guid.NewGuid();
+                }
+
+                var readresponse = await Storage.ReadPurchase(purchase.Id);
+
+                if (readresponse != null)
+                {
+                    if (readresponse.UserId != usertoken.UserId)
+                    {
+                        throw new ArgumentException("You don't have permission to this purchase");
+                    }
+                    purchase.UserId = readresponse.UserId;
+                }
+                else
+                {
+                    purchase.UserId = usertoken.UserId;
+                }
+
+                var responsetrip = await Storage.ReadTrip(purchase.TripId);
+
+                if (responsetrip == null)
+                {
+                    throw new ArgumentException("Such trip doesn't exist");
+                }
+
+                if (responsetrip.UserId != usertoken.UserId)
+                {
+                    throw new ArgumentException("You don't have permission to this trip");
+                }
+
+
+                if (!responsetrip.PurchaseIds.Contains(purchase.Id))
+                {
+                    var purchaseids = responsetrip.PurchaseIds.ToList();
+                    purchaseids.Add(purchase.Id);
+                    responsetrip.PurchaseIds = purchaseids.ToArray();
+                    await Storage.UpsertTrip(responsetrip);
+                }
+
+                var response = await Storage.UpsertPurchase(purchase);
+
+                return StatusCode(StatusCodes.Status200OK, response);
+            }
+            catch (ArgumentException exeption)
+            {
+                return StatusCode(StatusCodes.Status404NotFound, exeption.Message);
+            }
+            catch (Exception exeption)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, exeption.Message);
+            }
+        }
+
         [HttpGet("[action]")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
