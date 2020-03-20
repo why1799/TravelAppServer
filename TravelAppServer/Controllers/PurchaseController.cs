@@ -177,7 +177,7 @@ namespace TravelAppServer.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult> Delete(Guid id, string token)
+        public async Task<ActionResult> Delete(Guid id, bool deletefromtrip, string token)
         {
             try
             {
@@ -195,7 +195,7 @@ namespace TravelAppServer.Controllers
                     throw new ArgumentException("You don't have permission to this purchase");
                 }
 
-                var response = await Storage.DeletePurchase(id);
+                var response = await Storage.DeletePurchase(id, deletefromtrip);
 
                 return StatusCode(StatusCodes.Status200OK, response);
             }

@@ -38,7 +38,7 @@ namespace TravelAppStorage.Interfaces
 
         Task<Place> UpsertPlace(Place place);
         Task<Place> ReadPlace(Guid Id);
-        Task<Guid> DeletePlace(Guid Id);
+        Task<Guid> DeletePlace(Guid Id, bool deletefromtrip);
         Task<Guid[]> GetAllPlaces(Guid UserId);
 
         #endregion
@@ -47,7 +47,7 @@ namespace TravelAppStorage.Interfaces
 
         Task<Goal> UpsertGoal(Goal goal);
         Task<Goal> ReadGoal(Guid Id);
-        Task<Guid> DeleteGoal(Guid Id);
+        Task<Guid> DeleteGoal(Guid Id, bool deletefromtrip);
         Task<Guid[]> GetAllGoals(Guid UserId);
 
         #endregion
@@ -56,7 +56,7 @@ namespace TravelAppStorage.Interfaces
 
         Task<Good> UpsertGood(Good good);
         Task<Good> ReadGood(Guid Id);
-        Task<Guid> DeleteGood(Guid Id);
+        Task<Guid> DeleteGood(Guid Id, bool deletefromtrip);
         Task<Guid[]> GetAllGoods(Guid UserId);
 
         #endregion
@@ -75,7 +75,7 @@ namespace TravelAppStorage.Interfaces
 
         Task<Purchase> UpsertPurchase(Purchase purchase);
         Task<Purchase> ReadPurchase(Guid Id);
-        Task<Guid> DeletePurchase(Guid Id);
+        Task<Guid> DeletePurchase(Guid Id, bool deletefromtrip);
         Task<Guid[]> GetAllPurchases(Guid UserId);
 
         #endregion

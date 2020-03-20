@@ -426,10 +426,28 @@ namespace TravelAppStorage.Implementations
             return null;
         }
 
-        public async Task<Guid> DeletePlace(Guid Id)
+        public async Task<Guid> DeletePlace(Guid Id, bool deletefromtrip)
         {
             var filter = Builders<Place>.Filter.Eq(ed => ed.Id, Id);
+            var place = await ReadPlace(Id).ConfigureAwait(false);
             await places.DeleteOneAsync(filter).ConfigureAwait(false);
+
+            if(deletefromtrip)
+            {
+                var tripfilter = Builders<Trip>.Filter.And(
+                    Builders<Trip>.Filter.Eq(ed => ed.UserId, place.UserId),
+                    Builders<Trip>.Filter.Where(x => x.PlaceIds.Contains(Id)));
+                var trips = await this.trips.Find(tripfilter).ToListAsync();
+
+                foreach(var trip in trips)
+                {
+                    var placeids = trip.PlaceIds.ToList();
+                    placeids.Remove(Id);
+                    trip.PlaceIds = placeids.ToArray();
+                    await UpsertTrip(trip);
+                }
+            }
+
             return Id;
         }
 
@@ -506,10 +524,28 @@ namespace TravelAppStorage.Implementations
             return null;
         }
 
-        public async Task<Guid> DeleteGoal(Guid Id)
+        public async Task<Guid> DeleteGoal(Guid Id, bool deletefromtrip)
         {
             var filter = Builders<Goal>.Filter.Eq(ed => ed.Id, Id);
+            var goal = await ReadGoal(Id).ConfigureAwait(false);
             await goals.DeleteOneAsync(filter).ConfigureAwait(false);
+
+            if (deletefromtrip)
+            {
+                var tripfilter = Builders<Trip>.Filter.And(
+                    Builders<Trip>.Filter.Eq(ed => ed.UserId, goal.UserId),
+                    Builders<Trip>.Filter.Where(x => x.GoalIds.Contains(Id)));
+                var trips = await this.trips.Find(tripfilter).ToListAsync();
+
+                foreach (var trip in trips)
+                {
+                    var goalids = trip.GoalIds.ToList();
+                    goalids.Remove(Id);
+                    trip.GoalIds = goalids.ToArray();
+                    await UpsertTrip(trip);
+                }
+            }
+
             return Id;
         }
 
@@ -582,10 +618,28 @@ namespace TravelAppStorage.Implementations
             return null;
         }
 
-        public async Task<Guid> DeleteGood(Guid Id)
+        public async Task<Guid> DeleteGood(Guid Id, bool deletefromtrip)
         {
             var filter = Builders<Good>.Filter.Eq(ed => ed.Id, Id);
+            var good = await ReadGood(Id).ConfigureAwait(false);
             await goods.DeleteOneAsync(filter).ConfigureAwait(false);
+
+            if (deletefromtrip)
+            {
+                var tripfilter = Builders<Trip>.Filter.And(
+                    Builders<Trip>.Filter.Eq(ed => ed.UserId, good.UserId),
+                    Builders<Trip>.Filter.Where(x => x.GoodIds.Contains(Id)));
+                var trips = await this.trips.Find(tripfilter).ToListAsync();
+
+                foreach (var trip in trips)
+                {
+                    var goodids = trip.GoodIds.ToList();
+                    goodids.Remove(Id);
+                    trip.GoodIds = goodids.ToArray();
+                    await UpsertTrip(trip);
+                }
+            }
+
             return Id;
         }
 
@@ -744,10 +798,28 @@ namespace TravelAppStorage.Implementations
             return null;
         }
 
-        public async Task<Guid> DeletePurchase(Guid Id)
+        public async Task<Guid> DeletePurchase(Guid Id, bool deletefromtrip)
         {
             var filter = Builders<Purchase>.Filter.Eq(ed => ed.Id, Id);
+            var purchase = await ReadPurchase(Id).ConfigureAwait(false);
             await purchases.DeleteOneAsync(filter).ConfigureAwait(false);
+
+            if (deletefromtrip)
+            {
+                var tripfilter = Builders<Trip>.Filter.And(
+                    Builders<Trip>.Filter.Eq(ed => ed.UserId, purchase.UserId),
+                    Builders<Trip>.Filter.Where(x => x.PurchaseIds.Contains(Id)));
+                var trips = await this.trips.Find(tripfilter).ToListAsync();
+
+                foreach (var trip in trips)
+                {
+                    var purchaseids = trip.PurchaseIds.ToList();
+                    purchaseids.Remove(Id);
+                    trip.PurchaseIds = purchaseids.ToArray();
+                    await UpsertTrip(trip);
+                }
+            }
+
             return Id;
         }
 
