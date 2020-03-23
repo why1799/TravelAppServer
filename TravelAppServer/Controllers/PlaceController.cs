@@ -116,10 +116,9 @@ namespace TravelAppServer.Controllers
                     throw new ArgumentException("You don't have permission to this trip");
                 }
 
-
-                if(!responsetrip.PlaceIds.Contains(place.Id))
+                if(!responsetrip.PlaceIds?.Contains(place.Id) ?? true)
                 {
-                    var placeids = responsetrip.PlaceIds.ToList();
+                    var placeids = responsetrip.PlaceIds?.ToList() ?? new List<Guid>();
                     placeids.Add(place.Id);
                     responsetrip.PlaceIds = placeids.ToArray();
                     await Storage.UpsertTrip(responsetrip);

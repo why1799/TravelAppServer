@@ -117,9 +117,9 @@ namespace TravelAppServer.Controllers
                 }
 
 
-                if (!responsetrip.PurchaseIds.Contains(purchase.Id))
+                if (!responsetrip.PurchaseIds?.Contains(purchase.Id) ?? true)
                 {
-                    var purchaseids = responsetrip.PurchaseIds.ToList();
+                    var purchaseids = responsetrip.PurchaseIds?.ToList() ?? new List<Guid>();
                     purchaseids.Add(purchase.Id);
                     responsetrip.PurchaseIds = purchaseids.ToArray();
                     await Storage.UpsertTrip(responsetrip);

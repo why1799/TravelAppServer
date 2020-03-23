@@ -117,9 +117,9 @@ namespace TravelAppServer.Controllers
                 }
 
 
-                if (!responsetrip.GoalIds.Contains(goal.Id))
+                if (!responsetrip.GoalIds?.Contains(goal.Id) ?? true)
                 {
-                    var goalids = responsetrip.GoalIds.ToList();
+                    var goalids = responsetrip.GoalIds?.ToList() ?? new List<Guid>();
                     goalids.Add(goal.Id);
                     responsetrip.GoalIds = goalids.ToArray();
                     await Storage.UpsertTrip(responsetrip);
