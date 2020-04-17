@@ -11,6 +11,8 @@ using System.Data.Entity;
 using System.Collections.Generic;
 using System.Linq;
 using TravelAppModels.Models;
+using Microsoft.Extensions.Options;
+using TravelAppStorage.Settings;
 
 namespace TravelAppStorage.Implementations
 {
@@ -30,9 +32,9 @@ namespace TravelAppStorage.Implementations
         #endregion
 
         #region Constructors
-        public MongoStorage(IMongoClient client)
+        public MongoStorage(IOptions<DBConnection> options)
         {
-            this.client = client;
+            this.client = new MongoClient(options.Value.StringDBConnection);
             InitCollections();
         }
         #endregion

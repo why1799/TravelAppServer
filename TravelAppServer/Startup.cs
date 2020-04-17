@@ -17,18 +17,22 @@ using MongoDB.Driver;
 using Owin;
 using TravelAppStorage.Implementations;
 using TravelAppStorage.Interfaces;
+using TravelAppStorage.Settings;
 
 [assembly: OwinStartup(typeof(TravelAppServer.Startup))]
 namespace TravelAppServer
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        public IConfigurationRoot Configuration { get; set; }
+        public Startup()
         {
-            Configuration = configuration;
-        }
+            var builder = new ConfigurationBuilder()
+             .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+             .AddJsonFile("appsettings.Development.json", optional: false, reloadOnChange: true);
 
-        public IConfiguration Configuration { get; }
+            Configuration = builder.Build();
+        }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -37,7 +41,13 @@ namespace TravelAppServer
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
 
-            services.AddSingleton<IStorage>(new MongoStorage(new MongoClient("mongodb+srv://travelapp:travelapp@cluster0-txcfj.mongodb.net/test?retryWrites=true&w=majority")));
+            services.AddOptions();
+
+            services.Configure<Settings.Settings>(Configuration.GetSection("Settings"));
+            services.Configure<DBConnection>(Configuration.GetSection("DBConnection"));
+
+            //services.AddSingleton<IStorage>(new MongoStorage(new MongoClient("mongodb+srv://travelapp:travelapp@cluster0-txcfj.mongodb.net/test?retryWrites=true&w=majority")));
+            services.AddSingleton(typeof(IStorage), typeof(MongoStorage));
 
 
             // Register the Swagger generator, defining 1 or more Swagger documents
@@ -50,6 +60,8 @@ namespace TravelAppServer
             {
                 options.CustomSchemaIds(x => x.FullName);
             });
+
+            services.AddRazorPages();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -84,6 +96,13 @@ namespace TravelAppServer
             //HttpConfiguration config = new HttpConfiguration();
             //WebApiConfig.Register(config);
             //appowin.UseWebApi(config);
+            
+            app.UseStaticFiles();
+
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapRazorPages();
+            });
         }
     }
 }
