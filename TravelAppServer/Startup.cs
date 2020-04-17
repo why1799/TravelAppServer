@@ -47,7 +47,6 @@ namespace TravelAppServer
             services.Configure<Settings>(Configuration.GetSection("Settings"));
             services.Configure<DBConnection>(Configuration.GetSection("DBConnection"));
 
-            //services.AddSingleton<IStorage>(new MongoStorage(new MongoClient("mongodb+srv://travelapp:travelapp@cluster0-txcfj.mongodb.net/test?retryWrites=true&w=majority")));
             services.AddSingleton(typeof(IStorage), typeof(MongoStorage));
 
 

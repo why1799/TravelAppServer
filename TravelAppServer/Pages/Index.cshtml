@@ -13,6 +13,14 @@
 <button onclick="Register()">Регистрация</button>
 
 
+
+<button onclick="Quit()">Выйти из учетки</button>
+<script>
+    function Quit() {
+        localStorage.removeItem('travelapptoken');
+    }
+</script>
+
 <script>
 
     function Login() {
