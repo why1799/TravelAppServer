@@ -15,6 +15,7 @@ using Microsoft.OpenApi.Models;
 using Microsoft.Owin;
 using MongoDB.Driver;
 using Owin;
+using TravelAppServer.Configs;
 using TravelAppStorage.Implementations;
 using TravelAppStorage.Interfaces;
 using TravelAppStorage.Settings;
@@ -43,7 +44,7 @@ namespace TravelAppServer
 
             services.AddOptions();
 
-            services.Configure<Settings.Settings>(Configuration.GetSection("Settings"));
+            services.Configure<Settings>(Configuration.GetSection("Settings"));
             services.Configure<DBConnection>(Configuration.GetSection("DBConnection"));
 
             //services.AddSingleton<IStorage>(new MongoStorage(new MongoClient("mongodb+srv://travelapp:travelapp@cluster0-txcfj.mongodb.net/test?retryWrites=true&w=majority")));
