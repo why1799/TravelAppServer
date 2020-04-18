@@ -7,6 +7,9 @@ using TravelAppStorage.Interfaces;
 
 namespace TravelAppServer.Controllers
 {
+    /// <summary>
+    /// Контроллер для работы с фотографиями
+    /// </summary>
     [Route("api/[controller]")]
     [ApiController]
     public class PhotoController : ControllerBase
@@ -18,6 +21,12 @@ namespace TravelAppServer.Controllers
             Storage = storage;
         }
 
+        /// <summary>
+        /// Загрузка фотографии
+        /// </summary>
+        /// <param name="photo">Фотография</param>
+        /// <param name="token">Токен</param>
+        /// <returns>Загруженная фотография</returns>
         [HttpPost("[action]")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -47,6 +56,12 @@ namespace TravelAppServer.Controllers
             }
         }
 
+        /// <summary>
+        /// Получение фотографии по id
+        /// </summary>
+        /// <param name="Id">id фотографии</param>
+        /// <param name="token">Токен</param>
+        /// <returns>Фотография</returns>
         [HttpGet("[action]")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]

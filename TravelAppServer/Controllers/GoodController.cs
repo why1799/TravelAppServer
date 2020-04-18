@@ -9,6 +9,9 @@ using TravelAppStorage.Interfaces;
 
 namespace TravelAppServer.Controllers
 {
+    /// <summary>
+    /// Контроллер для работы с вещами
+    /// </summary>
     [Route("api/[controller]")]
     [ApiController]
     public class GoodController : ControllerBase
@@ -20,6 +23,12 @@ namespace TravelAppServer.Controllers
             Storage = storage;
         }
 
+        /// <summary>
+        /// Добавить вещь
+        /// </summary>
+        /// <param name="good">Вещь</param>
+        /// <param name="token">Токен</param>
+        /// <returns>Добавленная Вещь</returns>
         [HttpPost("[action]")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -69,6 +78,12 @@ namespace TravelAppServer.Controllers
             }
         }
 
+        /// <summary>
+        /// Добавить вещь с привязкой к поездке
+        /// </summary>
+        /// <param name="good">Вещь</param>
+        /// <param name="token">Токен</param>
+        /// <returns>Добавленную Вещь</returns>
         [HttpPost("[action]")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -139,6 +154,12 @@ namespace TravelAppServer.Controllers
             }
         }
 
+        /// <summary>
+        /// Получить вещь по id
+        /// </summary>
+        /// <param name="id">id вещи</param>
+        /// <param name="token">Токен</param>
+        /// <returns>Вещь</returns>
         [HttpGet("[action]")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -173,6 +194,13 @@ namespace TravelAppServer.Controllers
             }
         }
 
+        /// <summary>
+        /// Удалить вещь
+        /// </summary>
+        /// <param name="id">id вещи</param>
+        /// <param name="deletefromtrip">true - удаляет вещь из поездки</param>
+        /// <param name="token">Токен</param>
+        /// <returns>id удаленной вещи</returns>
         [HttpDelete("[action]")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -209,6 +237,11 @@ namespace TravelAppServer.Controllers
             }
         }
 
+        /// <summary>
+        /// Получить все вещи
+        /// </summary>
+        /// <param name="token">Токен</param>
+        /// <returns>Список id всех вещей</returns>
         [HttpGet("[action]")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]

@@ -10,6 +10,9 @@ using TravelAppStorage.Interfaces;
 
 namespace TravelAppServer.Controllers
 {
+    /// <summary>
+    /// Контроллер для авторизации
+    /// </summary>
     [ApiController]
     [Route("api/[controller]")]
     public class AuthController : ControllerBase
@@ -21,6 +24,11 @@ namespace TravelAppServer.Controllers
             Storage = storage;
         }
 
+        /// <summary>
+        /// Авторизация в профиль 
+        /// </summary>
+        /// <param name="loginTemplate">Email и пароль</param>
+        /// <returns>Возвращает токен и id пользователя</returns>
         [HttpPost("[action]")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -49,6 +57,11 @@ namespace TravelAppServer.Controllers
             }
         }
 
+        /// <summary>
+        /// Регистрация
+        /// </summary>
+        /// <param name="registerTemplate">Email, Имя пользователя и пароль</param>
+        /// <returns>Возвращает токен и id пользователя</returns>
         [HttpPost("[action]")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -79,6 +92,12 @@ namespace TravelAppServer.Controllers
             }
         }
 
+        /// <summary>
+        /// Проверка валидности токена
+        /// </summary>
+        /// <param name="token">Токен</param>
+        /// <param name="UserId">Id пользователя</param>
+        /// <returns>true - если соответствует, иначе - false</returns>
         [HttpGet("[action]")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]

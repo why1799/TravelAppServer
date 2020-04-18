@@ -10,6 +10,9 @@ using TravelAppStorage.Settings;
 
 namespace TravelAppServer.Controllers
 {
+    /// <summary>
+    /// Контроллер для определения статуса сервера
+    /// </summary>
     [ApiController]
     [Route("api/[controller]")]
     public class StatusController : ControllerBase
@@ -21,6 +24,10 @@ namespace TravelAppServer.Controllers
             this.options = options.Value;
         }
 
+        /// <summary>
+        /// Проверка подключения к серверу
+        /// </summary>
+        /// <returns>True, если есть подключение</returns>
         [HttpGet("[action]")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public ActionResult<bool> Connection()
@@ -28,6 +35,10 @@ namespace TravelAppServer.Controllers
             return true;
         }
 
+        /// <summary>
+        /// Проверка на наличие подключения к бд
+        /// </summary>
+        /// <returns>True, если есть подключение. Иначе - False</returns>
         [HttpGet("[action]")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public ActionResult<bool> ConnectionToDB()

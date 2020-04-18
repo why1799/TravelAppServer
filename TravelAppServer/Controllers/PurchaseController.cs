@@ -9,6 +9,9 @@ using TravelAppStorage.Interfaces;
 
 namespace TravelAppServer.Controllers
 {
+    /// <summary>
+    /// Контроллер для работы с покупками
+    /// </summary>
     [Route("api/[controller]")]
     [ApiController]
     public class PurchaseController : ControllerBase
@@ -20,6 +23,12 @@ namespace TravelAppServer.Controllers
             Storage = storage;
         }
 
+        /// <summary>
+        /// Добавить покупку
+        /// </summary>
+        /// <param name="purchase">Покупку</param>
+        /// <param name="token">Токен</param>
+        /// <returns>Добавленная покупку</returns>
         [HttpPost("[action]")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -69,6 +78,12 @@ namespace TravelAppServer.Controllers
             }
         }
 
+        /// <summary>
+        /// Добавить покупку с привязкой к поездке
+        /// </summary>
+        /// <param name="purchase">Покупку</param>
+        /// <param name="token">Токен</param>
+        /// <returns>Добавленную покупку</returns>
         [HttpPost("[action]")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -139,6 +154,12 @@ namespace TravelAppServer.Controllers
             }
         }
 
+        /// <summary>
+        /// Получить покупку по id
+        /// </summary>
+        /// <param name="id">id покупки</param>
+        /// <param name="token">Токен</param>
+        /// <returns>Покупку</returns>
         [HttpGet("[action]")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -173,6 +194,13 @@ namespace TravelAppServer.Controllers
             }
         }
 
+        /// <summary>
+        /// Удалить покупку
+        /// </summary>
+        /// <param name="id">id покупки</param>
+        /// <param name="deletefromtrip">true - удаляет покупку из поездки</param>
+        /// <param name="token">Токен</param>
+        /// <returns>id удаленной покупки</returns>
         [HttpDelete("[action]")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -209,6 +237,11 @@ namespace TravelAppServer.Controllers
             }
         }
 
+        /// <summary>
+        /// Получить все покупки
+        /// </summary>
+        /// <param name="token">Токен</param>
+        /// <returns>Список id всех покупок</returns>
         [HttpGet("[action]")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]

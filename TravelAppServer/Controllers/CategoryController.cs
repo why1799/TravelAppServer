@@ -9,6 +9,9 @@ using TravelAppStorage.Interfaces;
 
 namespace TravelAppServer.Controllers
 {
+    /// <summary>
+    /// Контроллер для работы с категориями
+    /// </summary>
     [Route("api/[controller]")]
     [ApiController]
     public class CategoryController : ControllerBase
@@ -20,6 +23,11 @@ namespace TravelAppServer.Controllers
             Storage = storage;
         }
 
+        /// <summary>
+        /// Добавить категорию (В данный момент не работает)
+        /// </summary>
+        /// <param name="category">Категория</param>
+        /// <returns>Возвращает добавленную категорию</returns>
         [HttpPost("[action]")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -71,6 +79,11 @@ namespace TravelAppServer.Controllers
             }
         }
 
+        /// <summary>
+        /// Получить категорию по id
+        /// </summary>
+        /// <param name="id">id категории</param>
+        /// <returns>Категорию</returns>
         [HttpGet("[action]")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -98,6 +111,10 @@ namespace TravelAppServer.Controllers
             }
         }
 
+        /// <summary>
+        /// Получить id всех категорий
+        /// </summary>
+        /// <returns>Список id категорий</returns>
         [HttpGet("[action]")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -120,6 +137,10 @@ namespace TravelAppServer.Controllers
             }
         }
 
+        /// <summary>
+        /// Получить все категории
+        /// </summary>
+        /// <returns>Список всех категорий</returns>
         [HttpGet("[action]")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]

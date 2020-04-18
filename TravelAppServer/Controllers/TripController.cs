@@ -9,6 +9,9 @@ using TravelAppStorage.Interfaces;
 
 namespace TravelAppServer.Controllers
 {
+    /// <summary>
+    /// Контроллер для работы с поездками
+    /// </summary>
     [Route("api/[controller]")]
     [ApiController]
     public class TripController : ControllerBase
@@ -20,6 +23,12 @@ namespace TravelAppServer.Controllers
             Storage = storage;
         }
 
+        /// <summary>
+        /// Добавить поездку
+        /// </summary>
+        /// <param name="trip">Поездка</param>
+        /// <param name="token">Токен</param>
+        /// <returns>Добавленная поездка</returns>
         [HttpPost("[action]")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -77,6 +86,12 @@ namespace TravelAppServer.Controllers
             }
         }
 
+        /// <summary>
+        /// Получить поездку по id
+        /// </summary>
+        /// <param name="id">id поездки</param>
+        /// <param name="token">Токен</param>
+        /// <returns>Поездка</returns>
         [HttpGet("[action]")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -111,6 +126,13 @@ namespace TravelAppServer.Controllers
             }
         }
 
+        /// <summary>
+        /// Удалить поездку
+        /// </summary>
+        /// <param name="id">id поездки</param>
+        /// <param name="deletefromtrip">true - удаляет поездку из поездки</param>
+        /// <param name="token">Токен</param>
+        /// <returns>id удаленной поездки</returns>
         [HttpDelete("[action]")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -147,6 +169,11 @@ namespace TravelAppServer.Controllers
             }
         }
 
+        /// <summary>
+        /// Получить все поездки
+        /// </summary>
+        /// <param name="token">Токен</param>
+        /// <returns>Список id всех поездок</returns>
         [HttpGet("[action]")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
