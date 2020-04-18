@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using TravelAppModels;
+using TravelAppModels.Models;
 using TravelAppModels.Templates;
 using TravelAppStorage.Interfaces;
 
@@ -30,9 +31,9 @@ namespace TravelAppServer.Controllers
         /// <param name="loginTemplate">Email и пароль</param>
         /// <returns>Возвращает токен и id пользователя</returns>
         [HttpPost("[action]")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(UserToken))]
+        [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(string))]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(string))]
         public async Task<ActionResult> Login([FromBody] LoginTemplate loginTemplate)
         {
             var email = loginTemplate.Email;
@@ -63,9 +64,9 @@ namespace TravelAppServer.Controllers
         /// <param name="registerTemplate">Email, Имя пользователя и пароль</param>
         /// <returns>Возвращает токен и id пользователя</returns>
         [HttpPost("[action]")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(UserToken))]
+        [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(string))]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(string))]
         public async Task<ActionResult> Register([FromBody] RegisterTemplate registerTemplate)
         {
             var username = registerTemplate.Username;
@@ -99,9 +100,9 @@ namespace TravelAppServer.Controllers
         /// <param name="UserId">Id пользователя</param>
         /// <returns>true - если соответствует, иначе - false</returns>
         [HttpGet("[action]")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(bool))]
+        [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(string))]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(string))]
         public async Task<ActionResult<bool>> CheckToken(string token, Guid UserId)
         {
             try

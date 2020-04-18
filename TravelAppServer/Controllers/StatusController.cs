@@ -29,7 +29,7 @@ namespace TravelAppServer.Controllers
         /// </summary>
         /// <returns>True, если есть подключение</returns>
         [HttpGet("[action]")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(bool))]
         public ActionResult<bool> Connection()
         {
             return true;
@@ -40,7 +40,7 @@ namespace TravelAppServer.Controllers
         /// </summary>
         /// <returns>True, если есть подключение. Иначе - False</returns>
         [HttpGet("[action]")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(bool))]
         public ActionResult<bool> ConnectionToDB()
         {
             try
