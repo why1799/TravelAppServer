@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Web.Http;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -12,15 +11,12 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
-using Microsoft.Owin;
 using MongoDB.Driver;
-using Owin;
 using TravelAppServer.Configs;
 using TravelAppStorage.Implementations;
 using TravelAppStorage.Interfaces;
 using TravelAppStorage.Settings;
 
-[assembly: OwinStartup(typeof(TravelAppServer.Startup))]
 namespace TravelAppServer
 {
     public class Startup
