@@ -78,5 +78,26 @@ namespace TravelAppServer.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, exeption.Message);
             }
         }
+
+        [HttpGet("[action]")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult<bool>> CheckToken(string token, Guid UserId)
+        {
+            try
+            {
+                var result = await Storage.CheckToken(token, UserId);
+                return StatusCode(StatusCodes.Status200OK, result);
+            }
+            catch (ArgumentException exeption)
+            {
+                return StatusCode(StatusCodes.Status404NotFound, exeption.Message);
+            }
+            catch (Exception exeption)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, exeption.Message);
+            }
+        }
     }
 }

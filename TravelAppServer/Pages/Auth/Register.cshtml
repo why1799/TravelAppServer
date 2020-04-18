@@ -1,16 +1,25 @@
 ﻿@page
-@model TravelAppServer.Pages.IndexModel
+@model TravelAppServer.Pages.Auth.RegisterModel
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Register";
 }
 
-<script src="https://code.jquery.com/jquery-3.5.0.js"></script>
+    <script src="https://code.jquery.com/jquery-3.5.0.js"></script>
+
+<h1>Регистрация</h1>
+
 
 <h2>Авторизация</h2>
-<p>Email:</p><input id="login"/>
-<p>Пароль:</p><input id="password" type="password"/>
-<button onclick="Login()">Войти</button>
-<button onclick="Register()">Регистрация</button>
+<label>Email:</label>
+<input id="email" /><br>
+<label>Ник:</label>
+<input id="login" /><br>
+<label>Пароль:</label>
+<input id="password" type="password" /><br>
+<label>Повторить пароль:</label>
+<input id="password_repeat" type="password" /><br>
+<button onclick="Register()">Зарегистироваться</button>
+<button onclick="Login()">Авторизироваться</button>
 
 
 
@@ -21,26 +30,24 @@
     }
 </script>
 
+
+
 <script>
-    
-    //CheckToken
 
 
-    function Login() {
+    function Register() {
 
 
-        var login = { "Email": $("#login").val(), "Password": $("#password").val() };
+        var register = { "Email": $("#email").val(), "UserName": $("#login").val(), "Password": $("#password").val() };
 
         $.ajax({
             type: "POST",
-            url: "/api/auth/login",
-            data: JSON.stringify(login),
+            url: "/api/auth/register",
+            data: JSON.stringify(register),
             contentType: "application/json; charset=utf-8",
             dataType: "json",
-            success: function (data)
-            {
+            success: function (data) {
                 localStorage.setItem('travelapptoken', data.token);
-                localStorage.setItem('travelappuserid', data.token);
                 //Переход на новую страницу
             },
             error: function (xhr, ajaxOptions, thrownError) {
@@ -59,9 +66,10 @@
     }
 
 
-    function Register() {
-        location.href = '/auth/register';
+    function Login() {
+        location.href = '/auth/login';
     }
 
 
 </script>
+

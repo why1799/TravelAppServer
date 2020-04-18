@@ -17,6 +17,8 @@ namespace TravelAppStorage.Interfaces
         Task<bool> FindUserEmail(string email);
 
         Task<UserToken> AddUser(string username, string email, string password);
+
+        Task<bool> CheckToken(string token, Guid UserId);
         #endregion
 
         #region Photo

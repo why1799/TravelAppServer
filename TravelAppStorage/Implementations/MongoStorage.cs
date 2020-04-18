@@ -180,6 +180,14 @@ namespace TravelAppStorage.Implementations
             return !(count == 0);
         }
 
+        public async Task<bool> CheckToken(string token, Guid UserId)
+        {
+            var filter = Builders<UserToken>.Filter.And(Builders<UserToken>.Filter.Eq(x => x.Token, token), Builders<UserToken>.Filter.Eq(x => x.UserId, UserId));
+            var gotusertokens = await tokens.Find(filter).ToListAsync();
+
+            return gotusertokens.Count == 1;
+        }
+
         private string TokenGenerator()
         {
             var list = new List<byte>();
