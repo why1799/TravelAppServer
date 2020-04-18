@@ -21,11 +21,15 @@ namespace TravelAppServer.Controllers
             this.options = options.Value;
         }
 
+        [HttpGet("[action]")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public ActionResult<bool> Connection()
         {
             return true;
         }
 
+        [HttpGet("[action]")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public ActionResult<bool> ConnectionToDB()
         {
             try
