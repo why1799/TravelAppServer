@@ -1,0 +1,321 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>TravelAppServer</name>
+    </assembly>
+    <members>
+        <member name="T:TravelAppServer.Controllers.AuthController">
+            <summary>
+            Контроллер для авторизации
+            </summary>
+        </member>
+        <member name="M:TravelAppServer.Controllers.AuthController.Login(TravelAppModels.Templates.LoginTemplate)">
+            <summary>
+            Авторизация в профиль 
+            </summary>
+            <param name="loginTemplate">Email и пароль</param>
+            <returns>Возвращает токен и id пользователя</returns>
+        </member>
+        <member name="M:TravelAppServer.Controllers.AuthController.Register(TravelAppModels.Templates.RegisterTemplate)">
+            <summary>
+            Регистрация
+            </summary>
+            <param name="registerTemplate">Email, Имя пользователя и пароль</param>
+            <returns>Возвращает токен и id пользователя</returns>
+        </member>
+        <member name="M:TravelAppServer.Controllers.AuthController.CheckToken(System.String,System.Guid)">
+            <summary>
+            Проверка валидности токена
+            </summary>
+            <param name="token">Токен</param>
+            <param name="UserId">Id пользователя</param>
+            <returns>true - если соответствует, иначе - false</returns>
+        </member>
+        <member name="T:TravelAppServer.Controllers.CategoryController">
+            <summary>
+            Контроллер для работы с категориями
+            </summary>
+        </member>
+        <member name="M:TravelAppServer.Controllers.CategoryController.Upsert(TravelAppModels.Models.Category)">
+            <summary>
+            Добавить категорию (В данный момент не работает)
+            </summary>
+            <param name="category">Категория</param>
+            <returns>Возвращает добавленную категорию</returns>
+        </member>
+        <member name="M:TravelAppServer.Controllers.CategoryController.Read(System.Guid)">
+            <summary>
+            Получить категорию по id
+            </summary>
+            <param name="id">id категории</param>
+            <returns>Категорию</returns>
+        </member>
+        <member name="M:TravelAppServer.Controllers.CategoryController.GetAllIds">
+            <summary>
+            Получить id всех категорий
+            </summary>
+            <returns>Список id категорий</returns>
+        </member>
+        <member name="M:TravelAppServer.Controllers.CategoryController.GetAll">
+            <summary>
+            Получить все категории
+            </summary>
+            <returns>Список всех категорий</returns>
+        </member>
+        <member name="T:TravelAppServer.Controllers.GoalController">
+            <summary>
+            Контроллер для работы с целями
+            </summary>
+        </member>
+        <member name="M:TravelAppServer.Controllers.GoalController.Upsert(TravelAppModels.Models.Goal,System.String)">
+            <summary>
+            Добавить цель
+            </summary>
+            <param name="goal">Цель</param>
+            <param name="token">Токен</param>
+            <returns>Добавленная цель</returns>
+        </member>
+        <member name="M:TravelAppServer.Controllers.GoalController.UpsertWithTripId(TravelAppModels.ModelsWithTripId.Goal,System.String)">
+            <summary>
+            Добавить цель с привязкой к поездке
+            </summary>
+            <param name="goal">Цель</param>
+            <param name="token">Токен</param>
+            <returns>Добавленную цель</returns>
+        </member>
+        <member name="M:TravelAppServer.Controllers.GoalController.Read(System.Guid,System.String)">
+            <summary>
+            Получить цель по id
+            </summary>
+            <param name="id">id цели</param>
+            <param name="token">Токен</param>
+            <returns>Цель</returns>
+        </member>
+        <member name="M:TravelAppServer.Controllers.GoalController.Delete(System.Guid,System.Boolean,System.String)">
+            <summary>
+            Удалить цель
+            </summary>
+            <param name="id">id цели</param>
+            <param name="deletefromtrip">true - удаляет цель из поездки</param>
+            <param name="token">Токен</param>
+            <returns>id удаленной цели</returns>
+        </member>
+        <member name="M:TravelAppServer.Controllers.GoalController.GetAll(System.String)">
+            <summary>
+            Получить все цели
+            </summary>
+            <param name="token">Токен</param>
+            <returns>Список id всех целей</returns>
+        </member>
+        <member name="T:TravelAppServer.Controllers.GoodController">
+            <summary>
+            Контроллер для работы с вещами
+            </summary>
+        </member>
+        <member name="M:TravelAppServer.Controllers.GoodController.Upsert(TravelAppModels.Models.Good,System.String)">
+            <summary>
+            Добавить вещь
+            </summary>
+            <param name="good">Вещь</param>
+            <param name="token">Токен</param>
+            <returns>Добавленная Вещь</returns>
+        </member>
+        <member name="M:TravelAppServer.Controllers.GoodController.UpsertWithTripId(TravelAppModels.ModelsWithTripId.Good,System.String)">
+            <summary>
+            Добавить вещь с привязкой к поездке
+            </summary>
+            <param name="good">Вещь</param>
+            <param name="token">Токен</param>
+            <returns>Добавленную Вещь</returns>
+        </member>
+        <member name="M:TravelAppServer.Controllers.GoodController.Read(System.Guid,System.String)">
+            <summary>
+            Получить вещь по id
+            </summary>
+            <param name="id">id вещи</param>
+            <param name="token">Токен</param>
+            <returns>Вещь</returns>
+        </member>
+        <member name="M:TravelAppServer.Controllers.GoodController.Delete(System.Guid,System.Boolean,System.String)">
+            <summary>
+            Удалить вещь
+            </summary>
+            <param name="id">id вещи</param>
+            <param name="deletefromtrip">true - удаляет вещь из поездки</param>
+            <param name="token">Токен</param>
+            <returns>id удаленной вещи</returns>
+        </member>
+        <member name="M:TravelAppServer.Controllers.GoodController.GetAll(System.String)">
+            <summary>
+            Получить все вещи
+            </summary>
+            <param name="token">Токен</param>
+            <returns>Список id всех вещей</returns>
+        </member>
+        <member name="T:TravelAppServer.Controllers.PhotoController">
+            <summary>
+            Контроллер для работы с фотографиями
+            </summary>
+        </member>
+        <member name="M:TravelAppServer.Controllers.PhotoController.Upload(Microsoft.AspNetCore.Http.IFormFile,System.String)">
+            <summary>
+            Загрузка фотографии
+            </summary>
+            <param name="photo">Фотография</param>
+            <param name="token">Токен</param>
+            <returns>Загруженная фотография</returns>
+        </member>
+        <member name="M:TravelAppServer.Controllers.PhotoController.Get(System.Guid,System.String)">
+            <summary>
+            Получение фотографии по id
+            </summary>
+            <param name="Id">id фотографии</param>
+            <param name="token">Токен</param>
+            <returns>Фотография</returns>
+        </member>
+        <member name="T:TravelAppServer.Controllers.PlaceController">
+            <summary>
+            Контроллер для работы с местами
+            </summary>
+        </member>
+        <member name="M:TravelAppServer.Controllers.PlaceController.Upsert(TravelAppModels.Models.Place,System.String)">
+            <summary>
+            Добавить место
+            </summary>
+            <param name="place">Место</param>
+            <param name="token">Токен</param>
+            <returns>Добавленная место</returns>
+        </member>
+        <member name="M:TravelAppServer.Controllers.PlaceController.UpsertWithTripId(TravelAppModels.ModelsWithTripId.Place,System.String)">
+            <summary>
+            Добавить место с привязкой к поездке
+            </summary>
+            <param name="place">Места</param>
+            <param name="token">Токен</param>
+            <returns>Добавленную место</returns>
+        </member>
+        <member name="M:TravelAppServer.Controllers.PlaceController.Read(System.Guid,System.String)">
+            <summary>
+            Получить место по id
+            </summary>
+            <param name="id">id места</param>
+            <param name="token">Токен</param>
+            <returns>Место</returns>
+        </member>
+        <member name="M:TravelAppServer.Controllers.PlaceController.Delete(System.Guid,System.Boolean,System.String)">
+            <summary>
+            Удалить место
+            </summary>
+            <param name="id">id места</param>
+            <param name="deletefromtrip">true - удаляет место из поездки</param>
+            <param name="token">Токен</param>
+            <returns>id удаленной места</returns>
+        </member>
+        <member name="M:TravelAppServer.Controllers.PlaceController.GetAll(System.String)">
+            <summary>
+            Получить все места
+            </summary>
+            <param name="token">Токен</param>
+            <returns>Список id всех мест</returns>
+        </member>
+        <member name="T:TravelAppServer.Controllers.PurchaseController">
+            <summary>
+            Контроллер для работы с покупками
+            </summary>
+        </member>
+        <member name="M:TravelAppServer.Controllers.PurchaseController.Upsert(TravelAppModels.Models.Purchase,System.String)">
+            <summary>
+            Добавить покупку
+            </summary>
+            <param name="purchase">Покупку</param>
+            <param name="token">Токен</param>
+            <returns>Добавленная покупку</returns>
+        </member>
+        <member name="M:TravelAppServer.Controllers.PurchaseController.UpsertWithTripId(TravelAppModels.ModelsWithTripId.Purchase,System.String)">
+            <summary>
+            Добавить покупку с привязкой к поездке
+            </summary>
+            <param name="purchase">Покупку</param>
+            <param name="token">Токен</param>
+            <returns>Добавленную покупку</returns>
+        </member>
+        <member name="M:TravelAppServer.Controllers.PurchaseController.Read(System.Guid,System.String)">
+            <summary>
+            Получить покупку по id
+            </summary>
+            <param name="id">id покупки</param>
+            <param name="token">Токен</param>
+            <returns>Покупку</returns>
+        </member>
+        <member name="M:TravelAppServer.Controllers.PurchaseController.Delete(System.Guid,System.Boolean,System.String)">
+            <summary>
+            Удалить покупку
+            </summary>
+            <param name="id">id покупки</param>
+            <param name="deletefromtrip">true - удаляет покупку из поездки</param>
+            <param name="token">Токен</param>
+            <returns>id удаленной покупки</returns>
+        </member>
+        <member name="M:TravelAppServer.Controllers.PurchaseController.GetAll(System.String)">
+            <summary>
+            Получить все покупки
+            </summary>
+            <param name="token">Токен</param>
+            <returns>Список id всех покупок</returns>
+        </member>
+        <member name="T:TravelAppServer.Controllers.StatusController">
+            <summary>
+            Контроллер для определения статуса сервера
+            </summary>
+        </member>
+        <member name="M:TravelAppServer.Controllers.StatusController.Connection">
+            <summary>
+            Проверка подключения к серверу
+            </summary>
+            <returns>True, если есть подключение</returns>
+        </member>
+        <member name="M:TravelAppServer.Controllers.StatusController.ConnectionToDB">
+            <summary>
+            Проверка на наличие подключения к бд
+            </summary>
+            <returns>True, если есть подключение. Иначе - False</returns>
+        </member>
+        <member name="T:TravelAppServer.Controllers.TripController">
+            <summary>
+            Контроллер для работы с поездками
+            </summary>
+        </member>
+        <member name="M:TravelAppServer.Controllers.TripController.Upsert(TravelAppModels.Models.Trip,System.String)">
+            <summary>
+            Добавить поездку
+            </summary>
+            <param name="trip">Поездка</param>
+            <param name="token">Токен</param>
+            <returns>Добавленная поездка</returns>
+        </member>
+        <member name="M:TravelAppServer.Controllers.TripController.Read(System.Guid,System.String)">
+            <summary>
+            Получить поездку по id
+            </summary>
+            <param name="id">id поездки</param>
+            <param name="token">Токен</param>
+            <returns>Поездка</returns>
+        </member>
+        <member name="M:TravelAppServer.Controllers.TripController.Delete(System.Guid,System.String)">
+            <summary>
+            Удалить поездку
+            </summary>
+            <param name="id">id поездки</param>
+            <param name="deletefromtrip">true - удаляет поездку из поездки</param>
+            <param name="token">Токен</param>
+            <returns>id удаленной поездки</returns>
+        </member>
+        <member name="M:TravelAppServer.Controllers.TripController.GetAll(System.String)">
+            <summary>
+            Получить все поездки
+            </summary>
+            <param name="token">Токен</param>
+            <returns>Список id всех поездок</returns>
+        </member>
+    </members>
+</doc>

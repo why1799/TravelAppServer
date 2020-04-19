@@ -10,6 +10,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <WarningLevel>0</WarningLevel>
     <PlatformTarget>AnyCPU</PlatformTarget>
+    <DocumentationFile>C:\git\TravelAppServer\TravelAppServer\TravelAppServer.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
