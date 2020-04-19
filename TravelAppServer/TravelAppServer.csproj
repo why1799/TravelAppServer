@@ -7,9 +7,11 @@
 	<AspNetCoreModuleName>AspNetCoreModule</AspNetCoreModuleName>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <WarningLevel>0</WarningLevel>
-    <PlatformTarget>AnyCPU</PlatformTarget>
+  <PropertyGroup Condition="'$(Configuration)'=='Debug'">
+    <DocumentationFile>C:\git\TravelAppServer\TravelAppServer\TravelAppServer.xml</DocumentationFile>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)'=='Release'">
     <DocumentationFile>C:\git\TravelAppServer\TravelAppServer\TravelAppServer.xml</DocumentationFile>
   </PropertyGroup>
 
@@ -26,6 +28,12 @@
 
   <ItemGroup>
     <ProjectReference Include="..\TravelAppStorage\TravelAppStorage.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="web.config">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
 	<Choose>
