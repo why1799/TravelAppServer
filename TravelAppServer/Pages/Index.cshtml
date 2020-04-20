@@ -14,16 +14,39 @@
 
 
 
-<button onclick="Quit()">Выйти из учетки</button>
-<script>
-    function Quit() {
-        localStorage.removeItem('travelapptoken');
-    }
-</script>
+
 
 <script>
     
-    //CheckToken
+    CheckToken();
+
+    function CheckToken() {
+        $.ajax({
+            type: "Get",
+            url: "/api/auth/checktoken?UserId=" + localStorage.getItem('travelappuserid') + "&token=" + localStorage.getItem('travelapptoken'),
+            dataType: "json",
+            success: function (data) {
+                if (data) {
+                    location.href = '/trips';
+                }
+                else {
+                    location.href = '/auth/login';
+                }
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                /*if (xhr.status == 404) {
+                    if (xhr.responseText == "Such account doesn't exist!") {
+                        alert("Неправильно введены логин и пароль");
+                    }
+                    else if (xhr.responseText == "Invalid arguments") {
+                        alert("Поля не могут быть пустыми");
+                    }
+                }*/
+                //Добавить обработку, если токен невалидный
+            }
+
+        });
+    }
 
 
     function Login() {
@@ -40,8 +63,8 @@
             success: function (data)
             {
                 localStorage.setItem('travelapptoken', data.token);
-                localStorage.setItem('travelappuserid', data.token);
-                //Переход на новую страницу
+                localStorage.setItem('travelappuserid', data.userId);
+                location.href = '/trips';
             },
             error: function (xhr, ajaxOptions, thrownError) {
                 if (xhr.status == 404) {
@@ -50,7 +73,9 @@
                     }
                     else if (xhr.responseText == "Invalid arguments") {
                         alert("Поля не могут быть пустыми");
-                    }
+                    } else if (xhr.responseText == "Such email doesn't exist!") {
+                        alert("Пользователя с таким email не существует");
+                    } 
                 }
             }
         });
