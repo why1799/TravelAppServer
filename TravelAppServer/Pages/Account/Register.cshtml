@@ -66,6 +66,8 @@
 
     function Register() {
 
+        var register = { "Email": $("#email").val(), "UserName": $("#login").val(), "Password": $("#password").val() };
+
         $.ajax({
             type: "POST",
             url: "?handler=Register",
