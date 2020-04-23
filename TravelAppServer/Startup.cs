@@ -4,10 +4,14 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.CookiePolicy;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -15,6 +19,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using MongoDB.Driver;
 using TravelAppServer.Configs;
+using TravelAppServer.Cookies;
 using TravelAppStorage.Implementations;
 using TravelAppStorage.Interfaces;
 using TravelAppStorage.Settings;
@@ -39,6 +44,7 @@ namespace TravelAppServer
             services.AddControllers();
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
+            services.AddAntiforgery(o => o.HeaderName = "XSRF-TOKEN");
 
             services.AddOptions();
 
@@ -65,6 +71,17 @@ namespace TravelAppServer
             });
 
             services.AddRazorPages();
+
+            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+                .AddCookie(options =>
+                {
+                    options.Cookie.Name = "TravelApp.AuthCookie";
+                    options.Cookie.HttpOnly = true;
+                    options.Cookie.SecurePolicy = CookieSecurePolicy.None; // Для https : CookieSecurePolicy.Always;
+                    options.Cookie.SameSite = SameSiteMode.Strict; //Lax если есть Auth02
+                    options.EventsType = typeof(TravelAppCookieAuthenticationEvents);
+                });
+            services.AddScoped<TravelAppCookieAuthenticationEvents>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -89,7 +106,8 @@ namespace TravelAppServer
 
             app.UseRouting();
 
-            //app.UseAuthorization();
+            app.UseAuthentication();
+            app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
@@ -99,7 +117,13 @@ namespace TravelAppServer
             //HttpConfiguration config = new HttpConfiguration();
             //WebApiConfig.Register(config);
             //appowin.UseWebApi(config);
-            
+
+            app.UseCookiePolicy(new CookiePolicyOptions {
+                HttpOnly = HttpOnlyPolicy.Always,
+                Secure = CookieSecurePolicy.None, // Для https : CookieSecurePolicy.Always;
+                MinimumSameSitePolicy = SameSiteMode.Strict //Lax если есть Auth02
+            });
+
             app.UseStaticFiles();
 
             app.UseEndpoints(endpoints =>

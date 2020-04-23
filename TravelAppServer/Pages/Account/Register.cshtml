@@ -3,21 +3,26 @@
 @{
     ViewData["Title"] = "Register";
 }
+@Html.AntiForgeryToken()
 
-    <script src="https://code.jquery.com/jquery-3.5.0.js"></script>
+<script src="https://code.jquery.com/jquery-3.5.0.js"></script>
 
 <h1>Регистрация</h1>
 
 
 <h2>Авторизация</h2>
 <label>Email:</label>
-<input id="email" /><br>
+<input id="email" />
+<br>
 <label>Ник:</label>
-<input id="login" /><br>
+<input id="login" />
+<br>
 <label>Пароль:</label>
-<input id="password" type="password" /><br>
+<input id="password" type="password" />
+<br>
 <label>Повторить пароль:</label>
-<input id="password_repeat" type="password" /><br>
+<input id="password_repeat" type="password" />
+<br>
 <button onclick="Register()">Зарегистироваться</button>
 <button onclick="Login()">Авторизироваться</button>
 
@@ -26,55 +31,17 @@
 <button onclick="Quit()">Выйти из учетки</button>
 <script>
     function Quit() {
-        localStorage.removeItem('travelapptoken');
-    }
-</script>
 
-
-
-<script>
-    CheckToken();
-
-    function CheckToken() {
         $.ajax({
             type: "Get",
-            url: "/api/auth/checktoken?UserId=" + localStorage.getItem('travelappuserid') + "&token=" + localStorage.getItem('travelapptoken'),
-            dataType: "json",
-            success: function (data) {
-                if (data) {
-                    location.href = '/trips';
-                }
+            url: "?handler=Logout",
+            beforeSend: function (xhr) {
+                xhr.setRequestHeader("XSRF-TOKEN",
+                    $('input:hidden[name="__RequestVerificationToken"]').val());
             },
-            error: function (xhr, ajaxOptions, thrownError) {
-                /*if (xhr.status == 404) {
-                    if (xhr.responseText == "Such account doesn't exist!") {
-                        alert("Неправильно введены логин и пароль");
-                    }
-                    else if (xhr.responseText == "Invalid arguments") {
-                        alert("Поля не могут быть пустыми");
-                    }
-                }*/
-                //Добавить обработку, если токен невалидный
-            }
-
-        });
-    }
-
-    function Register() {
-
-
-        var register = { "Email": $("#email").val(), "UserName": $("#login").val(), "Password": $("#password").val() };
-
-        $.ajax({
-            type: "POST",
-            url: "/api/auth/register",
-            data: JSON.stringify(register),
             contentType: "application/json; charset=utf-8",
-            dataType: "json",
             success: function (data) {
-                localStorage.setItem('travelapptoken', data.token);
-                localStorage.setItem('travelappuserid', data.userId);
-                //Переход на новую страницу
+                location.href = location.href;
             },
             error: function (xhr, ajaxOptions, thrownError) {
                 if (xhr.status == 404) {
@@ -83,6 +50,43 @@
                     }
                     else if (xhr.responseText == "Invalid arguments") {
                         alert("Поля не могут быть пустыми");
+                    } else if (xhr.responseText == "Such email doesn't exist!") {
+                        alert("Пользователя с таким email не существует");
+                    }
+                }
+            }
+        });
+    }
+</script>
+
+
+
+
+<script>
+
+    function Register() {
+
+        $.ajax({
+            type: "POST",
+            url: "?handler=Register",
+            beforeSend: function (xhr) {
+                xhr.setRequestHeader("XSRF-TOKEN",
+                    $('input:hidden[name="__RequestVerificationToken"]').val());
+            },
+            data: JSON.stringify(register),
+            contentType: "application/json; charset=utf-8",
+            success: function (data) {
+                location.href = location.href;
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                if (xhr.status == 404) {
+                    if (xhr.responseText == "Such account doesn't exist!") {
+                        alert("Неправильно введены логин и пароль");
+                    }
+                    else if (xhr.responseText == "Invalid arguments") {
+                        alert("Поля не могут быть пустыми");
+                    } else if (xhr.responseText == "Such email doesn't exist!") {
+                        alert("Пользователя с таким email не существует");
                     }
                 }
             }
@@ -93,7 +97,7 @@
 
 
     function Login() {
-        location.href = '/auth/login';
+        location.href = '/account/login';
     }
 
 

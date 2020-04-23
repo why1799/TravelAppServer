@@ -3,6 +3,7 @@
 @{
     ViewData["Title"] = "Login";
 }
+@Html.AntiForgeryToken()
 
 <script src="https://code.jquery.com/jquery-3.5.0.js"></script>
 
@@ -19,38 +20,35 @@
 <button onclick="Quit()">Выйти из учетки</button>
 <script>
     function Quit() {
-        localStorage.removeItem('travelapptoken');
-    }
-</script>
 
-<script>
-
-    CheckToken();
-
-    function CheckToken() {
         $.ajax({
             type: "Get",
-            url: "/api/auth/checktoken?UserId=" + localStorage.getItem('travelappuserid') + "&token=" + localStorage.getItem('travelapptoken'),
-            dataType: "json",
+            url: "?handler=Logout",
+            beforeSend: function (xhr) {
+                xhr.setRequestHeader("XSRF-TOKEN",
+                    $('input:hidden[name="__RequestVerificationToken"]').val());
+            },
+            contentType: "application/json; charset=utf-8",
             success: function (data) {
-                if (data) {
-                    location.href = '/trips';
-                }
+                location.href = location.href;
             },
             error: function (xhr, ajaxOptions, thrownError) {
-                /*if (xhr.status == 404) {
+                if (xhr.status == 404) {
                     if (xhr.responseText == "Such account doesn't exist!") {
                         alert("Неправильно введены логин и пароль");
                     }
                     else if (xhr.responseText == "Invalid arguments") {
                         alert("Поля не могут быть пустыми");
+                    } else if (xhr.responseText == "Such email doesn't exist!") {
+                        alert("Пользователя с таким email не существует");
                     }
-                }*/
-                //Добавить обработку, если токен невалидный
+                }
             }
-
         });
     }
+</script>
+
+<script>
 
 
     function Login() {
@@ -60,15 +58,15 @@
 
         $.ajax({
             type: "POST",
-            url: "/api/auth/login",
+            url: "?handler=Login",
+            beforeSend: function (xhr) {
+                xhr.setRequestHeader("XSRF-TOKEN",
+                    $('input:hidden[name="__RequestVerificationToken"]').val());
+            },
             data: JSON.stringify(login),
             contentType: "application/json; charset=utf-8",
-            dataType: "json",
-            success: function (data)
-            {
-                localStorage.setItem('travelapptoken', data.token);
-                localStorage.setItem('travelappuserid', data.userId);
-                location.href = '/trips';
+            success: function (data) {
+                location.href = '@Model.ReturnUrl';
             },
             error: function (xhr, ajaxOptions, thrownError) {
                 if (xhr.status == 404) {
@@ -89,7 +87,7 @@
 
 
     function Register() {
-        location.href = '/auth/register';
+        location.href = '/Account/Register';
     }
 
 
