@@ -82,27 +82,29 @@
 
     @foreach (var trip in Model.Trips)
     {
-        <div id="trip_@trip.Item1.Id" class="trip">
+        <a href="@String.Format($"/trip?id={trip.Item1.Id}")">
+            <div id="trip_@trip.Item1.Id" class="trip">
 
-            @if (trip.Item2 == null)
-            {
-                <img width="100" height="100" src="@base64">
-            }
-            else
-            {
-                <img width="100" height="100" src="@String.Format($"data:image/png;base64,{trip.Item2.Base64}")">
-            }
+                @if (trip.Item2 == null)
+                {
+                    <img width="100" height="100" src="@base64">
+                }
+                else
+                {
+                    <img width="100" height="100" src="@String.Format($"data:image/png;base64,{trip.Item2.Base64}")">
+                }
 
-            <div class="triptext">
+                <div class="triptext">
 
-                <label class="tripname">@trip.Item1.Name</label>
-                <br><br><br>
-                @{ var fd = trip.Item1.FromDate == null ? "" : (new DateTime(trip.Item1.FromDate.Value)).ToString("dd MMMM yyyy", CultureInfo.CreateSpecificCulture("ru-RU"));
-                    var td = trip.Item1.ToDate == null ? "" : (new DateTime(trip.Item1.ToDate.Value)).ToString("dd MMMM yyyy", CultureInfo.CreateSpecificCulture("ru-RU"));}
-                <label>@fd - @td</label>
+                    <label class="tripname">@trip.Item1.Name</label>
+                    <br><br><br>
+                    @{ var fd = trip.Item1.FromDate == null ? "" : (new DateTime(trip.Item1.FromDate.Value)).ToString("dd MMMM yyyy", CultureInfo.CreateSpecificCulture("ru-RU"));
+                        var td = trip.Item1.ToDate == null ? "" : (new DateTime(trip.Item1.ToDate.Value)).ToString("dd MMMM yyyy", CultureInfo.CreateSpecificCulture("ru-RU"));}
+                    <label>@fd - @td</label>
 
+                </div>
             </div>
-        </div>
+        </a>
     }
 </div>
 
@@ -123,6 +125,8 @@
 
 
     });
+
+
 
 
     function GetTrips() {
