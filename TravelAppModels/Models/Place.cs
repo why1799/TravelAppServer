@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Text.Json.Serialization;
 
 namespace TravelAppModels.Models
 {
@@ -13,6 +14,9 @@ namespace TravelAppModels.Models
         public string Description { get; set; }
         public bool IsVisited { get; set; }
         public long? Date { get; set; }
-        public Guid[] Photos { get; set; }
+        public Guid[] PhotoIds { get; set; }
+
+        [JsonIgnore]
+        public Photo[] Photos { get; set; }
     }
 }

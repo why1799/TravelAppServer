@@ -379,7 +379,7 @@ namespace TravelAppStorage.Implementations
                     entity.MapIdProperty(e => e.Adress)
                         .SetIsRequired(true)
                         .SetElementName("Adress");
-                    entity.MapIdProperty(e => e.Photos)
+                    entity.MapIdProperty(e => e.PhotoIds)
                         .SetIsRequired(false)
                         .SetElementName("Photos");
                     entity.MapIdProperty(e => e.IsVisited)
@@ -409,7 +409,7 @@ namespace TravelAppStorage.Implementations
             var definition = Builders<Place>.Update
                 .Combine(
                 Builders<Place>.Update.Set(e => e.Name, place.Name),
-                Builders<Place>.Update.Set(e => e.Photos, place.Photos),
+                Builders<Place>.Update.Set(e => e.PhotoIds, place.PhotoIds),
                 Builders<Place>.Update.Set(e => e.Adress, place.Adress),
                 Builders<Place>.Update.Set(e => e.Description, place.Description),
                 Builders<Place>.Update.Set(e => e.Date, place.Date),

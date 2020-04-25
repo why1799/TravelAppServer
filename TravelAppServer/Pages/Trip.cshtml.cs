@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -28,13 +30,6 @@ namespace TravelAppServer.Pages
         public Guid Id { get; set; }
 
         public Trip Trip { get; private set; }
-
-        public Photo Photo { get; private set; }
-
-        public List<Place> Places { get; private set; }
-        public List<Goal> Goals { get; private set; }
-        public List<Good> Goods { get; private set; }
-        public List<Purchase> Purchases { get; private set; }
         
         public TripModel(IStorage storage)
         {
@@ -46,28 +41,24 @@ namespace TravelAppServer.Pages
             _photos = new PhotoController(storage);
             _purchases = new PurchaseController(storage);
 
-
             Trip = null;
-            Photo = null;
-            Places = new List<Place>();
-            Goals = new List<Goal>();
-            Goods = new List<Good>();
-            Purchases = new List<Purchase>();
         }
 
         public async Task OnGet()
         {
             var token = User.Claims.Where(c => c.Type == "Token").Select(c => c.Value).FirstOrDefault();
             Trip = ((await _trips.Read(Id, token)) as ObjectResult).Value as Trip;
-            Goals = await GetElements<GoalController, Goal>(_goals, Trip.GoalIds, token);
-            Places = await GetElements<PlaceController, Place>(_places, Trip.PlaceIds, token);
-            Goods = await GetElements<GoodController, Good>(_goods, Trip.GoodIds, token);
-            Purchases = await GetElements<PurchaseController, Purchase>(_purchases, Trip.PurchaseIds, token);
+            Trip.Goals = await GetElements<GoalController, Goal>(_goals, Trip.GoalIds, token);
+            Trip.Places = await GetElements<PlaceController, Place>(_places, Trip.PlaceIds, token);
+            Trip.Goods = await GetElements<GoodController, Good>(_goods, Trip.GoodIds, token);
+            Trip.Purchases = await GetElements<PurchaseController, Purchase>(_purchases, Trip.PurchaseIds, token);
+            Trip.Photos = await GetElements<PhotoController, Photo>(_photos, Trip.PhotoIds, token, "Get");
+            
         }
 
-        private async Task<List<Element>> GetElements<Controller, Element>(Controller controller, Guid[] ids, string token) 
+        private async Task<Element[]> GetElements<Controller, Element>(Controller controller, Guid[] ids, string token, string method = "Read") 
         {
-            MethodInfo read = controller.GetType().GetMethod("Read",
+            MethodInfo read = controller.GetType().GetMethod(method,
             new Type[] { typeof(Guid), typeof(string) });
 
             List<Element> elements = new List<Element>();
@@ -78,26 +69,14 @@ namespace TravelAppServer.Pages
                 elements.Add((Element)Convert.ChangeType(result.Value, typeof(Element)));
             }
 
-            return elements;
+            return elements.ToArray();
         }
 
-        public async Task CreateModel(Guid id, string token)
+        [HttpGet]
+        public async Task<IActionResult> OnGetLogout()
         {
-            var a = this.GetType();
-            MethodInfo method = _goals.GetType().GetMethod("Read",
-            new Type[] { typeof(Guid), typeof(string) });
-            var result = (Task<ActionResult>)method.Invoke(_goals, new object[] { id, token });
-            //var b = await result;
-        }
-
-        public async Task<int> GetCar()
-        {
-            return 5;
-        }
-
-        public async Task<IActionResult> Read(Guid id, string token)
-        {
-            return StatusCode(StatusCodes.Status200OK, 5);
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme); //LogOut
+            return StatusCode(StatusCodes.Status200OK, "Logout success");
         }
     }
 }
