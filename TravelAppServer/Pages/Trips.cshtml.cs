@@ -47,12 +47,5 @@ namespace TravelAppServer.Pages
 
             return Page();
         }
-
-        [HttpGet]
-        public async Task<IActionResult> OnGetLogout()
-        {
-            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme); //LogOut
-            return StatusCode(StatusCodes.Status200OK, "Logout success");
-        }
     }
 }

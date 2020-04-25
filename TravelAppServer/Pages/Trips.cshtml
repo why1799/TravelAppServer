@@ -37,36 +37,7 @@
 
 <h1>Trips</h1>
 
-<button onclick="Quit()">Выйти из учетки</button>
-<script>
-    function Quit() {
-
-        $.ajax({
-            type: "Get",
-            url: "?handler=Logout",
-            beforeSend: function (xhr) {
-                xhr.setRequestHeader("XSRF-TOKEN",
-                    $('input:hidden[name="__RequestVerificationToken"]').val());
-            },
-            contentType: "application/json; charset=utf-8",
-            success: function (data) {
-                location.href = location.href;
-            },
-            error: function (xhr, ajaxOptions, thrownError) {
-                if (xhr.status == 404) {
-                    if (xhr.responseText == "Such account doesn't exist!") {
-                        alert("Неправильно введены логин и пароль");
-                    }
-                    else if (xhr.responseText == "Invalid arguments") {
-                        alert("Поля не могут быть пустыми");
-                    } else if (xhr.responseText == "Such email doesn't exist!") {
-                        alert("Пользователя с таким email не существует");
-                    }
-                }
-            }
-        });
-    }
-</script>
+<a href="/Account/Logout"><button>Выйти из учетки</button></a>
 
 <div id="trips">
     @*<div id="trip_id" class="trip">
