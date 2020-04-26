@@ -9,5 +9,6 @@ namespace TravelAppModels.Models
         public Guid Id { get; set; }
         public Guid UserId { get; set; }
         public string Base64 { get; set; }
+        public long? LastUpdate { get; set; }
     }
 }

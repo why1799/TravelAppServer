@@ -222,6 +222,9 @@ namespace TravelAppStorage.Implementations
                     entity.MapIdProperty(e => e.Base64)
                         .SetIsRequired(true)
                         .SetElementName("Base64");
+                    entity.MapIdProperty(e => e.LastUpdate)
+                        .SetIsRequired(false)
+                        .SetElementName("LastUpdate").SetDefaultValue(new DateTime(2020, 04, 26).Ticks);
                     entity.MapIdProperty(e => e.Id)
                         .SetIsRequired(true)
                         .SetSerializer(new GuidSerializer(BsonType.String));
@@ -236,8 +239,9 @@ namespace TravelAppStorage.Implementations
             {
                 UserId = UserId,
                 Base64 = Base64,
-                Id = Guid.NewGuid()
-            };
+                Id = Guid.NewGuid(),
+                LastUpdate = DateTime.UtcNow.Ticks
+        };
 
             await photos.InsertOneAsync(photo);
             return photo;
@@ -297,6 +301,9 @@ namespace TravelAppStorage.Implementations
                         .SetIsRequired(true)
                         .SetElementName("UserId")
                         .SetSerializer(new GuidSerializer(BsonType.String));
+                    entity.MapIdProperty(e => e.LastUpdate)
+                       .SetIsRequired(false)
+                       .SetElementName("LastUpdate").SetDefaultValue(new DateTime(2020, 04, 26).Ticks);
                     entity.MapIdProperty(e => e.Id)
                         .SetIsRequired(true)
                         .SetSerializer(new GuidSerializer(BsonType.String));
@@ -309,6 +316,7 @@ namespace TravelAppStorage.Implementations
         {
             if (trip == null) return null;
 
+            trip.LastUpdate = DateTime.UtcNow.Ticks;
             var filter = Builders<Trip>.Filter
                 .Eq(entity => entity.Id, trip.Id);
             var definition = Builders<Trip>.Update
@@ -322,7 +330,8 @@ namespace TravelAppStorage.Implementations
                 Builders<Trip>.Update.Set(e => e.TextField, trip.TextField),
                 Builders<Trip>.Update.Set(e => e.UserId, trip.UserId),
                 Builders<Trip>.Update.Set(e => e.FromDate, trip.FromDate),
-                Builders<Trip>.Update.Set(e => e.ToDate, trip.ToDate));
+                Builders<Trip>.Update.Set(e => e.ToDate, trip.ToDate),
+                Builders<Trip>.Update.Set(e => e.LastUpdate, DateTime.UtcNow.Ticks));
             var options = new FindOneAndUpdateOptions<Trip, Trip>()
             {
                 IsUpsert = true,
@@ -392,6 +401,9 @@ namespace TravelAppStorage.Implementations
                         .SetIsRequired(true)
                         .SetElementName("UserId")
                         .SetSerializer(new GuidSerializer(BsonType.String));
+                    entity.MapIdProperty(e => e.LastUpdate)
+                       .SetIsRequired(false)
+                       .SetElementName("LastUpdate").SetDefaultValue(new DateTime(2020, 04, 26).Ticks);
                     entity.MapIdProperty(e => e.Id)
                         .SetIsRequired(true)
                         .SetSerializer(new GuidSerializer(BsonType.String));
@@ -404,6 +416,7 @@ namespace TravelAppStorage.Implementations
         {
             if (place == null) return null;
 
+            place.LastUpdate = DateTime.UtcNow.Ticks;
             var filter = Builders<Place>.Filter
                 .Eq(entity => entity.Id, place.Id);
             var definition = Builders<Place>.Update
@@ -414,7 +427,8 @@ namespace TravelAppStorage.Implementations
                 Builders<Place>.Update.Set(e => e.Description, place.Description),
                 Builders<Place>.Update.Set(e => e.Date, place.Date),
                 Builders<Place>.Update.Set(e => e.IsVisited, place.IsVisited),
-                Builders<Place>.Update.Set(e => e.UserId, place.UserId));
+                Builders<Place>.Update.Set(e => e.UserId, place.UserId),
+                Builders<Place>.Update.Set(e => e.LastUpdate, DateTime.UtcNow.Ticks));
             var options = new FindOneAndUpdateOptions<Place, Place>()
             {
                 IsUpsert = true,
@@ -493,6 +507,9 @@ namespace TravelAppStorage.Implementations
                         .SetIsRequired(true)
                         .SetElementName("UserId")
                         .SetSerializer(new GuidSerializer(BsonType.String));
+                    entity.MapIdProperty(e => e.LastUpdate)
+                       .SetIsRequired(false)
+                       .SetElementName("LastUpdate").SetDefaultValue(new DateTime(2020, 04, 26).Ticks);
                     entity.MapIdProperty(e => e.Id)
                         .SetIsRequired(true)
                         .SetSerializer(new GuidSerializer(BsonType.String));
@@ -505,6 +522,7 @@ namespace TravelAppStorage.Implementations
         {
             if (goal == null) return null;
 
+            goal.LastUpdate = DateTime.UtcNow.Ticks;
             var filter = Builders<Goal>.Filter
                 .Eq(entity => entity.Id, goal.Id);
             var definition = Builders<Goal>.Update
@@ -512,7 +530,8 @@ namespace TravelAppStorage.Implementations
                 Builders<Goal>.Update.Set(e => e.Name, goal.Name),
                 Builders<Goal>.Update.Set(e => e.IsDone, goal.IsDone),
                 Builders<Goal>.Update.Set(e => e.Description, goal.Description),
-                Builders<Goal>.Update.Set(e => e.UserId, goal.UserId));
+                Builders<Goal>.Update.Set(e => e.UserId, goal.UserId),
+                Builders<Goal>.Update.Set(e => e.LastUpdate, DateTime.UtcNow.Ticks));
             var options = new FindOneAndUpdateOptions<Goal, Goal>()
             {
                 IsUpsert = true,
@@ -588,6 +607,9 @@ namespace TravelAppStorage.Implementations
                         .SetIsRequired(true)
                         .SetElementName("UserId")
                         .SetSerializer(new GuidSerializer(BsonType.String));
+                    entity.MapIdProperty(e => e.LastUpdate)
+                       .SetIsRequired(false)
+                       .SetElementName("LastUpdate").SetDefaultValue(new DateTime(2020, 04, 26).Ticks);
                     entity.MapIdProperty(e => e.Id)
                         .SetIsRequired(true)
                         .SetSerializer(new GuidSerializer(BsonType.String));
@@ -599,6 +621,7 @@ namespace TravelAppStorage.Implementations
         {
             if (good == null) return null;
 
+            good.LastUpdate = DateTime.UtcNow.Ticks;
             var filter = Builders<Good>.Filter
                 .Eq(entity => entity.Id, good.Id);
             var definition = Builders<Good>.Update
@@ -606,7 +629,8 @@ namespace TravelAppStorage.Implementations
                 Builders<Good>.Update.Set(e => e.Name, good.Name),
                 Builders<Good>.Update.Set(e => e.IsTook, good.IsTook),
                 Builders<Good>.Update.Set(e => e.Description, good.Description),
-                Builders<Good>.Update.Set(e => e.UserId, good.UserId));
+                Builders<Good>.Update.Set(e => e.UserId, good.UserId),
+                Builders<Good>.Update.Set(e => e.LastUpdate, DateTime.UtcNow.Ticks));
             var options = new FindOneAndUpdateOptions<Good, Good>()
             {
                 IsUpsert = true,
@@ -765,6 +789,9 @@ namespace TravelAppStorage.Implementations
                         .SetIsRequired(true)
                         .SetElementName("UserId")
                         .SetSerializer(new GuidSerializer(BsonType.String));
+                    entity.MapIdProperty(e => e.LastUpdate)
+                       .SetIsRequired(false)
+                       .SetElementName("LastUpdate").SetDefaultValue(new DateTime(2020, 04, 26).Ticks);
                     entity.MapIdProperty(e => e.Id)
                         .SetIsRequired(true)
                         .SetSerializer(new GuidSerializer(BsonType.String));
@@ -786,7 +813,8 @@ namespace TravelAppStorage.Implementations
                 Builders<Purchase>.Update.Set(e => e.CategoryId, purchase.CategoryId),
                 Builders<Purchase>.Update.Set(e => e.Price, purchase.Price),
                 Builders<Purchase>.Update.Set(e => e.IsBought, purchase.IsBought),
-                Builders<Purchase>.Update.Set(e => e.UserId, purchase.UserId));
+                Builders<Purchase>.Update.Set(e => e.UserId, purchase.UserId),
+                Builders<Purchase>.Update.Set(e => e.LastUpdate, DateTime.UtcNow.Ticks));
             var options = new FindOneAndUpdateOptions<Purchase, Purchase>()
             {
                 IsUpsert = true,

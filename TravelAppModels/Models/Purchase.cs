@@ -13,5 +13,6 @@ namespace TravelAppModels.Models
         public string Description { get; set; }
         public double Price { get; set; }
         public bool IsBought { get; set; }
+        public long? LastUpdate { get; set; }
     }
 }

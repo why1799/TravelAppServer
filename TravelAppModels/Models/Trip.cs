@@ -18,6 +18,7 @@ namespace TravelAppModels.Models
         public Guid[] PurchaseIds { get; set; }
         public long? FromDate { get; set; }
         public long? ToDate { get; set; }
+        public long? LastUpdate { get; set; }
 
         [JsonIgnore]
         public Photo[] Photos { get; set; }

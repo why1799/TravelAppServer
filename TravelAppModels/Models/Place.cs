@@ -14,6 +14,7 @@ namespace TravelAppModels.Models
         public string Description { get; set; }
         public bool IsVisited { get; set; }
         public long? Date { get; set; }
+        public long? LastUpdate { get; set; }
         public Guid[] PhotoIds { get; set; }
 
         [JsonIgnore]
