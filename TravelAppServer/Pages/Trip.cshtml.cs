@@ -54,6 +54,10 @@ namespace TravelAppServer.Pages
             Trip.Purchases = await GetElements<PurchaseController, Purchase>(_purchases, Trip.PurchaseIds, token);
             Trip.Photos = await GetElements<PhotoController, Photo>(_photos, Trip.PhotoIds, token, "Get");
             
+            foreach(var place in Trip.Places)
+            {
+                place.Photos = await GetElements<PhotoController, Photo>(_photos, place.PhotoIds, token, "Get");
+            }
         }
 
         private async Task<Element[]> GetElements<Controller, Element>(Controller controller, Guid[] ids, string token, string method = "Read") 

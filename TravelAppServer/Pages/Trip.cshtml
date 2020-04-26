@@ -21,8 +21,26 @@
         border-style: inset;
         border-width: 2px;
         padding: 1em;
+        flex-direction:column;
         width: 500px;
         margin-bottom: 1em;
+    }
+
+    .placeheader {
+        display: flex;
+        border-color: black;
+        border-style: inset;
+        border-width: 2px;
+        padding: 1em;
+        margin-bottom: 1em;
+    }
+
+    .placename {
+        font-weight: bold;
+    }
+
+    .placedescription{
+        font-size: small;
     }
 
     .tripheader {
@@ -39,6 +57,7 @@
 </style>
 
 <a href="/Account/Logout"><button>Выйти из учетки</button></a>
+<a href="/Trips"><button>Поездки</button></a>
 
 <div id="trip_@Model.Trip.Id" class="trip">
 
@@ -61,6 +80,35 @@
             <label>@fd - @td</label>
 
         </div>
+    </div>
+
+    <div id="places">
+        <h1>Поездки:</h1>
+        @foreach (var place in Model.Trip.Places)
+        {
+            <div id="place_@place.Id" class="placeheader">
+                @if (place.Photos.Length == 0)
+                {
+                    <img width="100" height="100" src="@base64">
+                }
+                else
+                {
+                    <img width="100" height="100" src="@String.Format($"data:image/png;base64,{place.Photos[0].Base64}")">
+                }
+
+                <div class="triptext">
+
+                    <label class="placename">@place.Name</label>
+                    <br>
+                    <label class="placedescription">@place.Description</label><br>
+                    <label class="placeadress">@place.Adress</label><br>
+
+                    @{ var placedate = place.Date == null ? "" : (new DateTime(place.Date.Value)).ToString("dd MMMM yyyy", CultureInfo.CreateSpecificCulture("ru-RU")); }
+                    <label>@placedate</label>
+
+                </div>
+            </div>
+        }
     </div>
 
 </div>
