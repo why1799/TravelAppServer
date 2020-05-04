@@ -22,7 +22,7 @@
         border-width: 2px;
         padding: 1em;
         flex-direction:column;
-        width: 500px;
+        width: 800px;
         margin-bottom: 1em;
     }
 
@@ -43,74 +43,181 @@
         font-size: small;
     }
 
-    .tripheader {
+    .tripphototext {
         display: flex;
+        flex-direction: row;
+    }
+
+    .triphead {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
     }
 
     .triptext {
         margin-left: 2em;
     }
 
+
+    .placetext {
+        margin-left: 2em;
+    }
+
     .tripname {
         font-size: 25px;
+    }
+
+    .tripdata {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-around;
+    }
+
+        .tripdata #places {
+            flex: 0 0 65%;
+        }
+
+    .checkboxes{
+    }
+
+    .editbutton {
+        align-self: start;
+        align-items: center;
+        width: 35;
+        height: 35;
+        background-image: url(/images/edit.png);
+        background-size: 35px 35px;
+        /* padding: 1px; */
+        background-origin: content-box;
+        border: 2px solid black;
+    }
+
+    .editbutton:hover{
+
     }
 </style>
 
 <a href="/Account/Logout"><button>Выйти из учетки</button></a>
-<a href="/Trips"><button>Поездки</button></a>
+<a href="/Trips" type="button"><button>Поездки</button></a>
 
 <div id="trip_@Model.Trip.Id" class="trip">
 
-    <div class="tripheader">
-        @if (Model.Trip.Photos.Length == 0)
-        {
-            <img width="100" height="100" src="@base64">
-        }
-        else
-        {
-            <img width="100" height="100" src="@String.Format($"data:image/png;base64,{Model.Trip.Photos[0].Base64}")">
-        }
+    <div class="triphead">
+        <div class="tripphototext">
+            @if (Model.Trip.Photos.Length == 0)
+            {
+                <img width="100" height="100" src="@base64">
+            }
+            else
+            {
+                <img width="100" height="100" src="@String.Format($"data:image/png;base64,{Model.Trip.Photos[0].Base64}")">
+            }
 
-        <div class="triptext">
+            <div class="triptext">
 
-            <label class="tripname">@Model.Trip.Name</label>
-            <br><br><br>
-            @{ var fd = Model.Trip.FromDate == null ? "" : (new DateTime(Model.Trip.FromDate.Value)).ToString("dd MMMM yyyy", CultureInfo.CreateSpecificCulture("ru-RU"));
-                var td = Model.Trip.ToDate == null ? "" : (new DateTime(Model.Trip.ToDate.Value)).ToString("dd MMMM yyyy", CultureInfo.CreateSpecificCulture("ru-RU"));}
-            <label>@fd - @td</label>
+                <label class="tripname">@Model.Trip.Name</label>
+                <br><br><br>
+                @{ var fd = Model.Trip.FromDate == null ? "" : (new DateTime(Model.Trip.FromDate.Value)).ToString("dd MMMM yyyy", CultureInfo.CreateSpecificCulture("ru-RU"));
+                    var td = Model.Trip.ToDate == null ? "" : (new DateTime(Model.Trip.ToDate.Value)).ToString("dd MMMM yyyy", CultureInfo.CreateSpecificCulture("ru-RU"));}
+                <label>@fd - @td</label>
 
+            </div>
         </div>
+        <a href="/Edit?@Model.Trip.Id" class="editbutton"></a>
     </div>
 
-    <div id="places">
-        <h1>Поездки:</h1>
-        @foreach (var place in Model.Trip.Places)
+    <div class="tripdata">
+        @if (Model.Trip.Places.Length > 0)
         {
-            <div id="place_@place.Id" class="placeheader">
-                @if (place.Photos.Length == 0)
+            <div id="places">
+                <h1>Места:</h1>
+                @foreach (var place in Model.Trip.Places)
                 {
-                    <img width="100" height="100" src="@base64">
+                    <div id="place_@place.Id" class="placeheader">
+                        @if (place.Photos.Length == 0)
+                        {
+                            <img width="100" height="100" src="@base64">
+                        }
+                        else
+                        {
+                            <img width="100" height="100" src="@String.Format($"data:image/png;base64,{place.Photos[0].Base64}")">
+                        }
+
+                        <div class="placetext">
+
+                            <label class="placename">@place.Name</label>
+                            <br>
+                            <label class="placedescription">@place.Description</label><br>
+                            <label class="placeadress">@place.Adress</label><br>
+
+                            @{ var placedate = place.Date == null ? "" : (new DateTime(place.Date.Value)).ToString("dd MMMM yyyy", CultureInfo.CreateSpecificCulture("ru-RU")); }
+                            <label>@placedate</label>
+
+                        </div>
+                    </div>
                 }
-                else
-                {
-                    <img width="100" height="100" src="@String.Format($"data:image/png;base64,{place.Photos[0].Base64}")">
-                }
-
-                <div class="triptext">
-
-                    <label class="placename">@place.Name</label>
-                    <br>
-                    <label class="placedescription">@place.Description</label><br>
-                    <label class="placeadress">@place.Adress</label><br>
-
-                    @{ var placedate = place.Date == null ? "" : (new DateTime(place.Date.Value)).ToString("dd MMMM yyyy", CultureInfo.CreateSpecificCulture("ru-RU")); }
-                    <label>@placedate</label>
-
-                </div>
             </div>
         }
-    </div>
 
+        <div class="checkboxes">
+
+        @if (Model.Trip.Goods.Length > 0)
+        {
+            <div id="goods">
+                <h1>Вещи:</h1>
+                @foreach (var good in Model.Trip.Goods)
+                {
+                    <div id="good_@good.Id" class="good">
+
+                        <input type="checkbox" @string.Format(good.IsTook ? "checked" : "") disabled>
+                        <label class="goodname">@good.Name</label>
+                        <br>
+                        <label class="gooddescription">@good.Description</label><br>
+
+                    </div>
+                }
+            </div>
+        }
+
+        @if (Model.Trip.Goals.Length > 0)
+        {
+            <div id="goals">
+                <h1>Цели:</h1>
+                @foreach (var goal in Model.Trip.Goals)
+                {
+                    <div id="goal_@goal.Id" class="goal">
+
+                        <input type="checkbox" @string.Format(goal.IsDone ? "checked" : "") disabled>
+                        <label class="goalname">@goal.Name</label>
+                        <br>
+                        <label class="goaldescription">@goal.Description</label><br>
+
+                    </div>
+                }
+            </div>
+        }
+
+        @if (Model.Trip.Purchases.Length > 0)
+        {
+            <div id="purchases">
+                <h1>Покупки:</h1>
+                @foreach (var purchase in Model.Trip.Purchases)
+                {
+                    <div id="purchase_@purchase.Id" class="purchase">
+
+                        <input type="checkbox" @string.Format(purchase.IsBought ? "checked" : "") disabled>
+                        <label class="purchasename">@purchase.Name</label>
+                        <br>
+                        <label class="purchasedescription">@purchase.Description</label><br>
+                        <label class="purchaseprice">@purchase.Price</label><br>
+
+                    </div>
+                }
+            </div>
+
+        }
+        </div>
+    </div>
 </div>
 
 
