@@ -20,7 +20,7 @@ namespace TravelAppServer.Pages
         private readonly TripController _trips;
         private readonly PhotoController _photos;
 
-        public List<Trip> Trips;
+        public List<TravelAppModels.Models.Trip> Trips;
 
         public TripsModel(IStorage storage)
         {
@@ -31,12 +31,12 @@ namespace TravelAppServer.Pages
         public async Task<IActionResult> OnGet()
         {
             var token = User.Claims.Where(c => c.Type == "Token").Select(c => c.Value).FirstOrDefault();
-            Trips = new List<Trip>();
+            Trips = new List<TravelAppModels.Models.Trip>();
             var allids = ((await _trips.GetAll(token)) as ObjectResult).Value as Guid[];
 
             foreach(var id in allids)
             {
-                var trip = ((await _trips.Read(id, token)) as ObjectResult).Value as Trip;
+                var trip = ((await _trips.Read(id, token)) as ObjectResult).Value as TravelAppModels.Models.Trip;
                 trip.Photos = new Photo[trip.PhotoIds?.Length ?? 0] ;
                 for (int i = 0; i < (trip.PhotoIds?.Length ?? 0); i++)
                 {

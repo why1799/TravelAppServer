@@ -12,7 +12,7 @@
     "IIS Express": {
       "commandName": "IISExpress",
       "launchBrowser": true,
-      "launchUrl": "trip?id=41a9f916-b5b6-4eab-950a-d4675d69f54f",
+      "launchUrl": "trip/edit?id=41a9f916-b5b6-4eab-950a-d4675d69f54f",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
