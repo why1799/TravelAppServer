@@ -212,26 +212,26 @@ namespace TravelAppStorage.Implementations
 
         public void RegisterPhotoModel()
         {
-            if (BsonClassMap.IsClassMapRegistered(typeof(Photo)) == false)
-            {
-                BsonClassMap.RegisterClassMap<Photo>(entity =>
-                {
-                    entity.MapIdProperty(e => e.UserId)
-                        .SetIsRequired(true)
-                        .SetSerializer(new GuidSerializer(BsonType.String))
-                        .SetElementName("UserId");
-                    entity.MapIdProperty(e => e.Base64)
-                        .SetIsRequired(true)
-                        .SetElementName("Base64");
-                    entity.MapIdProperty(e => e.LastUpdate)
-                        .SetIsRequired(false)
-                        .SetElementName("LastUpdate").SetDefaultValue(new DateTime(2020, 04, 26).Ticks);
-                    entity.MapIdProperty(e => e.Id)
-                        .SetIsRequired(true)
-                        .SetSerializer(new GuidSerializer(BsonType.String));
-                    entity.SetIdMember(entity.GetMemberMap(e => e.Id));
-                });
-            }
+            //if (BsonClassMap.IsClassMapRegistered(typeof(Photo)) == false)
+            //{
+            //    BsonClassMap.RegisterClassMap<Photo>(entity =>
+            //    {
+            //        entity.MapIdProperty(e => e.UserId)
+            //            .SetIsRequired(true)
+            //            .SetSerializer(new GuidSerializer(BsonType.String))
+            //            .SetElementName("UserId");
+            //        entity.MapIdProperty(e => e.Base64)
+            //            .SetIsRequired(true)
+            //            .SetElementName("Base64");
+            //        entity.MapIdProperty(e => e.LastUpdate)
+            //            .SetIsRequired(false)
+            //            .SetElementName("LastUpdate").SetDefaultValue(new DateTime(2020, 04, 26).Ticks);
+            //        entity.MapIdProperty(e => e.Id)
+            //            .SetIsRequired(true)
+            //            .SetSerializer(new GuidSerializer(BsonType.String));
+            //        entity.SetIdMember(entity.GetMemberMap(e => e.Id));
+            //    });
+            //}
         }
 
         public async Task<Photo> UploadPhoto(string Base64, Guid UserId)
@@ -239,7 +239,7 @@ namespace TravelAppStorage.Implementations
             Photo photo = new Photo()
             {
                 UserId = UserId,
-                Base64 = Base64,
+                //Base64 = Base64,
                 Id = Guid.NewGuid(),
                 LastUpdate = DateTime.UtcNow.Ticks
         };
