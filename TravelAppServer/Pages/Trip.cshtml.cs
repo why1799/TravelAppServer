@@ -24,13 +24,16 @@ namespace TravelAppServer.Pages
         private readonly PlaceController _places;
         private readonly GoalController _goals;
         private readonly PurchaseController _purchases;
+        private readonly CategoryController _categories;
 
 
         [BindProperty(Name = "id", SupportsGet = true)]
         public Guid Id { get; set; }
 
         public TravelAppModels.Models.Trip Trip { get; private set; }
-        
+
+        public Category[] Categories { get; private set; }
+
         public TripModel(IStorage storage)
         {
 
@@ -40,6 +43,7 @@ namespace TravelAppServer.Pages
             _goods = new GoodController(storage);
             _photos = new PhotoController(storage);
             _purchases = new PurchaseController(storage);
+            _categories = new CategoryController(storage);
 
             Trip = null;
         }
@@ -58,6 +62,8 @@ namespace TravelAppServer.Pages
             {
                 place.Photos = await GetElements<PhotoController, Photo>(_photos, place.PhotoIds, token, "Get");
             }
+
+            Categories = ((await _categories.GetAll()) as ObjectResult).Value as Category[];
         }
 
         private async Task<Element[]> GetElements<Controller, Element>(Controller controller, Guid[] ids, string token, string method = "Read") 
@@ -74,6 +80,34 @@ namespace TravelAppServer.Pages
             }
 
             return elements.ToArray();
+        }
+
+        [HttpDelete]
+        public async Task<IActionResult> OnDeleteDelete(Guid Id)
+        {
+            var token = User.Claims.Where(c => c.Type == "Token").Select(c => c.Value).FirstOrDefault();
+            Trip = ((await _trips.Read(Id, token)) as ObjectResult).Value as TravelAppModels.Models.Trip;
+
+            foreach (var id in Trip.PlaceIds ?? new Guid[0])
+            {
+                await _places.Delete(id, false, token);
+            }
+            foreach (var id in Trip.GoalIds ?? new Guid[0])
+            {
+                await _goals.Delete(id, false, token);
+            }
+            foreach (var id in Trip.GoodIds ?? new Guid[0])
+            {
+                await _goods.Delete(id, false, token);
+            }
+            foreach (var id in Trip.PurchaseIds ?? new Guid[0])
+            {
+                await _purchases.Delete(id, false, token);
+            }
+
+
+            await _trips.Delete(Id, token);
+            return StatusCode(StatusCodes.Status200OK, "Ok");
         }
     }
 }

@@ -714,21 +714,9 @@
              data: { Id: "@Model.Trip.Id" },
 
              success: function (data) {
-                 //alert("saved");
                  location.href = "/trips";
-                //;
             },
             error: function (xhr, ajaxOptions, thrownError) {
-                /*if (xhr.status == 404) {
-                    if (xhr.responseText == "Such account doesn't exist!") {
-                        alert("Неправильно введены логин и пароль");
-                    }
-                    else if (xhr.responseText == "Invalid arguments") {
-                        alert("Поля не могут быть пустыми");
-                    } else if (xhr.responseText == "Such email doesn't exist!") {
-                        alert("Пользователя с таким email не существует");
-                    }
-                }*/
             }
         });
     }

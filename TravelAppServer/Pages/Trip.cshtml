@@ -38,8 +38,20 @@
         font-weight: bold;
     }
 
-    .placedescription{
+    .placedescription {
         font-size: small;
+        display: inline-block;
+        margin-top: 1em;
+    }
+
+    .placeadress {
+        display: inline-block;
+        margin-top: 1em;
+    }
+
+    .placedate {
+        display: inline-block;
+        margin-top: 1em;
     }
 
     .tripphototext {
@@ -79,20 +91,61 @@
     .checkboxes{
     }
 
-    .editbutton {
-        align-self: start;
-        align-items: center;
-        width: 35;
-        height: 35;
-        background-image: url(/images/edit.png);
-        background-size: 35px 35px;
-        /* padding: 1px; */
-        background-origin: content-box;
-        border: 2px solid black;
-    }
-
     .editbutton:hover{
 
+    }
+
+    .photowrapper {
+        position: relative;
+        width: 100px;
+        height: 100px;
+    }
+
+    .tripdesc {
+        display: inline-block;
+        margin-top: 1em;
+    }
+
+    .tripdate {
+        display: inline-block;
+        margin-top: 1em;
+    }
+
+    .leftsideoftheplace {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .placevisited {
+        margin-top: 2em;
+    }
+
+    .tripicons {
+        height: 25px;
+        width: 25px;
+        margin: 0.2em;
+    }
+
+    .purchase {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        margin-bottom: 1em;
+    }
+
+    .purchasedata {
+        display: flex;
+        flex-direction: column;
+        margin-left: 0.5em;
+    }
+
+    .purchasecategory{
+        font-size: smaller;
+    }
+
+    .purchaseprice {
+        font-size: smaller;
     }
 </style>
 
@@ -103,26 +156,34 @@
 
     <div class="triphead">
         <div class="tripphototext">
-            @if (Model.Trip.Photos.Length == 0)
-            {
-                <img width="100" height="100" src="/images/nophoto.png">
-            }
-            else
-            {
-                <img width="100" height="100" src="@Model.Trip.Photos[0].Location">
-            }
+            <div class="photowrapper">
+                @if (Model.Trip.Photos.Length == 0)
+                {
+                    <img width="100" height="100" src="/images/nophoto.png">
+                }
+                else
+                {
+                    <img width="100" height="100" src="/@Model.Trip.Photos[0].Location">
+                }
+            </div>
 
             <div class="triptext">
 
                 <label class="tripname">@Model.Trip.Name</label>
-                <br><br><br>
+                <br>
+                <label class="tripdesc">@Model.Trip.TextField</label>
+                <br>
                 @{ var fd = Model.Trip.FromDate == null ? "" : (new DateTime(Model.Trip.FromDate.Value)).ToString("dd MMMM yyyy", CultureInfo.CreateSpecificCulture("ru-RU"));
                     var td = Model.Trip.ToDate == null ? "" : (new DateTime(Model.Trip.ToDate.Value)).ToString("dd MMMM yyyy", CultureInfo.CreateSpecificCulture("ru-RU"));}
-                <label>@fd - @td</label>
+                <label class="tripdate">@fd @String.Format(fd == "" && td == "" ? "" : "-") @td</label>
 
             </div>
         </div>
-        <a href="/Trip/Edit?id=@Model.Trip.Id" class="editbutton"></a>
+        <div>
+            <a href="/Trip/Edit?id=@Model.Trip.Id"><img title="Редактировать" class="tripicons" src="/images/edit.png" /></a>
+            <input title="Удалить" type="image" class="tripicons" src="/images/rubbish.png" onclick="Delete()">
+        </div>
+        
     </div>
 
     <div class="tripdata">
@@ -132,28 +193,35 @@
                 <h1>Места:</h1>
                 @foreach (var place in Model.Trip.Places)
                 {
-                    <div id="place_@place.Id" class="placeheader">
+            <div id="place_@place.Id" class="placeheader">
+
+                <div class="leftsideoftheplace">
+                    <div class="photowrapper">
                         @if (place.Photos.Length == 0)
                         {
                             <img width="100" height="100" src="/images/nophoto.png">
                         }
                         else
                         {
-                            <img width="100" height="100" src="@place.Photos[0].Location">
+                            <img width="100" height="100" src="/@place.Photos[0].Location">
                         }
-
-                        <div class="placetext">
-
-                            <label class="placename">@place.Name</label>
-                            <br>
-                            <label class="placedescription">@place.Description</label><br>
-                            <label class="placeadress">@place.Adress</label><br>
-
-                            @{ var placedate = place.Date == null ? "" : (new DateTime(place.Date.Value)).ToString("dd MMMM yyyy", CultureInfo.CreateSpecificCulture("ru-RU")); }
-                            <label>@placedate</label>
-
-                        </div>
                     </div>
+
+                    <input type="checkbox" class="placevisited" @string.Format(place.IsVisited ? "checked" : "") disabled>
+                </div>
+
+                    <div class="placetext">
+
+                        <label class="placename">@place.Name</label>
+                        <br>
+                        <label class="placedescription">@place.Description</label><br>
+                        <label class="placeadress">@place.Adress</label><br>
+
+                        @{ var placedate = place.Date == null ? "" : (new DateTime(place.Date.Value)).ToString("dd MMMM yyyy", CultureInfo.CreateSpecificCulture("ru-RU")); }
+                        <label class="placedate">@placedate</label>
+
+                    </div>
+                </div>
                 }
             </div>
         }
@@ -205,10 +273,12 @@
                     <div id="purchase_@purchase.Id" class="purchase">
 
                         <input type="checkbox" @string.Format(purchase.IsBought ? "checked" : "") disabled>
-                        <label class="purchasename">@purchase.Name</label>
-                        <br>
-                        <label class="purchasedescription">@purchase.Description</label><br>
-                        <label class="purchaseprice">@purchase.Price</label><br>
+
+                        <div class="purchasedata">
+                            <label class="purchasecategory">Категория: @Model.Categories.FirstOrDefault(x => x.Id == purchase.CategoryId)?.Name</label>
+                            <label class="purchasename">@purchase.Name</label>
+                            <label class="purchaseprice">Стоимость: @purchase.Price</label>
+                        </div>
 
                     </div>
                 }
@@ -223,6 +293,22 @@
 
 <script>
 
+    function Delete() {
+        $.ajax({
+            type: "DELETE",
+            url: "?handler=Delete",
+            beforeSend: function (xhr) {
+                xhr.setRequestHeader("XSRF-TOKEN",
+                    $('input:hidden[name="__RequestVerificationToken"]').val());
+             },
+             data: { Id: "@Model.Trip.Id" },
 
+             success: function (data) {
+                 location.href = "/trips";
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+            }
+        });
+    }
 
 </script>
