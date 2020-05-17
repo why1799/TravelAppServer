@@ -165,6 +165,14 @@
             <param name="token">Токен</param>
             <returns>Загруженная фотография</returns>
         </member>
+        <member name="M:TravelAppServer.Controllers.PhotoController.UploadBase64(System.String,System.String)">
+            <summary>
+            Загрузка фотографии
+            </summary>
+            <param name="base64">Фотография</param>
+            <param name="token">Токен</param>
+            <returns>Загруженная фотография</returns>
+        </member>
         <member name="M:TravelAppServer.Controllers.PhotoController.Get(System.Guid,System.String)">
             <summary>
             Получение фотографии по id

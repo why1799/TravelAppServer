@@ -34,20 +34,21 @@ namespace TravelAppStorage.Implementations
         #region Constructors
         public MongoStorage(IOptions<DBConnection> options)
         {
-            this.client = new MongoClient(options.Value.StringDBConnection);
-            InitCollections();
+            var connection = options.Value;
+            this.client = new MongoClient(connection.StringDBConnection);
+            InitCollections(connection.DataBaseName);
         }
         #endregion
 
         #region Service Methods
-        private void InitCollections()
+        private void InitCollections(string DataBaseName)
         {
-            var database = client.GetDatabase("test");
+            var database = client.GetDatabase(DataBaseName);
 
             Register();
             tokens = database.GetCollection<UserToken>("Tokens");
             users = database.GetCollection<User>("Users");
-            photos = database.GetCollection<Photo>("Photos");
+            //photos = database.GetCollection<Photo>("Photos");
             trips = database.GetCollection<Trip>("Trips");
             places = database.GetCollection<Place>("Places");
             goods = database.GetCollection<Good>("Goods");
@@ -60,7 +61,7 @@ namespace TravelAppStorage.Implementations
         private void Register()
         {
             RegisterUserModels();
-            RegisterPhotoModel();
+            //RegisterPhotoModel();
             RegisterTripModel();
             RegisterPlaceModel();
             RegisterGoodModel();
