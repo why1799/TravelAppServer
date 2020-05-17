@@ -9,20 +9,32 @@
 
 <h1>Регистрация</h1>
 
+<style>
+    .same {
+        width: 304px;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        margin-bottom: 0.3em;
+    }
+</style>
 
-<h2>Авторизация</h2>
-<label>Email:</label>
-<input id="email" />
-<br>
-<label>Ник:</label>
-<input id="login" />
-<br>
-<label>Пароль:</label>
-<input id="password" type="password" />
-<br>
-<label>Повторить пароль:</label>
-<input id="password_repeat" type="password" />
-<br>
+<div class="same">
+    <label>Email:</label>
+    <input id="email" />
+</div>
+<div class="same">
+    <label>Ник:</label>
+    <input id="login" />
+</div>
+<div class="same">
+    <label>Пароль:</label>
+    <input id="password" type="password" />
+</div>
+<div class="same">
+    <label>Повторить пароль:</label>
+    <input id="password_repeat" type="password" />
+</div>
 <button onclick="Register()">Зарегистироваться</button>
 <button onclick="Login()">Авторизироваться</button>
 
