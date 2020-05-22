@@ -150,6 +150,10 @@
     .purchaseprice {
         font-size: smaller;
     }
+
+    .iconsintriphead {
+        width: 90px;
+    }
 </style>
 
 <div id="trip_@Model.Trip.Id" class="trip center">
@@ -179,7 +183,7 @@
 
             </div>
         </div>
-        <div>
+        <div class="iconsintriphead">
             <a href="/Trip/Edit?id=@Model.Trip.Id"><img title="Редактировать" class="tripicons" src="/images/edit.png" /></a>
             <input title="Удалить" type="image" class="tripicons" src="/images/rubbish.png" onclick="Delete()">
         </div>

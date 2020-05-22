@@ -91,6 +91,10 @@
         height: 25px;
         margin-top: 0.7em;
     }
+
+    .iconsintriphead{
+        width: 90px;
+    }
 </style>
 
 <div id="trips" class="trips center">
@@ -144,7 +148,7 @@
 
                     </div>
                 </a>
-                <div>
+                <div class="iconsintriphead">
                     <a href="/Trip/Edit?id=@trip.Id"><img title="Редактировать" class="tripicons" src="/images/edit.png" /></a>
                     <input title="Удалить" type="image" class="tripicons" src="/images/rubbish.png" onclick="Delete('@trip.Id')">
                 </div>
