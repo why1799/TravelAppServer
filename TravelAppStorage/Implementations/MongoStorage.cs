@@ -29,6 +29,12 @@ namespace TravelAppStorage.Implementations
         private IMongoCollection<Goal> goals;
         private IMongoCollection<Category> categories;
         private IMongoCollection<Purchase> purchases;
+
+        private IMongoCollection<DeletedTrip> deletedtrips;
+        private IMongoCollection<DeletedPlace> deletedplaces;
+        private IMongoCollection<DeletedGood> deletedgoods;
+        private IMongoCollection<DeletedGoal> deletedgoals;
+        private IMongoCollection<DeletedPurchase> deletedpurchases;
         #endregion
 
         #region Constructors
@@ -56,6 +62,11 @@ namespace TravelAppStorage.Implementations
             categories = database.GetCollection<Category>("Categories");
             purchases = database.GetCollection<Purchase>("Purchases");
             //CreateIndexes();
+            deletedtrips = database.GetCollection<DeletedTrip>("DeletedTrips");
+            deletedplaces = database.GetCollection<DeletedPlace>("DeletedPlaces");
+            deletedgoods = database.GetCollection<DeletedGood>("DeletedGoods");
+            deletedgoals = database.GetCollection<DeletedGoal>("DeletedGoals");
+            deletedpurchases = database.GetCollection<DeletedPurchase>("DeletedPurchases");
         }
 
         private void Register()

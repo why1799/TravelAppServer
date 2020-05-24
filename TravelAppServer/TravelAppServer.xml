@@ -288,6 +288,17 @@
             </summary>
             <returns>True, если есть подключение. Иначе - False</returns>
         </member>
+        <member name="T:TravelAppServer.Controllers.SynchronizationController">
+            <summary>
+            Контроллер для синхронизации
+            </summary>
+        </member>
+        <member name="M:TravelAppServer.Controllers.SynchronizationController.GetServerTime">
+            <summary>
+            Получение текущего времени на сервере
+            </summary>
+            <returns>Текущее время на сервере</returns>
+        </member>
         <member name="T:TravelAppServer.Controllers.TripController">
             <summary>
             Контроллер для работы с поездками
