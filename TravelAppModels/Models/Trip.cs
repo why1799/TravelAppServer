@@ -21,6 +21,9 @@ namespace TravelAppModels.Models
         public long? LastUpdate { get; set; }
 
         [JsonIgnore]
+        public bool IsDeleted { get; set; }
+
+        [JsonIgnore]
         public Photo[] Photos { get; set; }
         [JsonIgnore]
         public Place[] Places { get; set; }

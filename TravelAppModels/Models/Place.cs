@@ -18,6 +18,9 @@ namespace TravelAppModels.Models
         public Guid[] PhotoIds { get; set; }
 
         [JsonIgnore]
+        public bool IsDeleted { get; set; }
+
+        [JsonIgnore]
         public Photo[] Photos { get; set; }
     }
 }
