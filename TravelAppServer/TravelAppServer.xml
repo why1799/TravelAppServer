@@ -293,6 +293,14 @@
             Контроллер для синхронизации
             </summary>
         </member>
+        <member name="M:TravelAppServer.Controllers.SynchronizationController.GetData(System.String,System.Int64)">
+            <summary>
+            Получение всех данных
+            </summary>
+            <param name="token">Токен</param>
+            <param name="time">Время изменения</param>
+            <returns>Все данные после изменения</returns>
+        </member>
         <member name="M:TravelAppServer.Controllers.SynchronizationController.GetServerTime">
             <summary>
             Получение текущего времени на сервере

@@ -363,13 +363,16 @@ namespace TravelAppStorage.Implementations
         public async Task<Guid> DeleteTrip(Guid Id)
         {
             var filter = Builders<Trip>.Filter.Eq(x => x.Id, Id);
-            var update = Builders<Trip>.Update.Set(e => e.IsDeleted, true);
+            var update = Builders<Trip>.Update
+                .Combine(
+                Builders<Trip>.Update.Set(e => e.LastUpdate, DateTime.UtcNow.Ticks),
+                Builders<Trip>.Update.Set(e => e.IsDeleted, true));
             var result = await trips.UpdateOneAsync(filter, update).ConfigureAwait(false);
             //await trips.DeleteOneAsync(filter).ConfigureAwait(false);
             return Id;
         }
 
-        public async Task<Guid[]> GetAllTrips(Guid UserId)
+        public async Task<Guid[]> GetAllTripIds(Guid UserId)
         {
             var filter = Builders<Trip>.Filter.And(
                 Builders<Trip>.Filter.Eq(x => x.UserId, UserId),
@@ -377,6 +380,17 @@ namespace TravelAppStorage.Implementations
             var gotids = (await trips.Find(filter).ToListAsync()).Select(x => x.Id).ToList();
 
             return gotids.ToArray();
+        }
+
+        public async Task<Trip[]> GetAllTrips(Guid UserId, long time = 0, bool IsDeleted = false)
+        {
+            var filter = Builders<Trip>.Filter.And(
+                Builders<Trip>.Filter.Eq(x => x.UserId, UserId),
+                Builders<Trip>.Filter.Gt(x => x.LastUpdate, time),
+                Builders<Trip>.Filter.Eq(x => x.IsDeleted, IsDeleted));
+            var got = await trips.Find(filter).ToListAsync();
+
+            return got.ToArray();
         }
 
         #endregion
@@ -468,7 +482,10 @@ namespace TravelAppStorage.Implementations
         public async Task<Guid> DeletePlace(Guid Id, bool deletefromtrip)
         {
             var filter = Builders<Place>.Filter.Eq(x => x.Id, Id);
-            var update = Builders<Place>.Update.Set(e => e.IsDeleted, true);
+            var update = Builders<Place>.Update
+                .Combine(
+                Builders<Place>.Update.Set(e => e.LastUpdate, DateTime.UtcNow.Ticks),
+                Builders<Place>.Update.Set(e => e.IsDeleted, true));
             var place = await ReadPlace(Id).ConfigureAwait(false);
             var result = await places.UpdateOneAsync(filter, update).ConfigureAwait(false);
             //await places.DeleteOneAsync(filter).ConfigureAwait(false);
@@ -492,7 +509,7 @@ namespace TravelAppStorage.Implementations
             return Id;
         }
 
-        public async Task<Guid[]> GetAllPlaces(Guid UserId)
+        public async Task<Guid[]> GetAllPlaceIds(Guid UserId)
         {
             var filter = Builders<Place>.Filter.And(
                 Builders<Place>.Filter.Eq(x => x.UserId, UserId),
@@ -502,7 +519,16 @@ namespace TravelAppStorage.Implementations
             return gotids.ToArray();
         }
 
+        public async Task<Place[]> GetAllPlaces(Guid UserId, long time = 0, bool IsDeleted = false)
+        {
+            var filter = Builders<Place>.Filter.And(
+               Builders<Place>.Filter.Eq(x => x.UserId, UserId),
+               Builders<Place>.Filter.Gt(x => x.LastUpdate, time),
+               Builders<Place>.Filter.Eq(x => x.IsDeleted, IsDeleted));
+            var got = await places.Find(filter).ToListAsync();
 
+            return got.ToArray();
+        }
         #endregion
 
         #region Goal
@@ -580,7 +606,10 @@ namespace TravelAppStorage.Implementations
         public async Task<Guid> DeleteGoal(Guid Id, bool deletefromtrip)
         {
             var filter = Builders<Goal>.Filter.Eq(x => x.Id, Id);
-            var update = Builders<Goal>.Update.Set(e => e.IsDeleted, true);
+            var update = Builders<Goal>.Update
+                .Combine(
+                Builders<Goal>.Update.Set(e => e.LastUpdate, DateTime.UtcNow.Ticks),
+                Builders<Goal>.Update.Set(e => e.IsDeleted, true));
             var goal = await ReadPlace(Id).ConfigureAwait(false);
             var result = await goals.UpdateOneAsync(filter, update).ConfigureAwait(false);
             //await goals.DeleteOneAsync(filter).ConfigureAwait(false);
@@ -604,7 +633,7 @@ namespace TravelAppStorage.Implementations
             return Id;
         }
 
-        public async Task<Guid[]> GetAllGoals(Guid UserId)
+        public async Task<Guid[]> GetAllGoalIds(Guid UserId)
         {
             var filter = Builders<Goal>.Filter.And(
                 Builders<Goal>.Filter.Eq(x => x.UserId, UserId),
@@ -612,6 +641,17 @@ namespace TravelAppStorage.Implementations
             var gotids = (await goals.Find(filter).ToListAsync()).Select(x => x.Id).ToList();
 
             return gotids.ToArray();
+        }
+
+        public async Task<Goal[]> GetAllGoals(Guid UserId, long time = 0, bool IsDeleted = false)
+        {
+            var filter = Builders<Goal>.Filter.And(
+               Builders<Goal>.Filter.Eq(x => x.UserId, UserId),
+               Builders<Goal>.Filter.Gt(x => x.LastUpdate, time),
+               Builders<Goal>.Filter.Eq(x => x.IsDeleted, IsDeleted));
+            var got = await goals.Find(filter).ToListAsync();
+
+            return got.ToArray();
         }
         #endregion
 
@@ -688,7 +728,10 @@ namespace TravelAppStorage.Implementations
         public async Task<Guid> DeleteGood(Guid Id, bool deletefromtrip)
         {
             var filter = Builders<Good>.Filter.Eq(x => x.Id, Id);
-            var update = Builders<Good>.Update.Set(e => e.IsDeleted, true);
+            var update = Builders<Good>.Update
+                .Combine(
+                Builders<Good>.Update.Set(e => e.LastUpdate, DateTime.UtcNow.Ticks),
+                Builders<Good>.Update.Set(e => e.IsDeleted, true));
             var good = await ReadPlace(Id).ConfigureAwait(false);
             var result = await goods.UpdateOneAsync(filter, update).ConfigureAwait(false);
             //await goods.DeleteOneAsync(filter).ConfigureAwait(false);
@@ -712,7 +755,7 @@ namespace TravelAppStorage.Implementations
             return Id;
         }
 
-        public async Task<Guid[]> GetAllGoods(Guid UserId)
+        public async Task<Guid[]> GetAllGoodIds(Guid UserId)
         {
             var filter = Builders<Good>.Filter.And(
                 Builders<Good>.Filter.Eq(x => x.UserId, UserId),
@@ -720,6 +763,17 @@ namespace TravelAppStorage.Implementations
             var gotids = (await goods.Find(filter).ToListAsync()).Select(x => x.Id).ToList();
 
             return gotids.ToArray();
+        }
+
+        public async Task<Good[]> GetAllGoods(Guid UserId, long time = 0, bool IsDeleted = false)
+        {
+            var filter = Builders<Good>.Filter.And(
+                Builders<Good>.Filter.Eq(x => x.UserId, UserId),
+                Builders<Good>.Filter.Gt(x => x.LastUpdate, time),
+                Builders<Good>.Filter.Eq(x => x.IsDeleted, IsDeleted));
+            var got = await goods.Find(filter).ToListAsync();
+
+            return got.ToArray();
         }
         #endregion
 
@@ -882,7 +936,10 @@ namespace TravelAppStorage.Implementations
         public async Task<Guid> DeletePurchase(Guid Id, bool deletefromtrip)
         {
             var filter = Builders<Purchase>.Filter.Eq(x => x.Id, Id);
-            var update = Builders<Purchase>.Update.Set(e => e.IsDeleted, true);
+            var update = Builders<Purchase>.Update
+               .Combine(
+               Builders<Purchase>.Update.Set(e => e.LastUpdate, DateTime.UtcNow.Ticks),
+               Builders<Purchase>.Update.Set(e => e.IsDeleted, true));
             var purchase = await ReadPlace(Id).ConfigureAwait(false);
             var result = await purchases.UpdateOneAsync(filter, update).ConfigureAwait(false);
             //await purchases.DeleteOneAsync(filter).ConfigureAwait(false);
@@ -906,7 +963,7 @@ namespace TravelAppStorage.Implementations
             return Id;
         }
 
-        public async Task<Guid[]> GetAllPurchases(Guid UserId)
+        public async Task<Guid[]> GetAllPurchaseIds(Guid UserId)
         {
             var filter = Builders<Purchase>.Filter.And(
                 Builders<Purchase>.Filter.Eq(x => x.UserId, UserId),
@@ -914,6 +971,17 @@ namespace TravelAppStorage.Implementations
             var gotids = (await purchases.Find(filter).ToListAsync()).Select(x => x.Id).ToList();
 
             return gotids.ToArray();
+        }
+
+        public async Task<Purchase[]> GetAllPurchases(Guid UserId, long time = 0, bool IsDeleted = false)
+        {
+            var filter = Builders<Purchase>.Filter.And(
+                Builders<Purchase>.Filter.Eq(x => x.UserId, UserId),
+                Builders<Purchase>.Filter.Gt(x => x.LastUpdate, time),
+                Builders<Purchase>.Filter.Eq(x => x.IsDeleted, IsDeleted));
+            var got = await purchases.Find(filter).ToListAsync();
+
+            return got.ToArray();
         }
         #endregion
     }

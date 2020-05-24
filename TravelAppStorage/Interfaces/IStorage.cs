@@ -32,8 +32,8 @@ namespace TravelAppStorage.Interfaces
         Task<Trip> UpsertTrip(Trip trip);
         Task<Trip> ReadTrip(Guid Id);
         Task<Guid> DeleteTrip(Guid Id);
-        Task<Guid[]> GetAllTrips(Guid UserId);
-
+        Task<Guid[]> GetAllTripIds(Guid UserId);
+        Task<Trip[]> GetAllTrips(Guid UserId, long time = 0, bool IsDeleted = false);
         #endregion
 
         #region Place
@@ -41,7 +41,8 @@ namespace TravelAppStorage.Interfaces
         Task<Place> UpsertPlace(Place place);
         Task<Place> ReadPlace(Guid Id);
         Task<Guid> DeletePlace(Guid Id, bool deletefromtrip);
-        Task<Guid[]> GetAllPlaces(Guid UserId);
+        Task<Guid[]> GetAllPlaceIds(Guid UserId);
+        Task<Place[]> GetAllPlaces(Guid UserId, long time = 0, bool IsDeleted = false);
 
         #endregion
 
@@ -50,8 +51,8 @@ namespace TravelAppStorage.Interfaces
         Task<Goal> UpsertGoal(Goal goal);
         Task<Goal> ReadGoal(Guid Id);
         Task<Guid> DeleteGoal(Guid Id, bool deletefromtrip);
-        Task<Guid[]> GetAllGoals(Guid UserId);
-
+        Task<Guid[]> GetAllGoalIds(Guid UserId);
+        Task<Goal[]> GetAllGoals(Guid UserId, long time = 0, bool IsDeleted = false);
         #endregion
 
         #region Good
@@ -59,7 +60,8 @@ namespace TravelAppStorage.Interfaces
         Task<Good> UpsertGood(Good good);
         Task<Good> ReadGood(Guid Id);
         Task<Guid> DeleteGood(Guid Id, bool deletefromtrip);
-        Task<Guid[]> GetAllGoods(Guid UserId);
+        Task<Guid[]> GetAllGoodIds(Guid UserId);
+        Task<Good[]> GetAllGoods(Guid UserId, long time = 0, bool IsDeleted = false);
 
         #endregion
 
@@ -78,7 +80,8 @@ namespace TravelAppStorage.Interfaces
         Task<Purchase> UpsertPurchase(Purchase purchase);
         Task<Purchase> ReadPurchase(Guid Id);
         Task<Guid> DeletePurchase(Guid Id, bool deletefromtrip);
-        Task<Guid[]> GetAllPurchases(Guid UserId);
+        Task<Guid[]> GetAllPurchaseIds(Guid UserId);
+        Task<Purchase[]> GetAllPurchases(Guid UserId, long time = 0, bool IsDeleted = false);
 
         #endregion
     }

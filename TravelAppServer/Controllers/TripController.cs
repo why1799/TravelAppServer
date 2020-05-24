@@ -184,7 +184,7 @@ namespace TravelAppServer.Controllers
             {
                 var usertoken = await Storage.FindUserByToken(token);
 
-                var response = await Storage.GetAllTrips(usertoken.UserId);
+                var response = await Storage.GetAllTripIds(usertoken.UserId);
 
                 return StatusCode(StatusCodes.Status200OK, response);
             }

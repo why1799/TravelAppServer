@@ -252,7 +252,7 @@ namespace TravelAppServer.Controllers
             {
                 var usertoken = await Storage.FindUserByToken(token);
 
-                var response = await Storage.GetAllGoals(usertoken.UserId);
+                var response = await Storage.GetAllGoalIds(usertoken.UserId);
 
                 return StatusCode(StatusCodes.Status200OK, response);
             }
