@@ -49,22 +49,7 @@ namespace TravelAppServer.Controllers
                     good.Id = Guid.NewGuid();
                 }
 
-                var readresponse = await Storage.ReadGood(good.Id);
-
-                if (readresponse != null)
-                {
-                    if (readresponse.UserId != usertoken.UserId)
-                    {
-                        throw new ArgumentException("You don't have permission to this good");
-                    }
-                    good.UserId = readresponse.UserId;
-                }
-                else
-                {
-                    good.UserId = usertoken.UserId;
-                }
-
-                var response = await Storage.UpsertGood(good);
+                var response = await Storage.UpsertGood(good, usertoken.UserId);
 
                 return StatusCode(StatusCodes.Status200OK, response);
             }
@@ -104,43 +89,22 @@ namespace TravelAppServer.Controllers
                     good.Id = Guid.NewGuid();
                 }
 
-                var readresponse = await Storage.ReadGood(good.Id);
-
-                if (readresponse != null)
-                {
-                    if (readresponse.UserId != usertoken.UserId)
-                    {
-                        throw new ArgumentException("You don't have permission to this good");
-                    }
-                    good.UserId = readresponse.UserId;
-                }
-                else
-                {
-                    good.UserId = usertoken.UserId;
-                }
-
-                var responsetrip = await Storage.ReadTrip(good.TripId);
+                var responsetrip = await Storage.ReadTrip(good.TripId, usertoken.UserId);
 
                 if (responsetrip == null)
                 {
                     throw new ArgumentException("Such trip doesn't exist");
                 }
 
-                if (responsetrip.UserId != usertoken.UserId)
-                {
-                    throw new ArgumentException("You don't have permission to this trip");
-                }
-
-
                 if (!responsetrip.GoodIds?.Contains(good.Id) ?? true)
                 {
                     var goodids = responsetrip.GoodIds?.ToList() ?? new List<Guid>();
                     goodids.Add(good.Id);
                     responsetrip.GoodIds = goodids.ToArray();
-                    await Storage.UpsertTrip(responsetrip);
+                    await Storage.UpsertTrip(responsetrip, Guid.Empty);
                 }
 
-                var response = await Storage.UpsertGood(good);
+                var response = await Storage.UpsertGood(good, usertoken.UserId);
 
                 return StatusCode(StatusCodes.Status200OK, response);
             }
@@ -170,16 +134,11 @@ namespace TravelAppServer.Controllers
             {
                 var usertoken = await Storage.FindUserByToken(token);
 
-                var response = await Storage.ReadGood(id);
+                var response = await Storage.ReadGood(id, usertoken.UserId);
 
                 if (response == null)
                 {
                     throw new ArgumentException("Such good doesn't exist");
-                }
-
-                if (response.UserId != usertoken.UserId)
-                {
-                    throw new ArgumentException("You don't have permission to this good");
                 }
 
                 return StatusCode(StatusCodes.Status200OK, response);
@@ -211,19 +170,7 @@ namespace TravelAppServer.Controllers
             {
                 var usertoken = await Storage.FindUserByToken(token);
 
-                var readresponse = await Storage.ReadGood(id);
-
-                if (readresponse == null)
-                {
-                    throw new ArgumentException("Such good doesn't exist");
-                }
-
-                if (readresponse.UserId != usertoken.UserId)
-                {
-                    throw new ArgumentException("You don't have permission to this good");
-                }
-
-                var response = await Storage.DeleteGood(id, deletefromtrip);
+                var response = await Storage.DeleteGood(id, deletefromtrip, usertoken.UserId);
 
                 return StatusCode(StatusCodes.Status200OK, response);
             }

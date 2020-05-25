@@ -49,22 +49,7 @@ namespace TravelAppServer.Controllers
                     place.Id = Guid.NewGuid();
                 }
 
-                var readresponse = await Storage.ReadPlace(place.Id);
-
-                if (readresponse != null)
-                {
-                    if (readresponse.UserId != usertoken.UserId)
-                    {
-                        throw new ArgumentException("You don't have permission to this place");
-                    }
-                    place.UserId = readresponse.UserId;
-                }
-                else
-                {
-                    place.UserId = usertoken.UserId;
-                }
-
-                var response = await Storage.UpsertPlace(place);
+                var response = await Storage.UpsertPlace(place, usertoken.UserId);
 
                 return StatusCode(StatusCodes.Status200OK, response);
             }
@@ -104,31 +89,11 @@ namespace TravelAppServer.Controllers
                     place.Id = Guid.NewGuid();
                 }
 
-                var readresponse = await Storage.ReadPlace(place.Id);
-
-                if (readresponse != null)
-                {
-                    if (readresponse.UserId != usertoken.UserId)
-                    {
-                        throw new ArgumentException("You don't have permission to this place");
-                    }
-                    place.UserId = readresponse.UserId;
-                }
-                else
-                {
-                    place.UserId = usertoken.UserId;
-                }
-
-                var responsetrip = await Storage.ReadTrip(place.TripId);
+                var responsetrip = await Storage.ReadTrip(place.TripId, usertoken.UserId);
 
                 if (responsetrip == null)
                 {
                     throw new ArgumentException("Such trip doesn't exist");
-                }
-
-                if (responsetrip.UserId != usertoken.UserId)
-                {
-                    throw new ArgumentException("You don't have permission to this trip");
                 }
 
                 if(!responsetrip.PlaceIds?.Contains(place.Id) ?? true)
@@ -136,10 +101,10 @@ namespace TravelAppServer.Controllers
                     var placeids = responsetrip.PlaceIds?.ToList() ?? new List<Guid>();
                     placeids.Add(place.Id);
                     responsetrip.PlaceIds = placeids.ToArray();
-                    await Storage.UpsertTrip(responsetrip);
+                    await Storage.UpsertTrip(responsetrip, usertoken.UserId);
                 }
 
-                var response = await Storage.UpsertPlace(place);
+                var response = await Storage.UpsertPlace(place, usertoken.UserId);
 
                 return StatusCode(StatusCodes.Status200OK, response);
             }
@@ -169,16 +134,11 @@ namespace TravelAppServer.Controllers
             {
                 var usertoken = await Storage.FindUserByToken(token);
 
-                var response = await Storage.ReadPlace(id);
+                var response = await Storage.ReadPlace(id, usertoken.UserId);
 
                 if (response == null)
                 {
                     throw new ArgumentException("Such place doesn't exist");
-                }
-
-                if (response.UserId != usertoken.UserId)
-                {
-                    throw new ArgumentException("You don't have permission to this place");
                 }
 
                 return StatusCode(StatusCodes.Status200OK, response);
@@ -210,19 +170,7 @@ namespace TravelAppServer.Controllers
             {
                 var usertoken = await Storage.FindUserByToken(token);
 
-                var readresponse = await Storage.ReadPlace(id);
-
-                if (readresponse == null)
-                {
-                    throw new ArgumentException("Such place doesn't exist");
-                }
-
-                if (readresponse.UserId != usertoken.UserId)
-                {
-                    throw new ArgumentException("You don't have permission to this place");
-                }
-
-                var response = await Storage.DeletePlace(id, deletefromtrip);
+                var response = await Storage.DeletePlace(id, deletefromtrip, usertoken.UserId);
 
                 return StatusCode(StatusCodes.Status200OK, response);
             }

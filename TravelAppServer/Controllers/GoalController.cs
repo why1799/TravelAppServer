@@ -49,22 +49,7 @@ namespace TravelAppServer.Controllers
                     goal.Id = Guid.NewGuid();
                 }
 
-                var readresponse = await Storage.ReadGoal(goal.Id);
-
-                if (readresponse != null)
-                {
-                    if (readresponse.UserId != usertoken.UserId)
-                    {
-                        throw new ArgumentException("You don't have permission to this goal");
-                    }
-                    goal.UserId = readresponse.UserId;
-                }
-                else
-                {
-                    goal.UserId = usertoken.UserId;
-                }
-
-                var response = await Storage.UpsertGoal(goal);
+                var response = await Storage.UpsertGoal(goal, usertoken.UserId);
 
                 return StatusCode(StatusCodes.Status200OK, response);
             }
@@ -104,43 +89,22 @@ namespace TravelAppServer.Controllers
                     goal.Id = Guid.NewGuid();
                 }
 
-                var readresponse = await Storage.ReadGoal(goal.Id);
-
-                if (readresponse != null)
-                {
-                    if (readresponse.UserId != usertoken.UserId)
-                    {
-                        throw new ArgumentException("You don't have permission to this goal");
-                    }
-                    goal.UserId = readresponse.UserId;
-                }
-                else
-                {
-                    goal.UserId = usertoken.UserId;
-                }
-
-                var responsetrip = await Storage.ReadTrip(goal.TripId);
+                var responsetrip = await Storage.ReadTrip(goal.TripId, usertoken.UserId);
 
                 if (responsetrip == null)
                 {
                     throw new ArgumentException("Such trip doesn't exist");
                 }
 
-                if (responsetrip.UserId != usertoken.UserId)
-                {
-                    throw new ArgumentException("You don't have permission to this trip");
-                }
-
-
                 if (!responsetrip.GoalIds?.Contains(goal.Id) ?? true)
                 {
                     var goalids = responsetrip.GoalIds?.ToList() ?? new List<Guid>();
                     goalids.Add(goal.Id);
                     responsetrip.GoalIds = goalids.ToArray();
-                    await Storage.UpsertTrip(responsetrip);
+                    await Storage.UpsertTrip(responsetrip, Guid.Empty);
                 }
 
-                var response = await Storage.UpsertGoal(goal);
+                var response = await Storage.UpsertGoal(goal, usertoken.UserId);
 
                 return StatusCode(StatusCodes.Status200OK, response);
             }
@@ -170,16 +134,11 @@ namespace TravelAppServer.Controllers
             {
                 var usertoken = await Storage.FindUserByToken(token);
 
-                var response = await Storage.ReadGoal(id);
+                var response = await Storage.ReadGoal(id, usertoken.UserId);
 
                 if (response == null)
                 {
                     throw new ArgumentException("Such goal doesn't exist");
-                }
-
-                if (response.UserId != usertoken.UserId)
-                {
-                    throw new ArgumentException("You don't have permission to this goal");
                 }
 
                 return StatusCode(StatusCodes.Status200OK, response);
@@ -211,19 +170,7 @@ namespace TravelAppServer.Controllers
             {
                 var usertoken = await Storage.FindUserByToken(token);
 
-                var readresponse = await Storage.ReadGoal(id);
-
-                if (readresponse == null)
-                {
-                    throw new ArgumentException("Such goal doesn't exist");
-                }
-
-                if (readresponse.UserId != usertoken.UserId)
-                {
-                    throw new ArgumentException("You don't have permission to this goal");
-                }
-
-                var response = await Storage.DeleteGoal(id, deletefromtrip);
+                var response = await Storage.DeleteGoal(id, deletefromtrip, usertoken.UserId);
 
                 return StatusCode(StatusCodes.Status200OK, response);
             }

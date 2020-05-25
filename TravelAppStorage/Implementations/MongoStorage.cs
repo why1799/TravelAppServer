@@ -316,12 +316,14 @@ namespace TravelAppStorage.Implementations
             }
         }
 
-        public async Task<Trip> UpsertTrip(Trip trip)
+        public async Task<Trip> UpsertTrip(Trip trip, Guid UserId)
         {
             if (trip == null) return null;
 
-            var filter = Builders<Trip>.Filter
-                .Eq(entity => entity.Id, trip.Id);
+            var filter = Builders<Trip>.Filter.And(
+                Builders<Trip>.Filter.Eq(entity => entity.Id, trip.Id),
+                Builders<Trip>.Filter.Eq(entity => entity.UserId, UserId));
+
             var definition = Builders<Trip>.Update
                 .Combine(
                 Builders<Trip>.Update.Set(e => e.Name, trip.Name),
@@ -331,7 +333,7 @@ namespace TravelAppStorage.Implementations
                 Builders<Trip>.Update.Set(e => e.GoodIds, trip.GoodIds),
                 Builders<Trip>.Update.Set(e => e.PurchaseIds, trip.PurchaseIds),
                 Builders<Trip>.Update.Set(e => e.TextField, trip.TextField),
-                Builders<Trip>.Update.Set(e => e.UserId, trip.UserId),
+                Builders<Trip>.Update.Set(e => e.UserId, UserId),
                 Builders<Trip>.Update.Set(e => e.FromDate, trip.FromDate),
                 Builders<Trip>.Update.Set(e => e.ToDate, trip.ToDate),
                 Builders<Trip>.Update.Set(e => e.LastUpdate, DateTime.UtcNow.Ticks),
@@ -345,10 +347,11 @@ namespace TravelAppStorage.Implementations
 
         }
 
-        public async Task<Trip> ReadTrip(Guid Id)
+        public async Task<Trip> ReadTrip(Guid Id, Guid UserId)
         {
             var filter = Builders<Trip>.Filter.And(
                 Builders<Trip>.Filter.Eq(x => x.Id, Id),
+                Builders<Trip>.Filter.Eq(x => x.UserId, UserId),
                 Builders<Trip>.Filter.Eq(x => x.IsDeleted, false));
             var gottrips = await trips.Find(filter).ToListAsync();
 
@@ -360,9 +363,12 @@ namespace TravelAppStorage.Implementations
             return null;
         }
 
-        public async Task<Guid> DeleteTrip(Guid Id)
+        public async Task<Guid> DeleteTrip(Guid Id, Guid UserId)
         {
-            var filter = Builders<Trip>.Filter.Eq(x => x.Id, Id);
+            var filter = Builders<Trip>.Filter.And(
+                Builders<Trip>.Filter.Eq(entity => entity.Id, Id),
+                Builders<Trip>.Filter.Eq(entity => entity.UserId, UserId));
+
             var update = Builders<Trip>.Update
                 .Combine(
                 Builders<Trip>.Update.Set(e => e.LastUpdate, DateTime.UtcNow.Ticks),
@@ -439,12 +445,14 @@ namespace TravelAppStorage.Implementations
             }
         }
 
-        public async Task<Place> UpsertPlace(Place place)
+        public async Task<Place> UpsertPlace(Place place, Guid UserId)
         {
             if (place == null) return null;
 
-            var filter = Builders<Place>.Filter
-                .Eq(entity => entity.Id, place.Id);
+            var filter = Builders<Place>.Filter.And(
+                Builders<Place>.Filter.Eq(entity => entity.Id, place.Id),
+                Builders<Place>.Filter.Eq(entity => entity.UserId, UserId));
+
             var definition = Builders<Place>.Update
                 .Combine(
                 Builders<Place>.Update.Set(e => e.Name, place.Name),
@@ -453,7 +461,7 @@ namespace TravelAppStorage.Implementations
                 Builders<Place>.Update.Set(e => e.Description, place.Description),
                 Builders<Place>.Update.Set(e => e.Date, place.Date),
                 Builders<Place>.Update.Set(e => e.IsVisited, place.IsVisited),
-                Builders<Place>.Update.Set(e => e.UserId, place.UserId),
+                Builders<Place>.Update.Set(e => e.UserId, UserId),
                 Builders<Place>.Update.Set(e => e.LastUpdate, DateTime.UtcNow.Ticks),  
                 Builders<Place>.Update.Set(e => e.IsDeleted, false));
             var options = new FindOneAndUpdateOptions<Place, Place>()
@@ -464,10 +472,11 @@ namespace TravelAppStorage.Implementations
             return await places.FindOneAndUpdateAsync(filter, definition, options).ConfigureAwait(false);
         }
 
-        public async Task<Place> ReadPlace(Guid Id)
+        public async Task<Place> ReadPlace(Guid Id, Guid UserId)
         {
             var filter = Builders<Place>.Filter.And(
                Builders<Place>.Filter.Eq(x => x.Id, Id),
+               Builders<Place>.Filter.Eq(x => x.UserId, UserId),
                Builders<Place>.Filter.Eq(x => x.IsDeleted, false));
             var gotplaces = await places.Find(filter).ToListAsync();
 
@@ -479,21 +488,22 @@ namespace TravelAppStorage.Implementations
             return null;
         }
 
-        public async Task<Guid> DeletePlace(Guid Id, bool deletefromtrip)
+        public async Task<Guid> DeletePlace(Guid Id, bool deletefromtrip, Guid UserId)
         {
-            var filter = Builders<Place>.Filter.Eq(x => x.Id, Id);
+            var filter = Builders<Place>.Filter.And(
+               Builders<Place>.Filter.Eq(x => x.Id, Id),
+               Builders<Place>.Filter.Eq(x => x.UserId, UserId));
             var update = Builders<Place>.Update
                 .Combine(
                 Builders<Place>.Update.Set(e => e.LastUpdate, DateTime.UtcNow.Ticks),
                 Builders<Place>.Update.Set(e => e.IsDeleted, true));
-            var place = await ReadPlace(Id).ConfigureAwait(false);
             var result = await places.UpdateOneAsync(filter, update).ConfigureAwait(false);
             //await places.DeleteOneAsync(filter).ConfigureAwait(false);
 
             if(deletefromtrip)
             {
                 var tripfilter = Builders<Trip>.Filter.And(
-                    Builders<Trip>.Filter.Eq(ed => ed.UserId, place.UserId),
+                    Builders<Trip>.Filter.Eq(ed => ed.UserId, UserId),
                     Builders<Trip>.Filter.Where(x => x.PlaceIds.Contains(Id)));
                 var trips = await this.trips.Find(tripfilter).ToListAsync();
 
@@ -502,7 +512,7 @@ namespace TravelAppStorage.Implementations
                     var placeids = trip.PlaceIds.ToList();
                     placeids.Remove(Id);
                     trip.PlaceIds = placeids.ToArray();
-                    await UpsertTrip(trip);
+                    await UpsertTrip(trip, UserId);
                 }
             }
 
@@ -566,18 +576,20 @@ namespace TravelAppStorage.Implementations
             }
         }
 
-        public async Task<Goal> UpsertGoal(Goal goal)
+        public async Task<Goal> UpsertGoal(Goal goal, Guid UserId)
         {
             if (goal == null) return null;
 
-            var filter = Builders<Goal>.Filter
-                .Eq(entity => entity.Id, goal.Id);
+            var filter = Builders<Goal>.Filter.And(
+                Builders<Goal>.Filter.Eq(entity => entity.Id, goal.Id),
+                Builders<Goal>.Filter.Eq(entity => entity.UserId, UserId));
+
             var definition = Builders<Goal>.Update
                 .Combine(
                 Builders<Goal>.Update.Set(e => e.Name, goal.Name),
                 Builders<Goal>.Update.Set(e => e.IsDone, goal.IsDone),
                 Builders<Goal>.Update.Set(e => e.Description, goal.Description),
-                Builders<Goal>.Update.Set(e => e.UserId, goal.UserId),
+                Builders<Goal>.Update.Set(e => e.UserId, UserId),
                 Builders<Goal>.Update.Set(e => e.LastUpdate, DateTime.UtcNow.Ticks),
                 Builders<Goal>.Update.Set(e => e.IsDeleted, false));
             var options = new FindOneAndUpdateOptions<Goal, Goal>()
@@ -588,10 +600,11 @@ namespace TravelAppStorage.Implementations
             return await goals.FindOneAndUpdateAsync(filter, definition, options).ConfigureAwait(false);
         }
 
-        public async Task<Goal> ReadGoal(Guid Id)
+        public async Task<Goal> ReadGoal(Guid Id, Guid UserId)
         {
             var filter = Builders<Goal>.Filter.And(
                Builders<Goal>.Filter.Eq(x => x.Id, Id),
+               Builders<Goal>.Filter.Eq(x => x.UserId, UserId),
                Builders<Goal>.Filter.Eq(x => x.IsDeleted, false));
             var gotgoals = await goals.Find(filter).ToListAsync();
 
@@ -603,21 +616,22 @@ namespace TravelAppStorage.Implementations
             return null;
         }
 
-        public async Task<Guid> DeleteGoal(Guid Id, bool deletefromtrip)
+        public async Task<Guid> DeleteGoal(Guid Id, bool deletefromtrip, Guid UserId)
         {
-            var filter = Builders<Goal>.Filter.Eq(x => x.Id, Id);
+            var filter = Builders<Goal>.Filter.And(
+                Builders<Goal>.Filter.Eq(entity => entity.Id, Id),
+                Builders<Goal>.Filter.Eq(entity => entity.UserId, UserId));
             var update = Builders<Goal>.Update
                 .Combine(
                 Builders<Goal>.Update.Set(e => e.LastUpdate, DateTime.UtcNow.Ticks),
                 Builders<Goal>.Update.Set(e => e.IsDeleted, true));
-            var goal = await ReadPlace(Id).ConfigureAwait(false);
             var result = await goals.UpdateOneAsync(filter, update).ConfigureAwait(false);
             //await goals.DeleteOneAsync(filter).ConfigureAwait(false);
 
             if (deletefromtrip)
             {
                 var tripfilter = Builders<Trip>.Filter.And(
-                    Builders<Trip>.Filter.Eq(ed => ed.UserId, goal.UserId),
+                    Builders<Trip>.Filter.Eq(ed => ed.UserId, UserId),
                     Builders<Trip>.Filter.Where(x => x.GoalIds.Contains(Id)));
                 var trips = await this.trips.Find(tripfilter).ToListAsync();
 
@@ -626,7 +640,7 @@ namespace TravelAppStorage.Implementations
                     var goalids = trip.GoalIds.ToList();
                     goalids.Remove(Id);
                     trip.GoalIds = goalids.ToArray();
-                    await UpsertTrip(trip);
+                    await UpsertTrip(trip, UserId);
                 }
             }
 
@@ -688,18 +702,20 @@ namespace TravelAppStorage.Implementations
                 });
             }
         }
-        public async Task<Good> UpsertGood(Good good)
+        public async Task<Good> UpsertGood(Good good, Guid UserId)
         {
             if (good == null) return null;
 
-            var filter = Builders<Good>.Filter
-                .Eq(entity => entity.Id, good.Id);
+            var filter = Builders<Good>.Filter.And(
+                Builders<Good>.Filter.Eq(entity => entity.Id, good.Id),
+                Builders<Good>.Filter.Eq(entity => entity.UserId, UserId));
+
             var definition = Builders<Good>.Update
                 .Combine(
                 Builders<Good>.Update.Set(e => e.Name, good.Name),
                 Builders<Good>.Update.Set(e => e.IsTook, good.IsTook),
                 Builders<Good>.Update.Set(e => e.Description, good.Description),
-                Builders<Good>.Update.Set(e => e.UserId, good.UserId),
+                Builders<Good>.Update.Set(e => e.UserId, UserId),
                 Builders<Good>.Update.Set(e => e.LastUpdate, DateTime.UtcNow.Ticks),
                 Builders<Good>.Update.Set(e => e.IsDeleted, false));
             var options = new FindOneAndUpdateOptions<Good, Good>()
@@ -710,10 +726,11 @@ namespace TravelAppStorage.Implementations
             return await goods.FindOneAndUpdateAsync(filter, definition, options).ConfigureAwait(false);
         }
 
-        public async Task<Good> ReadGood(Guid Id)
+        public async Task<Good> ReadGood(Guid Id, Guid UserId)
         {
             var filter = Builders<Good>.Filter.And(
                Builders<Good>.Filter.Eq(x => x.Id, Id),
+               Builders<Good>.Filter.Eq(x => x.UserId, UserId),
                Builders<Good>.Filter.Eq(x => x.IsDeleted, false));
             var gotgoods = await goods.Find(filter).ToListAsync();
 
@@ -725,21 +742,22 @@ namespace TravelAppStorage.Implementations
             return null;
         }
 
-        public async Task<Guid> DeleteGood(Guid Id, bool deletefromtrip)
+        public async Task<Guid> DeleteGood(Guid Id, bool deletefromtrip, Guid UserId)
         {
-            var filter = Builders<Good>.Filter.Eq(x => x.Id, Id);
+            var filter = Builders<Good>.Filter.And(
+                Builders<Good>.Filter.Eq(entity => entity.Id, Id),
+                Builders<Good>.Filter.Eq(entity => entity.UserId, UserId));
             var update = Builders<Good>.Update
                 .Combine(
                 Builders<Good>.Update.Set(e => e.LastUpdate, DateTime.UtcNow.Ticks),
                 Builders<Good>.Update.Set(e => e.IsDeleted, true));
-            var good = await ReadPlace(Id).ConfigureAwait(false);
             var result = await goods.UpdateOneAsync(filter, update).ConfigureAwait(false);
             //await goods.DeleteOneAsync(filter).ConfigureAwait(false);
 
             if (deletefromtrip)
             {
                 var tripfilter = Builders<Trip>.Filter.And(
-                    Builders<Trip>.Filter.Eq(ed => ed.UserId, good.UserId),
+                    Builders<Trip>.Filter.Eq(ed => ed.UserId, UserId),
                     Builders<Trip>.Filter.Where(x => x.GoodIds.Contains(Id)));
                 var trips = await this.trips.Find(tripfilter).ToListAsync();
 
@@ -748,7 +766,7 @@ namespace TravelAppStorage.Implementations
                     var goodids = trip.GoodIds.ToList();
                     goodids.Remove(Id);
                     trip.GoodIds = goodids.ToArray();
-                    await UpsertTrip(trip);
+                    await UpsertTrip(trip, UserId);
                 }
             }
 
@@ -894,12 +912,14 @@ namespace TravelAppStorage.Implementations
             }
         }
 
-        public async Task<Purchase> UpsertPurchase(Purchase purchase)
+        public async Task<Purchase> UpsertPurchase(Purchase purchase, Guid UserId)
         {
             if (purchase == null) return null;
 
-            var filter = Builders<Purchase>.Filter
-                .Eq(entity => entity.Id, purchase.Id);
+            var filter = Builders<Purchase>.Filter.And(
+                Builders<Purchase>.Filter.Eq(entity => entity.Id, purchase.Id),
+                Builders<Purchase>.Filter.Eq(entity => entity.UserId, UserId));
+
             var definition = Builders<Purchase>.Update
                 .Combine(
                 Builders<Purchase>.Update.Set(e => e.Name, purchase.Name),
@@ -907,7 +927,7 @@ namespace TravelAppStorage.Implementations
                 Builders<Purchase>.Update.Set(e => e.CategoryId, purchase.CategoryId),
                 Builders<Purchase>.Update.Set(e => e.Price, purchase.Price),
                 Builders<Purchase>.Update.Set(e => e.IsBought, purchase.IsBought),
-                Builders<Purchase>.Update.Set(e => e.UserId, purchase.UserId),
+                Builders<Purchase>.Update.Set(e => e.UserId, UserId),
                 Builders<Purchase>.Update.Set(e => e.LastUpdate, DateTime.UtcNow.Ticks),
                 Builders<Purchase>.Update.Set(e => e.IsDeleted, false));
             var options = new FindOneAndUpdateOptions<Purchase, Purchase>()
@@ -918,10 +938,11 @@ namespace TravelAppStorage.Implementations
             return await purchases.FindOneAndUpdateAsync(filter, definition, options).ConfigureAwait(false);
         }
 
-        public async Task<Purchase> ReadPurchase(Guid Id)
+        public async Task<Purchase> ReadPurchase(Guid Id, Guid UserId)
         {
             var filter = Builders<Purchase>.Filter.And(
                Builders<Purchase>.Filter.Eq(x => x.Id, Id),
+               Builders<Purchase>.Filter.Eq(x => x.UserId, UserId),
                Builders<Purchase>.Filter.Eq(x => x.IsDeleted, false));
             var gotpurchases = await purchases.Find(filter).ToListAsync();
 
@@ -933,21 +954,22 @@ namespace TravelAppStorage.Implementations
             return null;
         }
 
-        public async Task<Guid> DeletePurchase(Guid Id, bool deletefromtrip)
+        public async Task<Guid> DeletePurchase(Guid Id, bool deletefromtrip, Guid UserId)
         {
-            var filter = Builders<Purchase>.Filter.Eq(x => x.Id, Id);
+            var filter = Builders<Purchase>.Filter.And(
+                Builders<Purchase>.Filter.Eq(entity => entity.Id, Id),
+                Builders<Purchase>.Filter.Eq(entity => entity.UserId, UserId));
             var update = Builders<Purchase>.Update
                .Combine(
                Builders<Purchase>.Update.Set(e => e.LastUpdate, DateTime.UtcNow.Ticks),
                Builders<Purchase>.Update.Set(e => e.IsDeleted, true));
-            var purchase = await ReadPlace(Id).ConfigureAwait(false);
             var result = await purchases.UpdateOneAsync(filter, update).ConfigureAwait(false);
             //await purchases.DeleteOneAsync(filter).ConfigureAwait(false);
 
             if (deletefromtrip)
             {
                 var tripfilter = Builders<Trip>.Filter.And(
-                    Builders<Trip>.Filter.Eq(ed => ed.UserId, purchase.UserId),
+                    Builders<Trip>.Filter.Eq(ed => ed.UserId, UserId),
                     Builders<Trip>.Filter.Where(x => x.PurchaseIds.Contains(Id)));
                 var trips = await this.trips.Find(tripfilter).ToListAsync();
 
@@ -956,7 +978,7 @@ namespace TravelAppStorage.Implementations
                     var purchaseids = trip.PurchaseIds.ToList();
                     purchaseids.Remove(Id);
                     trip.PurchaseIds = purchaseids.ToArray();
-                    await UpsertTrip(trip);
+                    await UpsertTrip(trip, UserId);
                 }
             }
 

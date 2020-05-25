@@ -57,22 +57,7 @@ namespace TravelAppServer.Controllers
                     trip.Id = Guid.NewGuid();
                 }
 
-                var readresponse = await Storage.ReadTrip(trip.Id);
-
-                if(readresponse != null)
-                {
-                    if(readresponse.UserId != usertoken.UserId)
-                    {
-                        throw new ArgumentException("You don't have permission to this trip");
-                    }
-                    trip.UserId = readresponse.UserId;
-                }
-                else
-                {
-                    trip.UserId = usertoken.UserId;
-                }
-
-                var response = await Storage.UpsertTrip(trip);
+                var response = await Storage.UpsertTrip(trip, usertoken.UserId);
 
                 return StatusCode(StatusCodes.Status200OK, response);
             }
@@ -102,16 +87,11 @@ namespace TravelAppServer.Controllers
             {
                 var usertoken = await Storage.FindUserByToken(token);
 
-                var response = await Storage.ReadTrip(id);
+                var response = await Storage.ReadTrip(id, usertoken.UserId);
 
                 if(response == null)
                 {
                     throw new ArgumentException("Such trip doesn't exist");
-                }
-
-                if(response.UserId != usertoken.UserId)
-                {
-                    throw new ArgumentException("You don't have permission to this trip");
                 }
 
                 return StatusCode(StatusCodes.Status200OK, response);
@@ -130,7 +110,6 @@ namespace TravelAppServer.Controllers
         /// Удалить поездку
         /// </summary>
         /// <param name="id">id поездки</param>
-        /// <param name="deletefromtrip">true - удаляет поездку из поездки</param>
         /// <param name="token">Токен</param>
         /// <returns>id удаленной поездки</returns>
         [HttpDelete("[action]")]
@@ -143,19 +122,7 @@ namespace TravelAppServer.Controllers
             {
                 var usertoken = await Storage.FindUserByToken(token);
 
-                var readresponse = await Storage.ReadTrip(id);
-
-                if (readresponse == null)
-                {
-                    throw new ArgumentException("Such trip doesn't exist");
-                }
-
-                if (readresponse.UserId != usertoken.UserId)
-                {
-                    throw new ArgumentException("You don't have permission to this trip");
-                }
-
-                var response = await Storage.DeleteTrip(id);
+                var response = await Storage.DeleteTrip(id, usertoken.UserId);
 
                 return StatusCode(StatusCodes.Status200OK, response);
             }

@@ -49,22 +49,7 @@ namespace TravelAppServer.Controllers
                     purchase.Id = Guid.NewGuid();
                 }
 
-                var readresponse = await Storage.ReadPurchase(purchase.Id);
-
-                if (readresponse != null)
-                {
-                    if (readresponse.UserId != usertoken.UserId)
-                    {
-                        throw new ArgumentException("You don't have permission to this purchase");
-                    }
-                    purchase.UserId = readresponse.UserId;
-                }
-                else
-                {
-                    purchase.UserId = usertoken.UserId;
-                }
-
-                var response = await Storage.UpsertPurchase(purchase);
+                var response = await Storage.UpsertPurchase(purchase, usertoken.UserId);
 
                 return StatusCode(StatusCodes.Status200OK, response);
             }
@@ -104,43 +89,22 @@ namespace TravelAppServer.Controllers
                     purchase.Id = Guid.NewGuid();
                 }
 
-                var readresponse = await Storage.ReadPurchase(purchase.Id);
-
-                if (readresponse != null)
-                {
-                    if (readresponse.UserId != usertoken.UserId)
-                    {
-                        throw new ArgumentException("You don't have permission to this purchase");
-                    }
-                    purchase.UserId = readresponse.UserId;
-                }
-                else
-                {
-                    purchase.UserId = usertoken.UserId;
-                }
-
-                var responsetrip = await Storage.ReadTrip(purchase.TripId);
+                var responsetrip = await Storage.ReadTrip(purchase.TripId, usertoken.UserId);
 
                 if (responsetrip == null)
                 {
                     throw new ArgumentException("Such trip doesn't exist");
                 }
 
-                if (responsetrip.UserId != usertoken.UserId)
-                {
-                    throw new ArgumentException("You don't have permission to this trip");
-                }
-
-
                 if (!responsetrip.PurchaseIds?.Contains(purchase.Id) ?? true)
                 {
                     var purchaseids = responsetrip.PurchaseIds?.ToList() ?? new List<Guid>();
                     purchaseids.Add(purchase.Id);
                     responsetrip.PurchaseIds = purchaseids.ToArray();
-                    await Storage.UpsertTrip(responsetrip);
+                    await Storage.UpsertTrip(responsetrip, Guid.Empty);
                 }
 
-                var response = await Storage.UpsertPurchase(purchase);
+                var response = await Storage.UpsertPurchase(purchase, usertoken.UserId);
 
                 return StatusCode(StatusCodes.Status200OK, response);
             }
@@ -170,16 +134,11 @@ namespace TravelAppServer.Controllers
             {
                 var usertoken = await Storage.FindUserByToken(token);
 
-                var response = await Storage.ReadPurchase(id);
+                var response = await Storage.ReadPurchase(id, usertoken.UserId);
 
                 if (response == null)
                 {
                     throw new ArgumentException("Such purchase doesn't exist");
-                }
-
-                if (response.UserId != usertoken.UserId)
-                {
-                    throw new ArgumentException("You don't have permission to this purchase");
                 }
 
                 return StatusCode(StatusCodes.Status200OK, response);
@@ -211,19 +170,7 @@ namespace TravelAppServer.Controllers
             {
                 var usertoken = await Storage.FindUserByToken(token);
 
-                var readresponse = await Storage.ReadPurchase(id);
-
-                if (readresponse == null)
-                {
-                    throw new ArgumentException("Such purchase doesn't exist");
-                }
-
-                if (readresponse.UserId != usertoken.UserId)
-                {
-                    throw new ArgumentException("You don't have permission to this purchase");
-                }
-
-                var response = await Storage.DeletePurchase(id, deletefromtrip);
+                var response = await Storage.DeletePurchase(id, deletefromtrip, usertoken.UserId);
 
                 return StatusCode(StatusCodes.Status200OK, response);
             }

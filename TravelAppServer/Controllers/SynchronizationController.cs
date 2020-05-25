@@ -67,7 +67,30 @@ namespace TravelAppServer.Controllers
             }
         }
 
+        
+        [HttpPost("[action]")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Data))]
+        [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(string))]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(string))]
+        public async Task<ActionResult> SetData([FromBody] Data Data, string token, long time = 0)
+        {
+            try
+            {
+                var usertoken = await Storage.FindUserByToken(token);
 
+                
+
+                return StatusCode(StatusCodes.Status200OK, Data);
+            }
+            catch (ArgumentException exeption)
+            {
+                return StatusCode(StatusCodes.Status404NotFound, exeption.Message);
+            }
+            catch (Exception exeption)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, exeption.Message);
+            }
+        }
 
         /// <summary>
         /// Получение текущего времени на сервере
@@ -80,13 +103,13 @@ namespace TravelAppServer.Controllers
             return StatusCode(StatusCodes.Status200OK, DateTime.UtcNow.Ticks);
         }
 
-        private class Data
+        public class Data
         {
             public Update Updated { get; set; }
             public Delete Deleted { get; set; }
         }
 
-        private class Update
+        public class Update
         {
             public Trip[] Trips { get; set; }
             public Place[] Places { get; set; }
@@ -94,7 +117,7 @@ namespace TravelAppServer.Controllers
             public Goal[] Goals { get; set; }
             public Purchase[] Purchases { get; set; }
         }
-        private class Delete
+        public class Delete
         {
             public Trip[] Trips { get; set; }
             public Place[] Places { get; set; }

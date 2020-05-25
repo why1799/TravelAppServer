@@ -333,7 +333,6 @@
             Удалить поездку
             </summary>
             <param name="id">id поездки</param>
-            <param name="deletefromtrip">true - удаляет поездку из поездки</param>
             <param name="token">Токен</param>
             <returns>id удаленной поездки</returns>
         </member>
