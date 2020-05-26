@@ -838,7 +838,7 @@ namespace TravelAppStorage.Implementations
                 Builders<Good>.Update.Set(e => e.Description, good.Description),
                 Builders<Good>.Update.Set(e => e.UserId, UserId),
                 Builders<Good>.Update.Set(e => e.LastUpdate, DateTime.UtcNow.Ticks),
-                Builders<Good>.Update.Set(e => e.IsDeleted, false));
+                Builders<Good>.Update.Set(e => e.IsDeleted, false),
                 Builders<Good>.Update.Set(e => e.Count, good.Count));
             var options = new FindOneAndUpdateOptions<Good, Good>()
             {
