@@ -813,6 +813,9 @@ namespace TravelAppStorage.Implementations
                     entity.MapIdProperty(e => e.IsDeleted)
                        .SetIsRequired(true)
                        .SetElementName("IsDeleted");
+                    entity.MapIdProperty(e => e.Count)
+                       .SetIsRequired(true)
+                       .SetElementName("Count");
                     entity.MapIdProperty(e => e.Id)
                         .SetIsRequired(true)
                         .SetSerializer(new GuidSerializer(BsonType.String));
@@ -836,6 +839,7 @@ namespace TravelAppStorage.Implementations
                 Builders<Good>.Update.Set(e => e.UserId, UserId),
                 Builders<Good>.Update.Set(e => e.LastUpdate, DateTime.UtcNow.Ticks),
                 Builders<Good>.Update.Set(e => e.IsDeleted, false));
+                Builders<Good>.Update.Set(e => e.Count, good.Count));
             var options = new FindOneAndUpdateOptions<Good, Good>()
             {
                 IsUpsert = true,

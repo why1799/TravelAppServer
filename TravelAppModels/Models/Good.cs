@@ -13,6 +13,7 @@ namespace TravelAppModels.Models
         public string Description { get; set; }
         public bool IsTook { get; set; }
         public long? LastUpdate { get; set; }
+        public int Count { get; set; }
 
         [JsonIgnore]
         public bool IsDeleted { get; set; }
