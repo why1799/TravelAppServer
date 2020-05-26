@@ -516,6 +516,16 @@ namespace TravelAppStorage.Implementations
 
             return null;
         }
+        public async Task<Place[]> ReadManyPlaces(Guid[] Ids, Guid UserId)
+        {
+            var filter = Builders<Place>.Filter.And(
+               Builders<Place>.Filter.Where(x => Ids.Contains(x.Id)),
+               Builders<Place>.Filter.Eq(x => x.UserId, UserId),
+               Builders<Place>.Filter.Eq(x => x.IsDeleted, false));
+            var gotplaces = await places.Find(filter).ToListAsync();
+
+            return gotplaces.ToArray();
+        }
 
         public async Task<Guid> DeletePlace(Guid Id, bool deletefromtrip, Guid UserId)
         {
@@ -679,6 +689,16 @@ namespace TravelAppStorage.Implementations
 
             return null;
         }
+        public async Task<Goal[]> ReadManyGoals(Guid[] Ids, Guid UserId)
+        {
+            var filter = Builders<Goal>.Filter.And(
+               Builders<Goal>.Filter.Where(x => Ids.Contains(x.Id)),
+               Builders<Goal>.Filter.Eq(x => x.UserId, UserId),
+               Builders<Goal>.Filter.Eq(x => x.IsDeleted, false));
+            var gotgoals = await goals.Find(filter).ToListAsync();
+
+            return gotgoals.ToArray();
+        }
 
         public async Task<Guid> DeleteGoal(Guid Id, bool deletefromtrip, Guid UserId)
         {
@@ -838,6 +858,17 @@ namespace TravelAppStorage.Implementations
             }
 
             return null;
+        }
+
+        public async Task<Good[]> ReadManyGoods(Guid[] Ids, Guid UserId)
+        {
+            var filter = Builders<Good>.Filter.And(
+               Builders<Good>.Filter.Where(x => Ids.Contains(x.Id)),
+               Builders<Good>.Filter.Eq(x => x.UserId, UserId),
+               Builders<Good>.Filter.Eq(x => x.IsDeleted, false));
+            var gotgoods = await goods.Find(filter).ToListAsync();
+
+            return gotgoods.ToArray();
         }
 
         public async Task<Guid> DeleteGood(Guid Id, bool deletefromtrip, Guid UserId)
@@ -1086,6 +1117,17 @@ namespace TravelAppStorage.Implementations
             return null;
         }
 
+        public async Task<Purchase[]> ReadManyPurchases(Guid[] Ids, Guid UserId)
+        {
+            var filter = Builders<Purchase>.Filter.And(
+               Builders<Purchase>.Filter.Where(x => Ids.Contains(x.Id)),
+               Builders<Purchase>.Filter.Eq(x => x.UserId, UserId),
+               Builders<Purchase>.Filter.Eq(x => x.IsDeleted, false));
+            var gotpurchases = await purchases.Find(filter).ToListAsync();
+
+            return gotpurchases.ToArray();
+        }
+
         public async Task<Guid> DeletePurchase(Guid Id, bool deletefromtrip, Guid UserId)
         {
             var filter = Builders<Purchase>.Filter.And(
@@ -1171,7 +1213,6 @@ namespace TravelAppStorage.Implementations
 
             return got.ToArray();
         }
-        
         #endregion
     }
 }

@@ -332,7 +332,7 @@
                         <br><br>
                         <textarea class="placedescription inputline" placeholder="Описание..">@place.Description</textarea>
                         <br><br>
-                        <input class="placeadress inputline" value="@place.Adress" placeholder="Адрес.." required/>
+                        <input id="place_adress_@place.Id" class="placeadress inputline" value="@place.Adress" placeholder="Адрес.." required/>
                         <br><br>
 
                         @{ var placedate = place.Date == null ? "" : (new DateTime(place.Date.Value)).ToString("yyyy-MM-dd"); }
@@ -500,14 +500,14 @@
                             <br><br>\
                             <textarea class=\"placedescription inputline\" placeholder=\"Описание..\"></textarea>\
                             <br><br>\
-                            <input class=\"placeadress inputline\" placeholder=\"Адрес..\" required/>\
+                            <input id=\"place_adress_{{ID}}\" class=\"placeadress inputline\" placeholder=\"Адрес..\" required/>\
                             <br><br>\
                             <input type=\"date\" />\
                         </div>\
                         <input title=\"Удалить\" type=\"image\" class=\"remove removeplace\" src=\"/images/rubbish.png\" onclick=\"this.parentElement.remove()\">\
                     </div>";
 
-        place = place.replace("{{ID}}", addedplaces);
+        place = place.replace("{{ID}}", addedplaces).replace("{{ID}}", addedplaces);
 
         $("#places").append(place);
 

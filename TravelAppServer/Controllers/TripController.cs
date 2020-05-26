@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using TravelAppModels.FullModels;
 using TravelAppModels.Models;
 using TravelAppStorage.Interfaces;
 
@@ -146,6 +147,46 @@ namespace TravelAppServer.Controllers
                 {
                     throw new ArgumentException("Such trip doesn't exist");
                 }
+
+                return StatusCode(StatusCodes.Status200OK, response);
+            }
+            catch (ArgumentException exeption)
+            {
+                return StatusCode(StatusCodes.Status404NotFound, exeption.Message);
+            }
+            catch (Exception exeption)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, exeption.Message);
+            }
+        }
+
+        /// <summary>
+        /// Получить поездку по id с заполненными даными
+        /// </summary>
+        /// <param name="id">id поездки</param>
+        /// <param name="token">Токен</param>
+        /// <returns>Поездка</returns>
+        [HttpGet("[action]")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(FullTrip))]
+        [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(string))]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(string))]
+        public async Task<ActionResult> ReadWithData(Guid id, string token)
+        {
+            try
+            {
+                var usertoken = await Storage.FindUserByToken(token);
+
+                var response = new FullTrip(await Storage.ReadTrip(id, usertoken.UserId));
+
+                if (response == null)
+                {
+                    throw new ArgumentException("Such trip doesn't exist");
+                }
+
+                response.Places = await Storage.ReadManyPlaces(response.PlaceIds, usertoken.UserId);
+                response.Goods = await Storage.ReadManyGoods(response.GoodIds, usertoken.UserId);
+                response.Goals = await Storage.ReadManyGoals(response.GoalIds, usertoken.UserId);
+                response.Purchases = await Storage.ReadManyPurchases(response.PurchaseIds, usertoken.UserId);
 
                 return StatusCode(StatusCodes.Status200OK, response);
             }

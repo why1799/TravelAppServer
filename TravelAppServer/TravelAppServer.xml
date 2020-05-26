@@ -344,6 +344,14 @@
             <param name="token">Токен</param>
             <returns>Поездка</returns>
         </member>
+        <member name="M:TravelAppServer.Controllers.TripController.ReadWithData(System.Guid,System.String)">
+            <summary>
+            Получить поездку по id с заполненными даными
+            </summary>
+            <param name="id">id поездки</param>
+            <param name="token">Токен</param>
+            <returns>Поездка</returns>
+        </member>
         <member name="M:TravelAppServer.Controllers.TripController.Delete(System.Guid,System.String)">
             <summary>
             Удалить поездку

@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using TravelAppModels.FullModels;
 using TravelAppModels.Models;
 using TravelAppServer.Controllers;
 using TravelAppStorage.Interfaces;
@@ -49,11 +50,12 @@ namespace TravelAppServer.Pages.Trip
         public async Task OnGet()
         {
             var token = User.Claims.Where(c => c.Type == "Token").Select(c => c.Value).FirstOrDefault();
-            Trip = ((await _trips.Read(Id, token)) as ObjectResult).Value as TravelAppModels.Models.Trip;
-            Trip.Goals = await GetElements<GoalController, Goal>(_goals, Trip.GoalIds, token);
-            Trip.Places = await GetElements<PlaceController, Place>(_places, Trip.PlaceIds, token);
-            Trip.Goods = await GetElements<GoodController, Good>(_goods, Trip.GoodIds, token);
-            Trip.Purchases = await GetElements<PurchaseController, Purchase>(_purchases, Trip.PurchaseIds, token);
+            var fullTrip = ((await _trips.ReadWithData(Id, token)) as ObjectResult).Value as FullTrip;
+            Trip = fullTrip;
+            Trip.Goals = fullTrip.Goals;
+            Trip.Places = fullTrip.Places;
+            Trip.Goods = fullTrip.Goods;
+            Trip.Purchases = fullTrip.Purchases;
             Trip.Photos = await GetElements<PhotoController, Photo>(_photos, Trip.PhotoIds, token, "Get");
 
             foreach (var place in Trip.Places)
