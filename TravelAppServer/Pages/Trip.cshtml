@@ -152,7 +152,11 @@
     }
 
     .iconsintriphead {
-        width: 90px;
+        width: 66px;
+    }
+
+    .goodcount {
+        margin-left: 0.5em;
     }
 </style>
 
@@ -238,14 +242,15 @@
                 <h1>Вещи:</h1>
                 @foreach (var good in Model.Trip.Goods)
                 {
-                    <div id="good_@good.Id" class="good">
+            <div id="good_@good.Id" class="good">
 
-                        <input type="checkbox" @string.Format(good.IsTook ? "checked" : "") disabled>
-                        <label class="goodname">@good.Name</label>
-                        <br>
-                        <label class="gooddescription">@good.Description</label><br>
+                <input type="checkbox" @string.Format(good.IsTook ? "checked" : "") disabled>
+                <label class="goodname">@good.Name</label>
+                <label class="goodcount">(@good.Count шт.)</label>
+                <br>
+                <label class="gooddescription">@good.Description</label><br>
 
-                    </div>
+            </div>
                 }
             </div>
         }

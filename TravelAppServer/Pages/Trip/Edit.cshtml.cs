@@ -148,7 +148,7 @@ namespace TravelAppServer.Pages.Trip
                 }
                 Good.Name = good[1];
                 Good.IsTook = bool.Parse(good[2]);
-
+                Good.Count = int.Parse(good[3]);
 
                 Good = ((await _goods.Upsert(Good, token)) as ObjectResult).Value as TravelAppModels.Models.Good;
                 goodids.Add(Good.Id);

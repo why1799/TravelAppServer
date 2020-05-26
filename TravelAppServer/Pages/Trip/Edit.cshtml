@@ -90,7 +90,13 @@
     }
 
     .goodname {
-        width: 150px;
+        width: 100px;
+    }
+
+    .goodcount {
+        width: 50px;
+        margin-left: 0.5em;
+        margin-right: 0.5em;
     }
 
     .goalname {
@@ -153,6 +159,9 @@
 
     .goal {
         margin-bottom: 1em;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
     }
 
     .purchase {
@@ -354,13 +363,14 @@
                 </div>
                 @foreach (var good in Model.Trip.Goods)
                 {
-                    <div id="good_@good.Id" class="good">
+            <div id="good_@good.Id" class="good">
 
-                        <input type="checkbox" @string.Format(good.IsTook ? "checked" : "")>
-                        <input class="goodname inputline" value="@good.Name" placeholder="Название..." required>
-                        <input title="Удалить" type="image" class="remove" src="/images/rubbish.png" onclick="this.parentElement.remove()">
+                <input type="checkbox" @string.Format(good.IsTook ? "checked" : "")>
+                <input class="goodname inputline" value="@good.Name" placeholder="Название..." required>
+                <input type="number" class="goodcount inputline" value="@good.Count" min="1" placeholder="Количество" required>
+                <input title="Удалить" type="image" class="remove" src="/images/rubbish.png" onclick="this.parentElement.remove()">
 
-                    </div>
+            </div>
                 }
             </div>
             <div id="goals">
@@ -433,6 +443,7 @@
                     var good = "<div id=\"good_{{ID}}\" class=\"good\">\
                                     <input type=\"checkbox\">\
                                     <input class=\"goodname inputline\" placeholder=\"Название...\" required>\
+                        <input type=\"number\" class=\"goodcount inputline\" min=\"1\" placeholder=\"Количество\" required>\
                         <input title=\"Удалить\" type=\"image\" class=\"remove\" src=\"/images/rubbish.png\" onclick=\"this.parentElement.remove()\">\
                     </div>";
 
@@ -639,6 +650,10 @@
                 ok = false;
             }
             good.push($("#" + goodid + " input[type=checkbox]").is(":checked"));
+            good.push($("#" + goodid + " .goodcount").val());
+            if ($("#" + goodid + " .goodcount").val() == "") {
+                ok = false;
+            }
             goods.push(good);
         }
 
