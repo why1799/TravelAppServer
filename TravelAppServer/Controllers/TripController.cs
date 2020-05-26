@@ -72,6 +72,59 @@ namespace TravelAppServer.Controllers
         }
 
         /// <summary>
+        /// Добавить поездки
+        /// </summary>
+        /// <param name="trips">Поездки</param>
+        /// <param name="token">Токен</param>
+        /// <returns>Добавленные поездки</returns>
+        [HttpPost("[action]")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Trip))]
+        [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(string))]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(string))]
+        public async Task<ActionResult> UpsertMany([FromBody] Trip[] trips, string token)
+        {
+            try
+            {
+                var usertoken = await Storage.FindUserByToken(token);
+
+                if (trips == null)
+                {
+                    throw new ArgumentException("Trips can't be null");
+                }
+
+                var response = new List<Trip>();
+
+                foreach (var trip in trips)
+                {
+                    if (trip.FromDate != null && trip.ToDate != null)
+                    {
+                        if (trip.FromDate.Value > trip.ToDate.Value)
+                        {
+                            throw new ArgumentException("From date can't be after to date");
+                        }
+                    }
+
+                    if (trip.Id == Guid.Empty)
+                    {
+                        trip.Id = Guid.NewGuid();
+                    }
+
+                    response.Add(await Storage.UpsertTrip(trip, usertoken.UserId));
+                }
+
+                return StatusCode(StatusCodes.Status200OK, response);
+            }
+            catch (ArgumentException exeption)
+            {
+                return StatusCode(StatusCodes.Status404NotFound, exeption.Message);
+            }
+            catch (Exception exeption)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, exeption.Message);
+            }
+        }
+
+        /// <summary>
         /// Получить поездку по id
         /// </summary>
         /// <param name="id">id поездки</param>
@@ -106,6 +159,41 @@ namespace TravelAppServer.Controllers
             }
         }
 
+        ///// <summary>
+        ///// Получить поездку по id
+        ///// </summary>
+        ///// <param name="ids">id поездки</param>
+        ///// <param name="token">Токен</param>
+        ///// <returns>Поездка</returns>
+        //[HttpGet("[action]")]
+        //[ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Trip))]
+        //[ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(string))]
+        //[ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(string))]
+        //public async Task<ActionResult> ReadMany([FromForm]Guid[] ids, string token)
+        //{
+        //    try
+        //    {
+        //        var usertoken = await Storage.FindUserByToken(token);
+
+        //        var response = await Storage.ReadManyTrips(ids, usertoken.UserId);
+
+        //        if (response == null || response.Length == 0)
+        //        {
+        //            throw new ArgumentException("Such trip doesn't exist");
+        //        }
+
+        //        return StatusCode(StatusCodes.Status200OK, response);
+        //    }
+        //    catch (ArgumentException exeption)
+        //    {
+        //        return StatusCode(StatusCodes.Status404NotFound, exeption.Message);
+        //    }
+        //    catch (Exception exeption)
+        //    {
+        //        return StatusCode(StatusCodes.Status500InternalServerError, exeption.Message);
+        //    }
+        //}
+
         /// <summary>
         /// Удалить поездку
         /// </summary>
@@ -137,6 +225,65 @@ namespace TravelAppServer.Controllers
         }
 
         /// <summary>
+        /// Удалить поездки
+        /// </summary>
+        /// <param name="ids">id поездкок</param>
+        /// <param name="token">Токен</param>
+        /// <returns>id удаленных поездок</returns>
+        [HttpDelete("[action]")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Guid[]))]
+        [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(string))]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(string))]
+        public async Task<ActionResult> DeleteMany([FromBody] Guid[] ids, string token)
+        {
+            try
+            {
+                var usertoken = await Storage.FindUserByToken(token);
+
+                var responses = await Storage.DeleteManyTrips(ids, usertoken.UserId);
+
+                return StatusCode(StatusCodes.Status200OK, responses);
+            }
+            catch (ArgumentException exeption)
+            {
+                return StatusCode(StatusCodes.Status404NotFound, exeption.Message);
+            }
+            catch (Exception exeption)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, exeption.Message);
+            }
+        }
+
+        /// <summary>
+        /// Получить id всех поездок
+        /// </summary>
+        /// <param name="token">Токен</param>
+        /// <returns>Список id всех поездок</returns>
+        [HttpGet("[action]")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Guid[]))]
+        [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(string))]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(string))]
+        public async Task<ActionResult> GetAllIds(string token)
+        {
+            try
+            {
+                var usertoken = await Storage.FindUserByToken(token);
+
+                var response = await Storage.GetAllTripIds(usertoken.UserId);
+
+                return StatusCode(StatusCodes.Status200OK, response);
+            }
+            catch (ArgumentException exeption)
+            {
+                return StatusCode(StatusCodes.Status404NotFound, exeption.Message);
+            }
+            catch (Exception exeption)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, exeption.Message);
+            }
+        }
+
+        /// <summary>
         /// Получить все поездки
         /// </summary>
         /// <param name="token">Токен</param>
@@ -151,7 +298,7 @@ namespace TravelAppServer.Controllers
             {
                 var usertoken = await Storage.FindUserByToken(token);
 
-                var response = await Storage.GetAllTripIds(usertoken.UserId);
+                var response = await Storage.GetAllTrips(usertoken.UserId);
 
                 return StatusCode(StatusCodes.Status200OK, response);
             }

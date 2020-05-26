@@ -301,6 +301,14 @@
             <param name="time">Время изменения</param>
             <returns>Все данные после изменения</returns>
         </member>
+        <member name="M:TravelAppServer.Controllers.SynchronizationController.SetData(TravelAppServer.Controllers.SynchronizationController.Data,System.String)">
+            <summary>
+            Загрузка данных
+            </summary>
+            <param name="Data">Данные</param>
+            <param name="token">токен</param>
+            <returns>загруженные данные</returns>
+        </member>
         <member name="M:TravelAppServer.Controllers.SynchronizationController.GetServerTime">
             <summary>
             Получение текущего времени на сервере
@@ -320,6 +328,14 @@
             <param name="token">Токен</param>
             <returns>Добавленная поездка</returns>
         </member>
+        <member name="M:TravelAppServer.Controllers.TripController.UpsertMany(TravelAppModels.Models.Trip[],System.String)">
+            <summary>
+            Добавить поездки
+            </summary>
+            <param name="trips">Поездки</param>
+            <param name="token">Токен</param>
+            <returns>Добавленные поездки</returns>
+        </member>
         <member name="M:TravelAppServer.Controllers.TripController.Read(System.Guid,System.String)">
             <summary>
             Получить поездку по id
@@ -335,6 +351,21 @@
             <param name="id">id поездки</param>
             <param name="token">Токен</param>
             <returns>id удаленной поездки</returns>
+        </member>
+        <member name="M:TravelAppServer.Controllers.TripController.DeleteMany(System.Guid[],System.String)">
+            <summary>
+            Удалить поездки
+            </summary>
+            <param name="ids">id поездкок</param>
+            <param name="token">Токен</param>
+            <returns>id удаленных поездок</returns>
+        </member>
+        <member name="M:TravelAppServer.Controllers.TripController.GetAllIds(System.String)">
+            <summary>
+            Получить id всех поездок
+            </summary>
+            <param name="token">Токен</param>
+            <returns>Список id всех поездок</returns>
         </member>
         <member name="M:TravelAppServer.Controllers.TripController.GetAll(System.String)">
             <summary>

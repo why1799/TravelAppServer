@@ -40,11 +40,10 @@ namespace TravelAppServer.Pages
         {
             var token = User.Claims.Where(c => c.Type == "Token").Select(c => c.Value).FirstOrDefault();
             Trips = new List<TravelAppModels.Models.Trip>();
-            var allids = ((await _trips.GetAll(token)) as ObjectResult).Value as Guid[];
+            var alltrips = ((await _trips.GetAll(token)) as ObjectResult).Value as TravelAppModels.Models.Trip[];
 
-            foreach(var id in allids)
+            foreach(var trip in alltrips)
             {
-                var trip = ((await _trips.Read(id, token)) as ObjectResult).Value as TravelAppModels.Models.Trip;
                 trip.Photos = new Photo[trip.PhotoIds?.Length ?? 0] ;
                 for (int i = 0; i < (trip.PhotoIds?.Length ?? 0); i++)
                 {

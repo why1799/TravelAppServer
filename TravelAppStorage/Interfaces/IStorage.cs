@@ -31,7 +31,9 @@ namespace TravelAppStorage.Interfaces
 
         Task<Trip> UpsertTrip(Trip trip, Guid UserId);
         Task<Trip> ReadTrip(Guid Id, Guid UserId);
+        Task<Trip[]> ReadManyTrips(Guid[] Ids, Guid UserId);
         Task<Guid> DeleteTrip(Guid Id, Guid UserId);
+        Task<Guid[]> DeleteManyTrips(Guid[] Ids, Guid UserId);
         Task<Guid[]> GetAllTripIds(Guid UserId);
         Task<Trip[]> GetAllTrips(Guid UserId, long time = 0, bool IsDeleted = false);
         #endregion
@@ -41,6 +43,7 @@ namespace TravelAppStorage.Interfaces
         Task<Place> UpsertPlace(Place place, Guid UserId);
         Task<Place> ReadPlace(Guid Id, Guid UserId);
         Task<Guid> DeletePlace(Guid Id, bool deletefromtrip, Guid UserId);
+        Task<Guid[]> DeleteManyPlaces(Guid[] Ids, bool deletefromtrip, Guid UserId);
         Task<Guid[]> GetAllPlaceIds(Guid UserId);
         Task<Place[]> GetAllPlaces(Guid UserId, long time = 0, bool IsDeleted = false);
 
@@ -51,6 +54,7 @@ namespace TravelAppStorage.Interfaces
         Task<Goal> UpsertGoal(Goal goal, Guid UserId);
         Task<Goal> ReadGoal(Guid Id, Guid UserId);
         Task<Guid> DeleteGoal(Guid Id, bool deletefromtrip, Guid UserId);
+        Task<Guid[]> DeleteManyGoals(Guid[] Ids, bool deletefromtrip, Guid UserId);
         Task<Guid[]> GetAllGoalIds(Guid UserId);
         Task<Goal[]> GetAllGoals(Guid UserId, long time = 0, bool IsDeleted = false);
         #endregion
@@ -60,6 +64,7 @@ namespace TravelAppStorage.Interfaces
         Task<Good> UpsertGood(Good good, Guid UserId);
         Task<Good> ReadGood(Guid Id, Guid UserId);
         Task<Guid> DeleteGood(Guid Id, bool deletefromtrip, Guid UserId);
+        Task<Guid[]> DeleteManyGoods(Guid[] Ids, bool deletefromtrip, Guid UserId);
         Task<Guid[]> GetAllGoodIds(Guid UserId);
         Task<Good[]> GetAllGoods(Guid UserId, long time = 0, bool IsDeleted = false);
 
@@ -80,6 +85,7 @@ namespace TravelAppStorage.Interfaces
         Task<Purchase> UpsertPurchase(Purchase purchase, Guid UserId);
         Task<Purchase> ReadPurchase(Guid Id, Guid UserId);
         Task<Guid> DeletePurchase(Guid Id, bool deletefromtrip, Guid UserId);
+        Task<Guid[]> DeleteManyPurchases(Guid[] Ids, bool deletefromtrip, Guid UserId);
         Task<Guid[]> GetAllPurchaseIds(Guid UserId);
         Task<Purchase[]> GetAllPurchases(Guid UserId, long time = 0, bool IsDeleted = false);
 
