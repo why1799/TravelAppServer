@@ -59,26 +59,26 @@ namespace TravelAppServer.Pages
         public async Task<IActionResult> OnDeleteDelete(Guid Id)
         {
             var token = User.Claims.Where(c => c.Type == "Token").Select(c => c.Value).FirstOrDefault();
-            var Trip = ((await _trips.Read(Id, token)) as ObjectResult).Value as TravelAppModels.Models.Trip;
+            //var Trip = ((await _trips.Read(Id, token)) as ObjectResult).Value as TravelAppModels.Models.Trip;
 
             
 
-            foreach (var id in Trip.PlaceIds ?? new Guid[0])
-            {
-                await _places.Delete(id, false, token);
-            }
-            foreach (var id in Trip.GoalIds ?? new Guid[0])
-            {
-                await _goals.Delete(id, false, token);
-            }
-            foreach (var id in Trip.GoodIds ?? new Guid[0])
-            {
-                await _goods.Delete(id, false, token);
-            }
-            foreach (var id in Trip.PurchaseIds ?? new Guid[0])
-            {
-                await _purchases.Delete(id, false, token);
-            }
+            //foreach (var id in Trip.PlaceIds ?? new Guid[0])
+            //{
+            //    await _places.Delete(id, false, token);
+            //}
+            //foreach (var id in Trip.GoalIds ?? new Guid[0])
+            //{
+            //    await _goals.Delete(id, false, token);
+            //}
+            //foreach (var id in Trip.GoodIds ?? new Guid[0])
+            //{
+            //    await _goods.Delete(id, false, token);
+            //}
+            //foreach (var id in Trip.PurchaseIds ?? new Guid[0])
+            //{
+            //    await _purchases.Delete(id, false, token);
+            //}
 
 
             await _trips.Delete(Id, token);

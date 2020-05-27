@@ -183,10 +183,10 @@ namespace TravelAppServer.Controllers
                     throw new ArgumentException("Such trip doesn't exist");
                 }
 
-                response.Places = await Storage.ReadManyPlaces(response.PlaceIds, usertoken.UserId);
-                response.Goods = await Storage.ReadManyGoods(response.GoodIds, usertoken.UserId);
-                response.Goals = await Storage.ReadManyGoals(response.GoalIds, usertoken.UserId);
-                response.Purchases = await Storage.ReadManyPurchases(response.PurchaseIds, usertoken.UserId);
+                response.Places = await Storage.ReadManyPlaces(response.PlaceIds ?? new Guid[0], usertoken.UserId);
+                response.Goods = await Storage.ReadManyGoods(response.GoodIds ?? new Guid[0], usertoken.UserId);
+                response.Goals = await Storage.ReadManyGoals(response.GoalIds ?? new Guid[0], usertoken.UserId);
+                response.Purchases = await Storage.ReadManyPurchases(response.PurchaseIds ?? new Guid[0], usertoken.UserId);
 
                 return StatusCode(StatusCodes.Status200OK, response);
             }
@@ -253,6 +253,16 @@ namespace TravelAppServer.Controllers
 
                 var response = await Storage.DeleteTrip(id, usertoken.UserId);
 
+                Task.Run(async () =>
+                {
+                    var trip = (await Storage.GetAllTrips(usertoken.UserId, 0, true)).FirstOrDefault(x => x.Id == id);
+                    await Storage.DeleteManyPlaces(trip.PlaceIds ?? new Guid[0], false, usertoken.UserId);
+                    await Storage.DeleteManyGoals(trip.GoalIds ?? new Guid[0], false, usertoken.UserId);
+                    await Storage.DeleteManyGoods(trip.GoodIds ?? new Guid[0], false, usertoken.UserId);
+                    await Storage.DeleteManyPurchases(trip.PurchaseIds ?? new Guid[0], false, usertoken.UserId);
+                    return;
+                });
+
                 return StatusCode(StatusCodes.Status200OK, response);
             }
             catch (ArgumentException exeption)
@@ -282,6 +292,19 @@ namespace TravelAppServer.Controllers
                 var usertoken = await Storage.FindUserByToken(token);
 
                 var responses = await Storage.DeleteManyTrips(ids, usertoken.UserId);
+
+                Task.Run(async () =>
+                {
+                    var trips = (await Storage.GetAllTrips(usertoken.UserId, 0, true)).Where(x => ids.Contains(x.Id));
+                    foreach (var trip in trips)
+                    {
+                        await Storage.DeleteManyPlaces(trip.PlaceIds ?? new Guid[0], false, usertoken.UserId);
+                        await Storage.DeleteManyGoals(trip.GoalIds ?? new Guid[0], false, usertoken.UserId);
+                        await Storage.DeleteManyGoods(trip.GoodIds ?? new Guid[0], false, usertoken.UserId);
+                        await Storage.DeleteManyPurchases(trip.PurchaseIds ?? new Guid[0], false, usertoken.UserId);
+                    }
+                    return;
+                });
 
                 return StatusCode(StatusCodes.Status200OK, responses);
             }
