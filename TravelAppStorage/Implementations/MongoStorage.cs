@@ -13,6 +13,7 @@ using System.Linq;
 using TravelAppModels.Models;
 using Microsoft.Extensions.Options;
 using TravelAppStorage.Settings;
+using TravelAppStorage.Encryption;
 
 namespace TravelAppStorage.Implementations
 {
@@ -131,54 +132,53 @@ namespace TravelAppStorage.Implementations
                 Id = Guid.NewGuid(),
                 Email = email,
                 Username = username,
-                Password = password
+                Password = EncryptionData.HashData(password)
             };
 
-            if(await FindUserEmail(email))
+            if ((await FindUserEmail(email)) != null)
             {
                 throw new ArgumentException("Such email exists!");
             }
 
             await users.InsertOneAsync(user);
 
-            return await FindUser(user.Email, user.Password);
+            return await FindUser(user.Email, password);
         }
 
         public async Task<UserToken> FindUser(string email, string password)
         {
-            if(!await FindUserEmail(email))
+            var user = await FindUserEmail(email);
+
+            if (user == null)
             {
                 throw new ArgumentException("Such email doesn't exist!");
             }
 
-            var filter = new BsonDocument("$and", new BsonArray{    
-                new BsonDocument("Email", email),
-                new BsonDocument("Password", password)
-            });
-
-            var gotusers = await users.Find(filter).ToListAsync(); 
-
-            if(gotusers.Count != 1)
+            if(!EncryptionData.VerifyHashedData(user.Password, password))
             {
                 throw new ArgumentException("Such account doesn't exist!");
             }
 
             UserToken token = new UserToken()
             {
-                UserId = gotusers[0].Id,
+                UserId = user.Id,
                 Token = TokenGenerator()
             };
 
             await tokens.InsertOneAsync(token);
             return token;
         }
-
-        public async Task<bool> FindUserEmail(string email)
+        public async Task<User> FindUserEmail(string email)
         {
             var filter = new BsonDocument("Email", email);
-            var count = await users.CountDocumentsAsync(filter);
+            var user = await users.Find(filter).ToListAsync();
 
-            return !(count == 0);
+            if(user.Count != 1)
+            {
+                return null;
+            }
+
+            return user[0];
         }
 
         public async Task<bool> CheckToken(string token, Guid UserId)
