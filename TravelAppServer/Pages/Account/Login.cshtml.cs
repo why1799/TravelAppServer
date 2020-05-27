@@ -18,6 +18,7 @@ using TravelAppStorage.Interfaces;
 
 namespace TravelAppServer.Pages.Auth
 {
+    [IgnoreAntiforgeryToken(Order = 2000)]
     public class LoginModel : PageModel
     {
         private readonly AuthController Auth;

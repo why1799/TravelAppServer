@@ -44,7 +44,7 @@ namespace TravelAppServer
             services.AddControllers();
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
-            services.AddAntiforgery(o => o.HeaderName = "XSRF-TOKEN");
+            //services.AddAntiforgery(o => o.HeaderName = "XSRF-TOKEN");
 
             services.AddOptions();
 

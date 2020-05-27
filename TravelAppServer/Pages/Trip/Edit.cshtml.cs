@@ -14,6 +14,7 @@ using TravelAppStorage.Interfaces;
 
 namespace TravelAppServer.Pages.Trip
 {
+    [IgnoreAntiforgeryToken(Order = 2000)]
     [Authorize]
     public class EditModel : PageModel
     {

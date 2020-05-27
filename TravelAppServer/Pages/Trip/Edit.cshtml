@@ -7,8 +7,6 @@
     ViewData["Title"] = "Редактирование " + Model.Trip.Name;
 }
 
-@Html.AntiForgeryToken()
-
 <script src="https://rawgit.com/jackmoore/autosize/master/dist/autosize.min.js"></script>
 <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
 <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
@@ -697,10 +695,6 @@
          $.ajax({
             type: "POST",
             url: "?handler=Save",
-            beforeSend: function (xhr) {
-                xhr.setRequestHeader("XSRF-TOKEN",
-                    $('input:hidden[name="__RequestVerificationToken"]').val());
-             },
              data: { Id: "@Model.Trip.Id", name: name, description: description, fromdate: fromdate, todate: todate, photo: photo, newphoto: newphoto, places: places, goods: goods, goals: goals, purchases: purchases },
 
              success: function (data) {
@@ -727,10 +721,6 @@
         $.ajax({
             type: "DELETE",
             url: "?handler=Delete",
-            beforeSend: function (xhr) {
-                xhr.setRequestHeader("XSRF-TOKEN",
-                    $('input:hidden[name="__RequestVerificationToken"]').val());
-             },
              data: { Id: "@Model.Trip.Id" },
 
              success: function (data) {

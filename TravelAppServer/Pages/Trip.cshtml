@@ -6,8 +6,6 @@
     ViewData["Title"] = Model.Trip.Name;
 }
 
-@Html.AntiForgeryToken()
-
 <script src="https://code.jquery.com/jquery-3.5.0.js"></script>
 
 <style>
@@ -306,10 +304,6 @@
         $.ajax({
             type: "DELETE",
             url: "?handler=Delete",
-            beforeSend: function (xhr) {
-                xhr.setRequestHeader("XSRF-TOKEN",
-                    $('input:hidden[name="__RequestVerificationToken"]').val());
-             },
              data: { Id: "@Model.Trip.Id" },
 
              success: function (data) {

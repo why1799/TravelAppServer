@@ -6,7 +6,6 @@
     ViewData["Title"] = "Ваши поездки";
     ViewData["Nav"] = "Trips";
 }
-@Html.AntiForgeryToken()
 
 <script src="https://code.jquery.com/jquery-3.5.0.js"></script>
 
@@ -172,10 +171,6 @@
         $.ajax({
             type: "DELETE",
             url: "?handler=Delete",
-            beforeSend: function (xhr) {
-                xhr.setRequestHeader("XSRF-TOKEN",
-                    $('input:hidden[name="__RequestVerificationToken"]').val());
-             },
              data: { Id: tripid },
 
              success: function (data) {
@@ -190,10 +185,6 @@
         $.ajax({
             type: "Get",
             url: "?handler=AddTrip",
-            beforeSend: function (xhr) {
-                xhr.setRequestHeader("XSRF-TOKEN",
-                    $('input:hidden[name="__RequestVerificationToken"]').val());
-            },
             success: function (data) {
                 location.href = "/Trip/Edit?id=" + data;
             },
