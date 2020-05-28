@@ -27,6 +27,8 @@ namespace TravelAppServer.Pages.Trip
         private readonly PurchaseController _purchases;
         private readonly CategoryController _categories;
 
+        private readonly SynchronizationController _sync;
+
 
         [BindProperty(Name = "id", SupportsGet = true)]
         public Guid Id { get; set; }
@@ -45,6 +47,8 @@ namespace TravelAppServer.Pages.Trip
             _photos = new PhotoController(storage);
             _purchases = new PurchaseController(storage);
             _categories = new CategoryController(storage);
+
+            _sync = new SynchronizationController(storage);
 
             Trip = null;
         }
@@ -99,8 +103,9 @@ namespace TravelAppServer.Pages.Trip
             {
                 case "yes":
                     photo = photo.Substring(photo.IndexOf("base64,") + 7);
-                    var addedphoto = ((await _photos.UploadBase64(photo, token)) as ObjectResult).Value as Photo;
-                    Trip.PhotoIds = new Guid[] { addedphoto.Id };
+                    var newguid = Guid.NewGuid();
+                    Task.Run(async () => await _photos.UploadBase64(photo, token, newguid));
+                    Trip.PhotoIds = new Guid[] { newguid };
                     break;
                 case "nophoto":
                     Trip.PhotoIds = null;
@@ -109,13 +114,17 @@ namespace TravelAppServer.Pages.Trip
                     break;
             }
 
-            List<Guid> placeIds = new List<Guid>();
+            List<Place> newplaces = new List<Place>();
             foreach (var place in places)
             {
                 var Place = new Place();
                 if (Guid.TryParse(place[0], out var id))
                 {
-                    Place = ((await _places.Read(id, token)) as ObjectResult).Value as TravelAppModels.Models.Place;
+                    Place.Id = id;
+                }
+                else
+                {
+                    Place.Id = Guid.NewGuid();
                 }
                 Place.Name = place[1];
                 Place.Description = place[2];
@@ -126,8 +135,9 @@ namespace TravelAppServer.Pages.Trip
                 {
                     case "yes":
                         place[6] = place[6].Substring(place[6].IndexOf("base64,") + 7);
-                        var addedphoto = ((await _photos.UploadBase64(place[6], token)) as ObjectResult).Value as Photo;
-                        Place.PhotoIds = new Guid[] { addedphoto.Id };
+                        var newguid = Guid.NewGuid();
+                        Task.Run(async () => await _photos.UploadBase64(place[6], token, newguid));
+                        Place.PhotoIds = new Guid[] { newguid };
                         break;
                     case "nophoto":
                         Place.PhotoIds = null;
@@ -136,51 +146,59 @@ namespace TravelAppServer.Pages.Trip
                         break;
                 }
 
-                Place = ((await _places.Upsert(Place, token)) as ObjectResult).Value as TravelAppModels.Models.Place;
-                placeIds.Add(Place.Id);
+                newplaces.Add(Place);
             }
 
-            List<Guid> goodids = new List<Guid>();
+            List<Good> newgoods = new List<Good>();
             foreach (var good in goods)
             {
                 var Good = new Good();
                 if (Guid.TryParse(good[0], out var id))
                 {
-                    Good = ((await _goods.Read(id, token)) as ObjectResult).Value as TravelAppModels.Models.Good;
+                    Good.Id = id;
+                }
+                else
+                {
+                    Good.Id = Guid.NewGuid();
                 }
                 Good.Name = good[1];
                 Good.IsTook = bool.Parse(good[2]);
                 Good.Count = int.Parse(good[3]);
 
-                Good = ((await _goods.Upsert(Good, token)) as ObjectResult).Value as TravelAppModels.Models.Good;
-                goodids.Add(Good.Id);
+                newgoods.Add(Good);
             }
 
-            List<Guid> goalids = new List<Guid>();
+            List<Goal> newgoals = new List<Goal>();
             foreach (var goal in goals)
             {
                 var Goal = new Goal();
                 if (Guid.TryParse(goal[0], out var id))
                 {
-                    Goal = ((await _goals.Read(id, token)) as ObjectResult).Value as TravelAppModels.Models.Goal;
+                    Goal.Id = id;
+                }
+                else
+                {
+                    Goal.Id = Guid.NewGuid();
                 }
                 Goal.Name = goal[1];
                 Goal.IsDone = bool.Parse(goal[2]);
 
-
-                Goal = ((await _goals.Upsert(Goal, token)) as ObjectResult).Value as TravelAppModels.Models.Goal;
-                goalids.Add(Goal.Id);
+                newgoals.Add(Goal);
             }
 
             Categories = ((await _categories.GetAll()) as ObjectResult).Value as Category[];
 
-            List<Guid> purchaseids = new List<Guid>();
+            List<Purchase> newpurchases = new List<Purchase>();
             foreach (var purchase in purchases)
             {
                 var Purchase = new Purchase();
                 if (Guid.TryParse(purchase[0], out var id))
                 {
-                    Purchase = ((await _purchases.Read(id, token)) as ObjectResult).Value as TravelAppModels.Models.Purchase;
+                    Purchase.Id = id;
+                }
+                else
+                {
+                    Purchase.Id = Guid.NewGuid();
                 }
                 Purchase.Name = purchase[1];
                 Purchase.CategoryId = Guid.Empty;
@@ -195,52 +213,73 @@ namespace TravelAppServer.Pages.Trip
                 Purchase.Price = double.Parse((purchase[3].Replace('.', ',')));
                 Purchase.IsBought = bool.Parse(purchase[4]);
 
-
-                Purchase = ((await _purchases.Upsert(Purchase, token)) as ObjectResult).Value as TravelAppModels.Models.Purchase;
-                purchaseids.Add(Purchase.Id);
+                newpurchases.Add(Purchase);
             }
 
+
+            List<Guid> removeplaces = new List<Guid>();
             foreach (var id in Trip.PlaceIds ?? new Guid[0])
             {
-                var found = placeIds.FirstOrDefault(x => x == id);
-                if (found == Guid.Empty)
+                var found = newplaces.FirstOrDefault(x => x.Id == id);
+                if (found == null)
                 {
-                    await _places.Delete(id, false, token);
+                    removeplaces.Add(id);
                 }
             }
 
+            List<Guid> removegoals = new List<Guid>();
             foreach (var id in Trip.GoalIds ?? new Guid[0])
             {
-                var found = goalids.FirstOrDefault(x => x == id);
-                if (found == Guid.Empty)
+                var found = newgoals.FirstOrDefault(x => x.Id == id);
+                if (found == null)
                 {
-                    await _goals.Delete(id, false, token);
+                    removegoals.Add(id);
                 }
             }
 
+            List<Guid> removegoods = new List<Guid>();
             foreach (var id in Trip.GoodIds ?? new Guid[0])
             {
-                var found = goodids.FirstOrDefault(x => x == id);
-                if (found == Guid.Empty)
+                var found = newgoods.FirstOrDefault(x => x.Id == id);
+                if (found == null)
                 {
-                    await _goods.Delete(id, false, token);
+                    removegoods.Add(id);
                 }
             }
 
+            List<Guid> removepurchases = new List<Guid>();
             foreach (var id in Trip.PurchaseIds ?? new Guid[0])
             {
-                var found = purchaseids.FirstOrDefault(x => x == id);
-                if (found == Guid.Empty)
+                var found = newpurchases.FirstOrDefault(x => x.Id == id);
+                if (found == null)
                 {
-                    await _purchases.Delete(id, false, token);
+                    removepurchases.Add(id);
                 }
             }
 
+            Trip.PlaceIds = newplaces.Select(x => x.Id).ToArray();
+            Trip.GoalIds = newgoals.Select(x => x.Id).ToArray();
+            Trip.GoodIds = newgoods.Select(x => x.Id).ToArray();
+            Trip.PurchaseIds = newpurchases.Select(x => x.Id).ToArray();
 
-            Trip.PlaceIds = placeIds.ToArray();
-            Trip.GoalIds = goalids.ToArray();
-            Trip.GoodIds = goodids.ToArray();
-            Trip.PurchaseIds = purchaseids.ToArray();
+            SynchronizationController.Data data = new SynchronizationController.Data
+            {
+                Update = new SynchronizationController.Update
+                {
+                    Trips = new TravelAppModels.Models.Trip[] { Trip },
+                    Places = newplaces.ToArray(),
+                    Goods = newgoods.ToArray(),
+                    Goals = newgoals.ToArray(),
+                    Purchases = newpurchases.ToArray()
+                },
+                Delete = new SynchronizationController.Delete
+                {
+                    PlaceIds = removeplaces.ToArray(),
+                    GoodIds = removegoods.ToArray(),
+                    GoalIds = removegoals.ToArray(),
+                    PurchaseIds = removepurchases.ToArray()
+                }
+            };
 
             await _trips.Upsert(Trip, token);
 

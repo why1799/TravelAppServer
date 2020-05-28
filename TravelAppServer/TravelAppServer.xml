@@ -157,20 +157,22 @@
             Контроллер для работы с фотографиями
             </summary>
         </member>
-        <member name="M:TravelAppServer.Controllers.PhotoController.Upload(Microsoft.AspNetCore.Http.IFormFile,System.String)">
+        <member name="M:TravelAppServer.Controllers.PhotoController.Upload(Microsoft.AspNetCore.Http.IFormFile,System.String,System.Guid)">
             <summary>
             Загрузка фотографии
             </summary>
             <param name="photo">Фотография</param>
             <param name="token">Токен</param>
+            <param name="Id">Id (необязательно)</param>
             <returns>Загруженная фотография</returns>
         </member>
-        <member name="M:TravelAppServer.Controllers.PhotoController.UploadBase64(System.String,System.String)">
+        <member name="M:TravelAppServer.Controllers.PhotoController.UploadBase64(System.String,System.String,System.Guid)">
             <summary>
             Загрузка фотографии
             </summary>
             <param name="base64">Фотография</param>
             <param name="token">Токен</param>
+            <param name="Id">Id (необязательно)</param>
             <returns>Загруженная фотография</returns>
         </member>
         <member name="M:TravelAppServer.Controllers.PhotoController.Get(System.Guid,System.String)">

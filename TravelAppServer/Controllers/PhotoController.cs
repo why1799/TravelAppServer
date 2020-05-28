@@ -27,12 +27,13 @@ namespace TravelAppServer.Controllers
         /// </summary>
         /// <param name="photo">Фотография</param>
         /// <param name="token">Токен</param>
+        /// <param name="Id">Id (необязательно)</param>
         /// <returns>Загруженная фотография</returns>
         [HttpPost("[action]")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Photo))]
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(string))]
         [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(string))]
-        public async Task<ActionResult> Upload(IFormFile photo, string token)
+        public async Task<ActionResult> Upload(IFormFile photo, string token, Guid Id = new Guid())
         {
             try
             {
@@ -47,8 +48,8 @@ namespace TravelAppServer.Controllers
 
                 DirectoryCreater(@$"wwwroot/userfiles");
                 DirectoryCreater(@$"wwwroot/userfiles/{usertoken.UserId}");
-                var newid = Guid.NewGuid();
-                System.IO.File.WriteAllBytes(@$"wwwroot/userfiles/{usertoken.UserId}/{newid}.png", Convert.FromBase64String(base64));
+                var newid = Id == Guid.Empty ? Guid.NewGuid() : Id;
+                await System.IO.File.WriteAllBytesAsync(@$"wwwroot/userfiles/{usertoken.UserId}/{newid}.png", Convert.FromBase64String(base64));
                 //var response = await Storage.UploadPhoto(base64, usertoken.UserId);
                 return StatusCode(StatusCodes.Status200OK, new Photo { Location = @$"userfiles/{usertoken.UserId}/{newid}", Id = newid, UserId = usertoken.UserId });
             }
@@ -67,12 +68,13 @@ namespace TravelAppServer.Controllers
         /// </summary>
         /// <param name="base64">Фотография</param>
         /// <param name="token">Токен</param>
+        /// <param name="Id">Id (необязательно)</param>
         /// <returns>Загруженная фотография</returns>
         [HttpPost("[action]")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Photo))]
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(string))]
         [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(string))]
-        public async Task<ActionResult> UploadBase64(string base64, string token)
+        public async Task<ActionResult> UploadBase64(string base64, string token, Guid Id = new Guid())
         {
             try
             {
@@ -80,8 +82,8 @@ namespace TravelAppServer.Controllers
 
                 DirectoryCreater(@$"wwwroot/userfiles");
                 DirectoryCreater(@$"wwwroot/userfiles/{usertoken.UserId}");
-                var newid = Guid.NewGuid(); 
-                System.IO.File.WriteAllBytes(@$"wwwroot/userfiles/{usertoken.UserId}/{newid}.png", Convert.FromBase64String(base64));
+                var newid = Id == Guid.Empty ? Guid.NewGuid() : Id; 
+                await System.IO.File.WriteAllBytesAsync(@$"wwwroot/userfiles/{usertoken.UserId}/{newid}.png", Convert.FromBase64String(base64));
                 //var response = await Storage.UploadPhoto(base64, usertoken.UserId);
                 return StatusCode(StatusCodes.Status200OK, new Photo { Location = @$"userfiles/{usertoken.UserId}/{newid}.png", Id = newid, UserId = usertoken.UserId });
             }

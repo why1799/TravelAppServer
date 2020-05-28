@@ -85,11 +85,15 @@ namespace TravelAppServer.Controllers
 
                 Data.Update = await CreateUpdate(Data, usertoken.UserId);
 
-                Data.Delete.TripIds = await Storage.DeleteManyTrips(Data.Delete.TripIds, usertoken.UserId);
-                Data.Delete.PlaceIds = await Storage.DeleteManyPlaces(Data.Delete.PlaceIds, false, usertoken.UserId);
-                Data.Delete.GoodIds = await Storage.DeleteManyGoods(Data.Delete.GoodIds, false, usertoken.UserId);
-                Data.Delete.GoalIds = await Storage.DeleteManyGoals(Data.Delete.GoalIds, false, usertoken.UserId);
-                Data.Delete.PurchaseIds = await Storage.DeleteManyPurchases(Data.Delete.PurchaseIds, false, usertoken.UserId);
+                Task.Run(async () =>
+                {
+                    Data.Delete.TripIds = await Storage.DeleteManyTrips(Data.Delete.TripIds, usertoken.UserId);
+                    Data.Delete.PlaceIds = await Storage.DeleteManyPlaces(Data.Delete.PlaceIds, false, usertoken.UserId);
+                    Data.Delete.GoodIds = await Storage.DeleteManyGoods(Data.Delete.GoodIds, false, usertoken.UserId);
+                    Data.Delete.GoalIds = await Storage.DeleteManyGoals(Data.Delete.GoalIds, false, usertoken.UserId);
+                    Data.Delete.PurchaseIds = await Storage.DeleteManyPurchases(Data.Delete.PurchaseIds, false, usertoken.UserId);
+                    return;
+                });
 
                 return StatusCode(StatusCodes.Status200OK, Data);
             }
