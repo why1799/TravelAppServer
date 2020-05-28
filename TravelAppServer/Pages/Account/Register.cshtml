@@ -4,7 +4,6 @@
     Layout = "_Layout";
     ViewData["Title"] = "Регистрация";
 }
-@Html.AntiForgeryToken()
 
 <script src="https://code.jquery.com/jquery-3.5.0.js"></script>
 
@@ -12,7 +11,7 @@
 
 <style>
     .same {
-        width: 304px;
+        width: 315px;
         display: flex;
         flex-direction: row;
         justify-content: space-between;
@@ -50,10 +49,6 @@
         $.ajax({
             type: "POST",
             url: "?handler=Register",
-            beforeSend: function (xhr) {
-                xhr.setRequestHeader("XSRF-TOKEN",
-                    $('input:hidden[name="__RequestVerificationToken"]').val());
-            },
             data: JSON.stringify(register),
             contentType: "application/json; charset=utf-8",
             success: function (data) {

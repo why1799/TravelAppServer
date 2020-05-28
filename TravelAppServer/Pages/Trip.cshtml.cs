@@ -11,13 +11,14 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using TravelAppModels.FullModels;
 using TravelAppModels.Models;
+using TravelAppServer.Authorize;
 using TravelAppServer.Controllers;
 using TravelAppStorage.Interfaces;
 
 namespace TravelAppServer.Pages
 {
-    [IgnoreAntiforgeryToken(Order = 2000)]
-    [Authorize]
+    [MyClaimRequirement]
+    [IgnoreAntiforgeryToken]
     public class TripModel : PageModel
     {
         private readonly TripController _trips;

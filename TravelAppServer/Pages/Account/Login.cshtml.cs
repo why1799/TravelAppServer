@@ -18,7 +18,7 @@ using TravelAppStorage.Interfaces;
 
 namespace TravelAppServer.Pages.Auth
 {
-    [IgnoreAntiforgeryToken(Order = 2000)]
+    [IgnoreAntiforgeryToken]
     public class LoginModel : PageModel
     {
         private readonly AuthController Auth;
@@ -62,8 +62,9 @@ namespace TravelAppServer.Pages.Auth
                     claims, CookieAuthenticationDefaults.AuthenticationScheme);
 
                 var authProperties = new AuthenticationProperties
-                {
-                    //AllowRefresh = <bool>,
+                { 
+                    ExpiresUtc = new DateTimeOffset(2999, 12, 31, 23, 59, 59, new TimeSpan(0)),
+                    AllowRefresh = true,
                     // Refreshing the authentication session should be allowed.
 
                     //ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(10),
@@ -83,6 +84,7 @@ namespace TravelAppServer.Pages.Auth
                     //RedirectUri = <string>
                     // The full path or absolute URI to be used as an http 
                     // redirect response value.
+                    
                 };
 
                 await HttpContext.SignInAsync(

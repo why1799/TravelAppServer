@@ -9,13 +9,14 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using TravelAppModels.FullModels;
 using TravelAppModels.Models;
+using TravelAppServer.Authorize;
 using TravelAppServer.Controllers;
 using TravelAppStorage.Interfaces;
 
 namespace TravelAppServer.Pages.Trip
 {
-    [IgnoreAntiforgeryToken(Order = 2000)]
-    [Authorize]
+    [MyClaimRequirement]
+    [IgnoreAntiforgeryToken]
     public class EditModel : PageModel
     {
         private readonly TripController _trips;

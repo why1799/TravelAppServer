@@ -4,7 +4,6 @@
     Layout = "_Layout";
     ViewData["Title"] = "Авторизация";
 }
-@Html.AntiForgeryToken()
 
 <script src="https://code.jquery.com/jquery-3.5.0.js"></script>
 
@@ -28,10 +27,6 @@
         $.ajax({
             type: "POST",
             url: "?handler=Login",
-            beforeSend: function (xhr) {
-                xhr.setRequestHeader("XSRF-TOKEN",
-                    $('input:hidden[name="__RequestVerificationToken"]').val());
-            },
             data: JSON.stringify(login),
             contentType: "application/json; charset=utf-8",
             success: function (data) {
