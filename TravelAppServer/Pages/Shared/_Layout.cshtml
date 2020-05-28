@@ -59,13 +59,13 @@
     <header class="center">
         <ul class="topnav">
             <li><a class="@String.Format((string)ViewData["Nav"] == "Trips" ? "active" : "")" href="/Trips">Ваши поездки</a></li>
-            @if (User.Identity.AuthenticationType == Microsoft.AspNetCore.Authentication.Cookies.CookieAuthenticationDefaults.AuthenticationScheme)
+            @if ((bool?)ViewData["Login"] ?? false)
             {
-                <li class="right"><a href="/Account/Logout">Выйти</a></li>
+                <li class="right"><a href="/Account/Login">Войти</a></li>
             }
             else
             {
-                <li class="right"><a href="/Account/Login">Войти</a></li>
+                <li class="right"><a href="/Account/Logout">Выйти</a></li>
             }
         </ul>
     </header>

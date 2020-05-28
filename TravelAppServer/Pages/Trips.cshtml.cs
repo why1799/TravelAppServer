@@ -41,7 +41,7 @@ namespace TravelAppServer.Pages
 
         public async Task<IActionResult> OnGet()
         {
-            var token = User.Claims.Where(c => c.Type == "Token").Select(c => c.Value).FirstOrDefault();
+            var token = HttpContext.Request.Cookies["TraverlApp.fun.Token"];
             Trips = new List<TravelAppModels.Models.Trip>();
             var alltrips = ((await _trips.GetAll(token)) as ObjectResult).Value as TravelAppModels.Models.Trip[];
 
@@ -61,10 +61,10 @@ namespace TravelAppServer.Pages
         [HttpDelete]
         public async Task<IActionResult> OnDeleteDelete(Guid Id)
         {
-            var token = User.Claims.Where(c => c.Type == "Token").Select(c => c.Value).FirstOrDefault();
+            var token = HttpContext.Request.Cookies["TraverlApp.fun.Token"];
             //var Trip = ((await _trips.Read(Id, token)) as ObjectResult).Value as TravelAppModels.Models.Trip;
 
-            
+
 
             //foreach (var id in Trip.PlaceIds ?? new Guid[0])
             //{
@@ -91,7 +91,7 @@ namespace TravelAppServer.Pages
         [HttpGet]
         public async Task<IActionResult> OnGetAddTrip()
         {
-            var token = User.Claims.Where(c => c.Type == "Token").Select(c => c.Value).FirstOrDefault();
+            var token = HttpContext.Request.Cookies["TraverlApp.fun.Token"];
             var Trip = new TravelAppModels.Models.Trip
             {
                 Name = "Новая поездка"

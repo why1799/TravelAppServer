@@ -13,15 +13,9 @@ namespace TravelAppServer.Pages.Account
     {
         public async Task<IActionResult> OnGet()
         {
-            if (User.Identity.AuthenticationType == CookieAuthenticationDefaults.AuthenticationScheme)
-            {
-                await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme); //LogOut
-                return Redirect("/");
-            }
-            else
-            {
-                return Redirect("/");
-            }
+            HttpContext.Response.Cookies.Delete("TraverlApp.fun.UserId");
+            HttpContext.Response.Cookies.Delete("TraverlApp.fun.Token");
+            return Redirect("/");
         }
     }
 }

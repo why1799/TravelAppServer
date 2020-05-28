@@ -80,6 +80,11 @@ namespace TravelAppServer
                     options.Cookie.SecurePolicy = CookieSecurePolicy.None; // Для https : CookieSecurePolicy.Always;
                     options.Cookie.SameSite = SameSiteMode.Strict; //Lax если есть Auth02
                     options.EventsType = typeof(TravelAppCookieAuthenticationEvents);
+                    options.LoginPath = new PathString("/Account/Login");
+                    options.ExpireTimeSpan = TimeSpan.FromDays(5);
+                    options.SlidingExpiration = true;
+                    options.ReturnUrlParameter = "ReturnUrl";
+                    options.AccessDeniedPath = new PathString("/Account/Login");
                 });
             services.AddScoped<TravelAppCookieAuthenticationEvents>();
         }
@@ -106,8 +111,8 @@ namespace TravelAppServer
 
             app.UseRouting();
 
+            app.UseCookiePolicy();
             app.UseAuthentication();
-            app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
@@ -118,11 +123,6 @@ namespace TravelAppServer
             //WebApiConfig.Register(config);
             //appowin.UseWebApi(config);
 
-            app.UseCookiePolicy(new CookiePolicyOptions {
-                HttpOnly = HttpOnlyPolicy.Always,
-                Secure = CookieSecurePolicy.None, // Для https : CookieSecurePolicy.Always;
-                MinimumSameSitePolicy = SameSiteMode.Strict //Lax если есть Auth02
-            });
 
             app.UseStaticFiles();
 

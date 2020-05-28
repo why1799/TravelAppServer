@@ -51,7 +51,7 @@ namespace TravelAppServer.Pages.Trip
 
         public async Task OnGet()
         {
-            var token = User.Claims.Where(c => c.Type == "Token").Select(c => c.Value).FirstOrDefault();
+            var token = HttpContext.Request.Cookies["TraverlApp.fun.Token"];
             var fullTrip = ((await _trips.ReadWithData(Id, token)) as ObjectResult).Value as FullTrip;
             Trip = fullTrip;
             Trip.Goals = fullTrip.Goals;
@@ -87,7 +87,7 @@ namespace TravelAppServer.Pages.Trip
         [HttpPost]
         public async Task<IActionResult> OnPostSave(Guid Id, string name, string description, string fromdate, string todate, string photo, string newphoto, string[][] places, string[][] goods, string[][] goals, string[][] purchases)
         {
-            var token = User.Claims.Where(c => c.Type == "Token").Select(c => c.Value).FirstOrDefault();
+            var token = HttpContext.Request.Cookies["TraverlApp.fun.Token"];
             Trip = ((await _trips.Read(Id, token)) as ObjectResult).Value as TravelAppModels.Models.Trip;
 
             Trip.Name = name;
@@ -250,7 +250,7 @@ namespace TravelAppServer.Pages.Trip
         [HttpDelete]
         public async Task<IActionResult> OnDeleteDelete(Guid Id)
         {
-            var token = User.Claims.Where(c => c.Type == "Token").Select(c => c.Value).FirstOrDefault();
+            var token = HttpContext.Request.Cookies["TraverlApp.fun.Token"];
             //Trip = ((await _trips.Read(Id, token)) as ObjectResult).Value as TravelAppModels.Models.Trip;
 
             //foreach(var id in Trip.PlaceIds ?? new Guid[0])
