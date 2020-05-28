@@ -372,7 +372,18 @@ namespace TravelAppStorage.Implementations
 
             var gottrips = await trips.Find(filter).ToListAsync();
 
-            return gottrips.ToArray();
+            var returntrips = new List<Trip>();
+
+            foreach (var id in Ids)
+            {
+                var got = gottrips.FirstOrDefault(x => x.Id == id);
+                if (got != null)
+                {
+                    returntrips.Add(got);
+                }
+            }
+
+            return returntrips.ToArray();
         }
 
         public async Task<Guid> DeleteTrip(Guid Id, Guid UserId)
@@ -524,7 +535,18 @@ namespace TravelAppStorage.Implementations
                Builders<Place>.Filter.Eq(x => x.IsDeleted, false));
             var gotplaces = await places.Find(filter).ToListAsync();
 
-            return gotplaces.ToArray();
+            var returnplaces = new List<Place>();
+
+            foreach (var id in Ids)
+            {
+                var got = gotplaces.FirstOrDefault(x => x.Id == id);
+                if (got != null)
+                {
+                    returnplaces.Add(got);
+                }
+            }
+
+            return returnplaces.ToArray();
         }
 
         public async Task<Guid> DeletePlace(Guid Id, bool deletefromtrip, Guid UserId)
@@ -697,7 +719,18 @@ namespace TravelAppStorage.Implementations
                Builders<Goal>.Filter.Eq(x => x.IsDeleted, false));
             var gotgoals = await goals.Find(filter).ToListAsync();
 
-            return gotgoals.ToArray();
+            var returngoals = new List<Goal>();
+
+            foreach (var id in Ids)
+            {
+                var got = gotgoals.FirstOrDefault(x => x.Id == id);
+                if (got != null)
+                {
+                    returngoals.Add(got);
+                }
+            }
+
+            return returngoals.ToArray();
         }
 
         public async Task<Guid> DeleteGoal(Guid Id, bool deletefromtrip, Guid UserId)
@@ -872,7 +905,18 @@ namespace TravelAppStorage.Implementations
                Builders<Good>.Filter.Eq(x => x.IsDeleted, false));
             var gotgoods = await goods.Find(filter).ToListAsync();
 
-            return gotgoods.ToArray();
+            var returngoods = new List<Good>();
+
+            foreach (var id in Ids)
+            {
+                var got = gotgoods.FirstOrDefault(x => x.Id == id);
+                if (got != null)
+                {
+                    returngoods.Add(got);
+                }
+            }
+
+            return returngoods.ToArray();
         }
 
         public async Task<Guid> DeleteGood(Guid Id, bool deletefromtrip, Guid UserId)
@@ -1129,7 +1173,18 @@ namespace TravelAppStorage.Implementations
                Builders<Purchase>.Filter.Eq(x => x.IsDeleted, false));
             var gotpurchases = await purchases.Find(filter).ToListAsync();
 
-            return gotpurchases.ToArray();
+            var returnpurchases = new List<Purchase>();
+            
+            foreach(var id in Ids)
+            {
+                var got = gotpurchases.FirstOrDefault(x => x.Id == id);
+                if(got != null)
+                {
+                    returnpurchases.Add(got);
+                }
+            }
+
+            return returnpurchases.ToArray();
         }
 
         public async Task<Guid> DeletePurchase(Guid Id, bool deletefromtrip, Guid UserId)
