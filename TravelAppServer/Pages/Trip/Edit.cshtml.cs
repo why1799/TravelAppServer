@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -141,6 +142,9 @@ namespace TravelAppServer.Pages.Trip
                         break;
                     case "nophoto":
                         Place.PhotoIds = null;
+                        break;
+                    case "no":
+                        Place.PhotoIds = new Guid[] { new Guid(Path.ChangeExtension(Path.GetFileName(place[6]), null)) } ;
                         break;
                     default:
                         break;
