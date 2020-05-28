@@ -281,7 +281,8 @@ namespace TravelAppServer.Pages.Trip
                 }
             };
 
-            await _trips.Upsert(Trip, token);
+
+            await _sync.SetData(data, token);
 
             return StatusCode(StatusCodes.Status200OK, "Ok");
         }
