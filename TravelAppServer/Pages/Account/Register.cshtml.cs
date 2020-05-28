@@ -19,22 +19,29 @@ namespace TravelAppServer.Pages.Auth
     public class RegisterModel : PageModel
     {
         private readonly AuthController Auth;
+        private readonly IStorage _storage;
 
         public RegisterModel(IStorage storage)
         {
             Auth = new AuthController(storage);
+            _storage = storage;
         }
 
-        public IActionResult OnGet()
+        public async Task<IActionResult> OnGet()
         {
             ViewData["Login"] = true;
-            if (User.Identity.AuthenticationType == CookieAuthenticationDefaults.AuthenticationScheme)
+            var token = HttpContext.Request.Cookies["TraverlApp.fun.Token"];
+            var userId = HttpContext.Request.Cookies["TraverlApp.fun.UserId"];
+
+            if (string.IsNullOrEmpty(token) || string.IsNullOrEmpty(userId) || !Guid.TryParse(userId, out var useridguid) || !(await _storage.CheckToken(token, useridguid)))
             {
-                return Redirect("/trips");
+                HttpContext.Response.Cookies.Delete("TraverlApp.fun.UserId");
+                HttpContext.Response.Cookies.Delete("TraverlApp.fun.Token");
+                return Page();
             }
             else
             {
-                return Page();
+                return Redirect("/trips");
             }
         }
 
