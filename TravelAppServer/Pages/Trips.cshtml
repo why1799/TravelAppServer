@@ -177,6 +177,7 @@
                  location.href = "/trips";
             },
             error: function (xhr, ajaxOptions, thrownError) {
+                alert("Ошибка:\n" + xhr.responseText);
             }
         });
     }
@@ -189,105 +190,10 @@
                 location.href = "/Trip/Edit?id=" + data;
             },
             error: function (xhr, ajaxOptions, thrownError) {
+                alert("Ошибка:\n" + xhr.responseText);
             }
         });
     }
-
-    //GetTrips();
-
-    $(document).ready(function () {
-
-
-
-
-    });
-
-
-
-
-    function GetTrips() {
-        $.ajax({
-            type: "Get",
-            url: "/api/trip/getall?token=" + localStorage.getItem('travelapptoken'),
-            dataType: "json",
-            success: function (data) {
-                for (var i = 0; i < data.length; i++) {
-                    GetTrip(data[i]);
-                }
-            },
-            error: function (xhr, ajaxOptions, thrownError) {
-                /*if (xhr.status == 404) {
-                    if (xhr.responseText == "Such account doesn't exist!") {
-                        alert("Неправильно введены логин и пароль");
-                    }
-                    else if (xhr.responseText == "Invalid arguments") {
-                        alert("Поля не могут быть пустыми");
-                    }
-                }*/
-                //Добавить обработку, если токен невалидный
-            }
-        });
-    }
-
-    function GetTrip(id) {
-        $.ajax({
-            type: "Get",
-            url: "/api/trip/read?id=" + id + "&token=" + localStorage.getItem('travelapptoken'),
-            dataType: "json",
-            success: function (data) {
-
-                var newtrip = "<div id=\"trip_{{ID}}\" class=\"trip\">\
-                    <img width=\"100\" height=\"100\" src = \"\">\
-                        <div class=\"triptext\">\
-                            <label class=\"tripname\">{{NAME}}</label>\
-                            <br><br><br>";
-
-                var fd = ticksToDate(data.fromDate);
-                var td = ticksToDate(data.toDate);
-                if (data.fromDate != null || data.toDate != null) {
-                    if (data.fromDate == null) {
-                        newtrip += "<label>- {{DATETO}}</label>";
-                    }
-                    else if(data.toDate == null){
-                        newtrip += "<label>{{DATEFROM}} -</label>";
-                    }
-                    else {
-                        newtrip += "<label>{{DATEFROM}} - {{DATETO}}</label>";
-                    }
-                }
-
-
-                newtrip += "</div>\
-                    </div>";
-
-
-                const yef = new Intl.DateTimeFormat('ru', { year: 'numeric' }).format(fd)
-                const mof = new Intl.DateTimeFormat('ru', { month: 'short' }).format(fd)
-                const daf = new Intl.DateTimeFormat('ru', { day: '2-digit' }).format(fd)
-                const yet = new Intl.DateTimeFormat('ru', { year: 'numeric' }).format(td)
-                const mot = new Intl.DateTimeFormat('ru', { month: 'short' }).format(td)
-                const dat = new Intl.DateTimeFormat('ru', { day: '2-digit' }).format(td)
-
-                newtrip = newtrip.replace("{{ID}}", data.id).replace("{{NAME}}", data.name).replace("{{DATEFROM}}", daf + " " + mof + " " + yef).replace("{{DATETO}}", dat + " " + mot + " " + yet);
-                //newtrip.replace("{{BASE64}}", data.id);
-
-                $("#trips").append(newtrip);
-            },
-            error: function (xhr, ajaxOptions, thrownError) {
-                /*if (xhr.status == 404) {
-                    if (xhr.responseText == "Such account doesn't exist!") {
-                        alert("Неправильно введены логин и пароль");
-                    }
-                    else if (xhr.responseText == "Invalid arguments") {
-                        alert("Поля не могут быть пустыми");
-                    }
-                }*/
-                //Добавить обработку, если токен невалидный
-            }
-
-        });
-    }
-
 
 
     function ticksToDate(ticks) {

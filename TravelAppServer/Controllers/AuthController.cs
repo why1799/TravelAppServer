@@ -32,6 +32,7 @@ namespace TravelAppServer.Controllers
         /// <returns>Возвращает токен и id пользователя</returns>
         [HttpPost("[action]")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(UserToken))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(string))]
         [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(string))]
         public async Task<ActionResult> Login([FromBody] LoginTemplate loginTemplate)
@@ -40,9 +41,14 @@ namespace TravelAppServer.Controllers
             var password = loginTemplate.Password;
             try
             {
+                if (!IsValidEmail(email))
+                {
+                    return StatusCode(StatusCodes.Status400BadRequest, "Invalid email");
+                }
+
                 if (email == null || password == null || email == "" || password == "")
                 {
-                    return StatusCode(StatusCodes.Status404NotFound, "Invalid arguments");
+                    return StatusCode(StatusCodes.Status400BadRequest, "Invalid arguments");
                 }
 
                 var token = await Storage.FindUser(email, password);
@@ -65,6 +71,7 @@ namespace TravelAppServer.Controllers
         /// <returns>Возвращает токен и id пользователя</returns>
         [HttpPost("[action]")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(UserToken))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(string))]
         [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(string))]
         public async Task<ActionResult> Register([FromBody] RegisterTemplate registerTemplate)
@@ -72,12 +79,16 @@ namespace TravelAppServer.Controllers
             var username = registerTemplate.Username;
             var email = registerTemplate.Email;
             var password = registerTemplate.Password;
-
             try
             {
+                if(!IsValidEmail(email))
+                {
+                    return StatusCode(StatusCodes.Status400BadRequest, "Invalid email");
+                }
+
                 if(username == null || email == null || password == null || username == "" || email == "" || password == "")
                 {
-                    return StatusCode(StatusCodes.Status404NotFound, "Invalid arguments");
+                    return StatusCode(StatusCodes.Status400BadRequest, "Invalid arguments");
                 }
 
                 var token = await Storage.AddUser(username, email, password);
@@ -117,6 +128,19 @@ namespace TravelAppServer.Controllers
             catch (Exception exeption)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, exeption.Message);
+            }
+        }
+
+        private bool IsValidEmail(string email)
+        {
+            try
+            {
+                var addr = new System.Net.Mail.MailAddress(email);
+                return addr.Address == email;
+            }
+            catch
+            {
+                return false;
             }
         }
     }

@@ -310,6 +310,7 @@
                  location.href = "/trips";
             },
             error: function (xhr, ajaxOptions, thrownError) {
+                alert("Ошибка:\n" + xhr.responseText);
             }
         });
     }

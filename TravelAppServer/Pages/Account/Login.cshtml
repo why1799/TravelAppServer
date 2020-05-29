@@ -36,12 +36,20 @@
                 if (xhr.status == 404) {
                     if (xhr.responseText == "Such account doesn't exist!") {
                         alert("Неправильно введены логин и пароль");
-                    }
-                    else if (xhr.responseText == "Invalid arguments") {
-                        alert("Поля не могут быть пустыми");
                     } else if (xhr.responseText == "Such email doesn't exist!") {
                         alert("Пользователя с таким email не существует");
                     }
+                }
+                else if (xhr.status == 400) {
+                    if (xhr.responseText == "Invalid arguments") {
+                        alert("Поля не могут быть пустыми");
+                    }
+                    else if (xhr.responseText == "Invalid email") {
+                        alert("Неправильный формат email");
+                    }
+                }
+                else {
+                    alert("Ошибка:\n" + xhr.responseText);
                 }
             }
         });
