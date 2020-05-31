@@ -63,6 +63,7 @@ namespace TravelAppServer.Pages.Auth
 
                 var options = new CookieOptions
                 {
+                    SameSite = SameSiteMode.Lax,
                     Expires = new DateTimeOffset(DateTime.Now.AddMonths(6))
                 };
 

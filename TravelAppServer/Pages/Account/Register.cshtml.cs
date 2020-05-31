@@ -53,8 +53,14 @@ namespace TravelAppServer.Pages.Auth
             {
                 var token = result.Value as UserToken;
 
-                HttpContext.Response.Cookies.Append("TraverlApp.fun.UserId", token.UserId.ToString());
-                HttpContext.Response.Cookies.Append("TraverlApp.fun.Token", token.Token);
+                var options = new CookieOptions
+                {
+                    SameSite = SameSiteMode.Lax,
+                    Expires = new DateTimeOffset(DateTime.Now.AddMonths(6))
+                };
+
+                HttpContext.Response.Cookies.Append("TraverlApp.fun.UserId", token.UserId.ToString(), options);
+                HttpContext.Response.Cookies.Append("TraverlApp.fun.Token", token.Token, options);
 
                 return StatusCode(StatusCodes.Status200OK, "Login success");
             }
