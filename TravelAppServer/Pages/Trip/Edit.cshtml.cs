@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -145,6 +146,11 @@ namespace TravelAppServer.Pages.Trip
                         break;
                     case "no":
                         Place.PhotoIds = new Guid[] { new Guid(Path.ChangeExtension(Path.GetFileName(place[6]), null)) } ;
+                        break;
+                    case "url":
+                        var newguidurl = Guid.NewGuid();
+                        Task.Run(async () => await _photos.UploadURL(place[6], token, newguidurl));
+                        Place.PhotoIds = new Guid[] { newguidurl };
                         break;
                     default:
                         break;

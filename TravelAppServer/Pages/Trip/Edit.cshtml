@@ -11,6 +11,9 @@
 <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
 <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.6/cropper.js"></script>
+<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBF6BuOhGykjhrWqk0KM6r1SNjnOhpWH3o&libraries=places"></script>
+
+
 
 <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.6/cropper.css" rel="stylesheet">
 <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
@@ -204,6 +207,7 @@
         position: relative;
         width: 100px;
         height: 100px;
+        overflow: hidden;
     }
 
         .photowrapper .removephoto {
@@ -252,8 +256,13 @@
         margin-top: 2em;
     }
 
-    iconsintriphead{
+    .iconsintriphead{
         width: 100px;
+    }
+
+    .fixedphoto{
+        width: 100px;
+        height: 100px;
     }
 </style>
 
@@ -271,11 +280,11 @@
             <div class="photowrapper">
                 @if (Model.Trip.Photos.Length == 0)
                 {
-                    <img width="100" height="100" class="nophoto" src="/images/nophoto.png">
+                    <img width="100" height="100" class="nophoto" src="/images/nophoto.png" onerror="imgError(this)">
                 }
                 else
                 {
-                    <img width="100" height="100" class="withphoto" src="/@Model.Trip.Photos[0].Location">
+                    <img width="100" height="100" class="withphoto" src="/@Model.Trip.Photos[0].Location" onerror="imgError(this)">
                 }
                 <input title="Удалить фото" class="removephoto" type="image" src="/images/cross.png" onclick="RemovePhoto(this)" />
                 <input title="Добавить фото" type="image" class="addphoto" src="~/images/add photo.png" onclick="AddPhoto(this)" />
@@ -319,11 +328,11 @@
 
                             @if (place.Photos.Length == 0)
                             {
-                                <img width="100" height="100" class="nophoto" src="/images/nophoto.png">
+                                <img class="nophoto fixedphoto" src="/images/nophoto.png" onerror="imgError(this)">
                             }
                             else
                             {
-                                <img width="100" height="100" class="withphoto" src="/@place.Photos[0].Location">
+                                <img class="withphoto fixedphoto" src="/@place.Photos[0].Location" onerror="imgError(this)">
                             }
                             <input title="Удалить фото" class="removephoto" type="image" src="/images/cross.png" onclick="RemovePhoto(this)" />
                             <input title="Добавить фото" type="image" class="addphoto" src="~/images/add photo.png" onclick="AddPhoto(this)" />
@@ -429,12 +438,74 @@
 
     autosize(document.getElementById("tripdescription"));
     autosize($(".placedescription"));
+    initplacenames();
 
                 var addedgoods = 0;
                 var addedgoals = 0;
     var addedpurchases = 0;
     var addedplaces = 0;
 
+    function initautocomplete(input) {
+        var autocomplete = new google.maps.places.Autocomplete(input);
+        autocomplete.setFields(['place_id', 'name', 'formatted_address', 'photo', 'website', 'reviews', 'international_phone_number']);
+
+        google.maps.event.addListener(autocomplete, 'place_changed', function () {
+            var place = autocomplete.getPlace();
+            input.parentElement.children[0].value = "";
+            input.parentElement.children[3].value = "";
+            input.parentElement.children[6].value = "";
+
+            input.parentElement.children[0].value = place.name;
+            var description = "";
+            if (place.reviews != null && place.reviews.length > 0) {
+                description += place.reviews[0].text + "\n\n";
+            }
+            if (place.international_phone_number != null && place.international_phone_number != "") {
+                description += place.international_phone_number + "\n";
+            }
+            if (place.website != null && place.website != "") {
+                description += place.website;
+            }
+            input.parentElement.children[3].value = description;
+            autosize.update(input.parentElement.children[3]);
+            if (place.formatted_address == null || place.formatted_address == "") {
+                place.formatted_address = place.name;
+            }
+            input.parentElement.children[6].value = place.formatted_address;
+
+            input.parentElement.parentElement.children[0].children[0].children[1].click();
+            
+            if (place.photos != null && place.photos.length > 0) {
+                var urlphoto = place.photos[0].getUrl({ 'maxWidth': 700, 'maxHeight': 700 });
+                input.parentElement.parentElement.children[0].children[0].children[0].src = urlphoto;
+                input.parentElement.parentElement.children[0].children[0].children[0].className = "newphoto withphoto newurl";
+                var height;
+                var width;
+                if (place.photos[0].width > place.photos[0].height) {
+                    var height = 100;
+                    var width = place.photos[0].width * 100 / place.photos[0].height;
+                    var margin = (width - height) / 2;
+                    input.parentElement.parentElement.children[0].children[0].children[0].style.marginLeft = - margin + "%";
+                }
+                else {
+                    var width = 100;
+                    var height = place.photos[0].height * 100 / place.photos[0].width;
+                    var margin = (height - width) / 2;
+                    input.parentElement.parentElement.children[0].children[0].children[0].style.marginTop = - margin + "%";
+                }
+                input.parentElement.parentElement.children[0].children[0].children[0].style.width = width + "%";
+                input.parentElement.parentElement.children[0].children[0].children[0].style.height = height + "%";
+            }
+
+            test = place;
+        });
+    }
+
+    function initplacenames() {
+        for (var i = 0; i < ($("#places .placename")).length; i++) {
+            initautocomplete($("#places .placename")[i])
+        }
+    }
 
                 function addGood() {
 
@@ -498,7 +569,7 @@
         var place = "<div id=\"place_{{ID}}\" class=\"placeheader\">\
                         <div class=\"leftsideoftheplace\">\
                             <div class=\"photowrapper\">\
-                                <img width=\"100\" height=\"100\" class=\"nophoto\" src=\"/images/nophoto.png\">\
+                                <img class=\"nophoto fixedphoto\" src=\"/images/nophoto.png\">\
                                 <input title=\"Удалить фото\" class=\"removephoto\" type=\"image\" src=\"/images/cross.png\" onclick=\"RemovePhoto(this)\" />\
                                 <input title=\"Добавить фото\" type=\"image\" class=\"addphoto\" src=\"/images/add photo.png\" onclick=\"AddPhoto(this)\" />\
                             </div>\
@@ -521,6 +592,7 @@
         $("#places").append(place);
 
         autosize($("#place_" + addedplaces + " .placedescription"));
+        initautocomplete($("#place_" + addedplaces + " .placename")[0]);
         $("#place_" + addedplaces + " .placename").focus();
 
         addedplaces++;
@@ -528,7 +600,8 @@
 
     function RemovePhoto(element) {
         element.parentElement.children[0].src = "/images/nophoto.png";
-        element.parentElement.children[0].className = "nophoto";
+        element.parentElement.children[0].className = "nophoto fixedphoto";
+        element.parentElement.children[0].style = null;
     }
 
     var currentimg;
@@ -560,7 +633,8 @@
             buttons: {
                 Ok: function () {
                     currentimg.src = cropper.getCroppedCanvas().toDataURL();
-                    currentimg.className = "withphoto newphoto";
+                    currentimg.className = "withphoto newphoto fixedphoto";
+                    currentimg.style = null;
 
                     $(this).dialog("close");
                 }
@@ -632,6 +706,9 @@
             }
             else {
                 placephotonewphoto = "yes";
+                if ($("#" + placeid + " .newurl").attr('src') != null) {
+                    placephotonewphoto = "url";
+                }
             }
             place.push(placephoto);
             place.push(placephotonewphoto);
@@ -721,6 +798,19 @@
                 alert("Ошибка:\n" + xhr.responseText);
             }
         });
+    }
+
+    var localhost = false;
+    function imgError(img) {
+        if (localhost)
+            return;
+        var src = img.src;
+        img.src = "/images/loader.gif";
+
+        var millisecondsToWait = 500;
+        setTimeout(function () {
+            img.src = src;
+        }, millisecondsToWait);
     }
 
 </script>
