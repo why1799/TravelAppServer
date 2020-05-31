@@ -436,6 +436,8 @@
 
 <script>
 
+    var localhost = false;
+
     autosize(document.getElementById("tripdescription"));
     autosize($(".placedescription"));
     initplacenames();
@@ -446,6 +448,8 @@
     var addedplaces = 0;
 
     function initautocomplete(input) {
+        if (localhost)
+            return;
         var autocomplete = new google.maps.places.Autocomplete(input);
         autocomplete.setFields(['place_id', 'name', 'formatted_address', 'photo', 'website', 'reviews', 'international_phone_number']);
 
@@ -800,7 +804,6 @@
         });
     }
 
-    var localhost = false;
     function imgError(img) {
         if (localhost)
             return;
