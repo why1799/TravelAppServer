@@ -264,12 +264,53 @@
         width: 100px;
         height: 100px;
     }
+
+    .filesandtexts{
+        display: flex;
+        flex-direction: row;
+    }
+
+    .filesandtexts > div{
+        width: 45%;
+    }
+
+    .filesdata {
+        margin-right: 10%;
+        margin-bottom: 1.2em;
+    }
+
+    .files {
+        display: flex;
+        flex-direction: column; 
+    }
+
+    .file {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        width: 100%;
+        margin-bottom: 0.3em;
+    }
+
+        .file > a {
+            width: 91%;
+        }
+
+        .file span {
+            display: inline-block;
+            white-space: nowrap;
+            overflow: hidden !important;
+            text-overflow: ellipsis;
+            width: 100%;
+            text-decoration: underline;
+        }
 </style>
 
 
 <form onsubmit="return false;">
 <button id="submit" type="submit" style="display:none;"></button>
-<input id="uploader" class="uploader" type="file" onchange="OnChange(this)">
+<input id="photouploader" class="uploader" type="file" onchange="OnChangePhoto(this)">
+<input id="fileuploader" class="uploader" type="file" onchange="OnChangeFile(this)">
 
 
 <div id="trip_@Model.Trip.Id" class="trip center">
@@ -292,7 +333,7 @@
 
             <div class="triptext">
 
-                <input id="tripname" class="tripname inputline" value="@Model.Trip.Name" placeholder="Название поездки..." required/>
+                <input id="tripname" class="tripname inputline" value="@Model.Trip.Name" placeholder="Название поездки..." required />
                 <br>
                 <textarea id="tripdescription" class="tripdescription inputline" placeholder="Описание...">@Model.Trip.TextField</textarea>
                 <br><br>
@@ -301,15 +342,41 @@
 
                 <input id="fromdate" type="date" value="@fd" />
                 <label> - </label>
-                <input id="todate"  type="date" value="@td" />
+                <input id="todate" type="date" value="@td" />
             </div>
         </div>
         <div>
-            <a href="/trip?id=@Model.Id"><img title="Отмена" type="image" class="tripicons" src="/images/cross.png"/></a>
+            <a href="/trip?id=@Model.Id"><img title="Отмена" type="image" class="tripicons" src="/images/cross.png" /></a>
             <input title="Сохранить" type="image" class="tripicons" src="/images/save.png" onclick="Save()">
             <input title="Удалить" type="image" class="tripicons" src="/images/rubbish.png" onclick="Delete()">
         </div>
         @*<a href="/Edit?@Model.Trip.Id" class="editbutton"></a>*@
+    </div>
+
+    <div class="filesandtexts">
+        <div class="filesdata">
+            <div class="caterogyhead">
+                <h1 class="categoryname">Файлы:</h1>
+                <input title="Добавить файл" type="image" class="add" src="/images/add.png" onclick="AddFile(this)">
+            </div>
+            <div class="files">
+                @foreach (var file in Model.Trip.Files)
+                {
+                <div id="file_@file.Id" class="file">
+                    <a href="/@file.Location" download="@file.Name"><span>@file.Name</span></a>
+                    <input title="Удалить" type="image" class="remove removeplace" src="/images/rubbish.png" onclick="this.parentElement.remove()">
+                </div>
+                }
+            </div>
+        </div>
+        
+
+        <div>
+            <div class="caterogyhead">
+                <h1 class="categoryname">Заметки:</h1>
+                <input title="Добавить текст" type="image" class="add" src="/images/add.png" onclick="AddText()">
+            </div>
+        </div>
     </div>
 
     <div class="tripdata">
@@ -338,17 +405,17 @@
                             <input title="Добавить фото" type="image" class="addphoto" src="~/images/add photo.png" onclick="AddPhoto(this)" />
                         </div>
 
-                        <input type="checkbox" class="placevisited"  @string.Format(place.IsVisited ? "checked" : "")>
+                        <input type="checkbox" class="placevisited" @string.Format(place.IsVisited ? "checked" : "")>
 
                     </div>
 
                     <div class="placetext">
 
-                        <input class="placename inputline" value="@place.Name" placeholder="Название.." required/>
+                        <input class="placename inputline" value="@place.Name" placeholder="Название.." required />
                         <br><br>
                         <textarea class="placedescription inputline" placeholder="Описание..">@place.Description</textarea>
                         <br><br>
-                        <input id="place_adress_@place.Id" class="placeadress inputline" value="@place.Adress" placeholder="Адрес.." required/>
+                        <input id="place_adress_@place.Id" class="placeadress inputline" value="@place.Adress" placeholder="Адрес.." required />
                         <br><br>
 
                         @{ var placedate = place.Date == null ? "" : (new DateTime(place.Date.Value)).ToString("yyyy-MM-dd"); }
@@ -370,14 +437,14 @@
                 </div>
                 @foreach (var good in Model.Trip.Goods)
                 {
-            <div id="good_@good.Id" class="good">
+                    <div id="good_@good.Id" class="good">
 
-                <input type="checkbox" @string.Format(good.IsTook ? "checked" : "")>
-                <input class="goodname inputline" value="@good.Name" placeholder="Название..." required>
-                <input type="number" class="goodcount inputline" value="@good.Count" min="1" placeholder="Количество" required>
-                <input title="Удалить" type="image" class="remove" src="/images/rubbish.png" onclick="this.parentElement.remove()">
+                        <input type="checkbox" @string.Format(good.IsTook ? "checked" : "")>
+                        <input class="goodname inputline" value="@good.Name" placeholder="Название..." required>
+                        <input type="number" class="goodcount inputline" value="@good.Count" min="1" placeholder="Количество" required>
+                        <input title="Удалить" type="image" class="remove" src="/images/rubbish.png" onclick="this.parentElement.remove()">
 
-            </div>
+                    </div>
                 }
             </div>
             <div id="goals">
@@ -436,7 +503,7 @@
 
 <script>
 
-    var localhost = false;
+    var localhost = true;
 
     autosize(document.getElementById("tripdescription"));
     autosize($(".placedescription"));
@@ -446,6 +513,7 @@
                 var addedgoals = 0;
     var addedpurchases = 0;
     var addedplaces = 0;
+    var addedfiles = 0;
 
     function initautocomplete(input) {
         if (localhost)
@@ -478,7 +546,7 @@
             input.parentElement.children[6].value = place.formatted_address;
 
             input.parentElement.parentElement.children[0].children[0].children[1].click();
-            
+
             if (place.photos != null && place.photos.length > 0) {
                 var urlphoto = place.photos[0].getUrl({ 'maxWidth': 700, 'maxHeight': 700 });
                 input.parentElement.parentElement.children[0].children[0].children[0].src = urlphoto;
@@ -609,13 +677,44 @@
     }
 
     var currentimg;
+    var currentimg;
+
+    const toBase64 = file => new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = error => reject(error);
+    });
+
+    function AddFile(button) {
+        button.blur();
+        $("#fileuploader").click();
+    }
+
+    async function OnChangeFile(input)
+    {
+        for (var i = 0; i < input.files.length; i++) {
+            var base64 = await toBase64(input.files[i]);
+            var name = input.files[i].name;
+
+            var add = "<div id=\"file_{{ID}}\" class=\"file newfile\">\
+                    <a href=\"{{BASE64}}\" download=\"{{NAME}}\"><span>{{NAME}}</span></a>\
+                    <input title=\"Удалить\" type=\"image\" class=\"remove removeplace\" src=\"/images/rubbish.png\" onclick=\"this.parentElement.remove()\">\
+                </div>";
+
+            add = add.replace("{{BASE64}}", base64).replace("{{NAME}}", name).replace("{{NAME}}", name).replace("{{ID}}", addedfiles);
+            addedfiles++;
+            $(".files").append(add);
+        }
+        input.value = "";
+    }
 
     function AddPhoto(element) {
         currentimg = element.parentElement.children[0];
-        $("#uploader").click();
+        $("#photouploader").click();
     }
 
-    function OnChange(input) {
+    function OnChangePhoto(input) {
 
 
         $("#imagecutter").attr('src', URL.createObjectURL(input.files[0]));
@@ -678,6 +777,17 @@
         }
         else {
             newphoto = "yes";
+        }
+
+        var files = [];
+        for (var i = 0; i < $(".files .file").length; i++) {
+            var file = [];
+            var fileid = $(".files .file")[i].id;
+            file.push(fileid.replace("file_", ""));
+            file.push(!($("#" + fileid).attr('class').indexOf('newfile') === -1));
+            file.push(window.location.origin + $("#" + fileid + " a").attr('href'));
+            file.push($("#" + fileid + " a").attr('download'));
+            files.push(file);
         }
 
         var places = [];
@@ -775,8 +885,8 @@
 
          $.ajax({
             type: "POST",
-            url: "?handler=Save",
-             data: { Id: "@Model.Trip.Id", name: name, description: description, fromdate: fromdate, todate: todate, photo: photo, newphoto: newphoto, places: places, goods: goods, goals: goals, purchases: purchases },
+             url: "?handler=Save",
+             data: { Id: "@Model.Trip.Id", name: name, description: description, fromdate: fromdate, todate: todate, photo: photo, newphoto: newphoto, files: files, places: places, goods: goods, goals: goals, purchases: purchases },
 
              success: function (data) {
                  //alert("saved");

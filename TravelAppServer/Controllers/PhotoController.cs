@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using TravelAppModels.Models;
 using TravelAppStorage.Interfaces;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace TravelAppServer.Controllers
 {
@@ -103,7 +102,7 @@ namespace TravelAppServer.Controllers
         /// <summary>
         /// Загрузка фотографии по URL
         /// </summary>
-        /// <param name="base64">Фотография</param>
+        /// <param name="url">Ссылка на фотографию</param>
         /// <param name="token">Токен</param>
         /// <param name="Id">Id (необязательно)</param>
         /// <returns>Загруженная фотография</returns>

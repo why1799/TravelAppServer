@@ -23,10 +23,7 @@ namespace TravelAppServer.Pages.Trip
     {
         private readonly TripController _trips;
         private readonly PhotoController _photos;
-        private readonly GoodController _goods;
-        private readonly PlaceController _places;
-        private readonly GoalController _goals;
-        private readonly PurchaseController _purchases;
+        private readonly FileController _files;
         private readonly CategoryController _categories;
 
         private readonly SynchronizationController _sync;
@@ -43,11 +40,8 @@ namespace TravelAppServer.Pages.Trip
         {
 
             _trips = new TripController(storage);
-            _places = new PlaceController(storage);
-            _goals = new GoalController(storage);
-            _goods = new GoodController(storage);
             _photos = new PhotoController(storage);
-            _purchases = new PurchaseController(storage);
+            _files = new FileController(storage);
             _categories = new CategoryController(storage);
 
             _sync = new SynchronizationController(storage);
@@ -65,6 +59,7 @@ namespace TravelAppServer.Pages.Trip
             Trip.Goods = fullTrip.Goods;
             Trip.Purchases = fullTrip.Purchases;
             Trip.Photos = await GetElements<PhotoController, Photo>(_photos, Trip.PhotoIds, token, "Get");
+            Trip.Files = await GetElements<FileController, TravelAppModels.Models.File>(_files, Trip.FileIds, token, "Get", Trip.Id);
 
             foreach (var place in Trip.Places)
             {
@@ -74,16 +69,25 @@ namespace TravelAppServer.Pages.Trip
             Categories = ((await _categories.GetAll()) as ObjectResult).Value as Category[];
         }
 
-        private async Task<Element[]> GetElements<Controller, Element>(Controller controller, Guid[] ids, string token, string method = "Read")
+        private async Task<Element[]> GetElements<Controller, Element>(Controller controller, Guid[] ids, string token, string method = "Read", Guid TripId =  new Guid())
         {
-            MethodInfo read = controller.GetType().GetMethod(method,
-            new Type[] { typeof(Guid), typeof(string) });
+            MethodInfo read;
+            if (TripId == Guid.Empty)
+            {
+                read = controller.GetType().GetMethod(method,
+                new Type[] { typeof(Guid), typeof(string) });
+            }
+            else
+            {
+                read = controller.GetType().GetMethod(method,
+                new Type[] { typeof(Guid), typeof(Guid), typeof(string) });
+            }
 
             List<Element> elements = new List<Element>();
 
             foreach (var id in ids ?? new Guid[0])
             {
-                var result = (await (Task<ActionResult>)read.Invoke(controller, new object[] { id, token })) as ObjectResult;
+                var result = (await (Task<ActionResult>)read.Invoke(controller, TripId == Guid.Empty ? new object[] { id, token } : new object[] { id, TripId, token })) as ObjectResult;
                 elements.Add((Element)Convert.ChangeType(result.Value, typeof(Element)));
             }
 
@@ -91,7 +95,7 @@ namespace TravelAppServer.Pages.Trip
         }
 
         [HttpPost]
-        public async Task<IActionResult> OnPostSave(Guid Id, string name, string description, string fromdate, string todate, string photo, string newphoto, string[][] places, string[][] goods, string[][] goals, string[][] purchases)
+        public async Task<IActionResult> OnPostSave(Guid Id, string name, string description, string fromdate, string todate, string photo, string newphoto, string[][] files, string[][] places, string[][] goods, string[][] goals, string[][] purchases)
         {
             var token = HttpContext.Request.Cookies["TraverlApp.fun.Token"];
             Trip = ((await _trips.Read(Id, token)) as ObjectResult).Value as TravelAppModels.Models.Trip;
@@ -115,6 +119,24 @@ namespace TravelAppServer.Pages.Trip
                 default:
                     break;
             }
+
+            var fileid = new List<Guid>();
+            foreach (var file in files)
+            {
+                if (!Guid.TryParse(file[0], out var id))
+                {
+                    id = Guid.NewGuid();
+                }
+
+                if(bool.Parse(file[1]))
+                {
+                    Task.Run(async () => await _files.UploadBase64(file[2].Substring(file[2].IndexOf("base64,") + 7), file[3], Trip.Id, token, id));
+                }
+
+                fileid.Add(id);
+            }
+
+            Trip.FileIds = fileid.ToArray();
 
             List<Place> newplaces = new List<Place>();
             foreach (var place in places)

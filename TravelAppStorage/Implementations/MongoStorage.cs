@@ -241,7 +241,7 @@ namespace TravelAppStorage.Implementations
                 UserId = UserId,
                 //Base64 = Base64,
                 Id = Guid.NewGuid(),
-                LastUpdate = DateTime.UtcNow.Ticks
+                //LastUpdate = DateTime.UtcNow.Ticks
         };
 
             await photos.InsertOneAsync(photo);
@@ -280,6 +280,9 @@ namespace TravelAppStorage.Implementations
                     entity.MapIdProperty(e => e.PhotoIds)
                         .SetIsRequired(false)
                         .SetElementName("PhotoIds");
+                    entity.MapIdProperty(e => e.FileIds)
+                        .SetIsRequired(false)
+                        .SetElementName("FileIds");
                     entity.MapIdProperty(e => e.PlaceIds)
                         .SetIsRequired(false)
                         .SetElementName("PlaceIds");
@@ -328,6 +331,7 @@ namespace TravelAppStorage.Implementations
                 .Combine(
                 Builders<Trip>.Update.Set(e => e.Name, trip.Name),
                 Builders<Trip>.Update.Set(e => e.PhotoIds, trip.PhotoIds),
+                Builders<Trip>.Update.Set(e => e.FileIds, trip.FileIds),
                 Builders<Trip>.Update.Set(e => e.PlaceIds, trip.PlaceIds),
                 Builders<Trip>.Update.Set(e => e.GoalIds, trip.GoalIds),
                 Builders<Trip>.Update.Set(e => e.GoodIds, trip.GoodIds),

@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Text.Json.Serialization;
-using TravelAppModels.FullModels;
 
 namespace TravelAppModels.Models
 {
@@ -13,6 +10,7 @@ namespace TravelAppModels.Models
         public string Name { get; set; }
         public string TextField { get; set; }
         public Guid[] PhotoIds {get;set;}
+        public Guid[] FileIds { get; set; }
         public Guid[] PlaceIds { get; set; }
         public Guid[] GoodIds { get; set; }
         public Guid[] GoalIds { get; set; }
@@ -26,6 +24,8 @@ namespace TravelAppModels.Models
 
         [JsonIgnore]
         public Photo[] Photos { get; set; }
+        [JsonIgnore]
+        public File[] Files { get; set; }
         [JsonIgnore]
         public Place[] Places { get; set; }
         [JsonIgnore]

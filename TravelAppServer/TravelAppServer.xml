@@ -62,6 +62,41 @@
             </summary>
             <returns>Список всех категорий</returns>
         </member>
+        <member name="T:TravelAppServer.Controllers.FileController">
+            <summary>
+            Контроллер для работы с файлами
+            </summary>
+        </member>
+        <member name="M:TravelAppServer.Controllers.FileController.Upload(Microsoft.AspNetCore.Http.IFormFile,System.Guid,System.String,System.Guid)">
+            <summary>
+            Загрузка файла
+            </summary>
+            <param name="file">Файл</param>
+            <param name="TripId">Id поездки, к которой относится файл</param>
+            <param name="token">Токен</param>
+            <param name="Id">Id (необязательно)</param>
+            <returns>Загруженный файл</returns>
+        </member>
+        <member name="M:TravelAppServer.Controllers.FileController.UploadBase64(System.String,System.String,System.Guid,System.String,System.Guid)">
+            <summary>
+            Загрузка файла
+            </summary>
+            <param name="base64">Файл</param>
+            <param name="name">Название файла (С расширением)</param>
+            <param name="TripId">Id поездки, к которой относится файл</param>
+            <param name="token">Токен</param>
+            <param name="Id">Id (необязательно)</param>
+            <returns>Загруженный файл</returns>
+        </member>
+        <member name="M:TravelAppServer.Controllers.FileController.Get(System.Guid,System.Guid,System.String)">
+            <summary>
+            Получение файла
+            </summary>
+            <param name="Id">id файла</param>
+            <param name="TripId">id поездки, к которой относится файл</param>
+            <param name="token">Токен</param>
+            <returns>Файл</returns>
+        </member>
         <member name="T:TravelAppServer.Controllers.GoalController">
             <summary>
             Контроллер для работы с целями
@@ -179,7 +214,7 @@
             <summary>
             Загрузка фотографии по URL
             </summary>
-            <param name="base64">Фотография</param>
+            <param name="url">Ссылка на фотографию</param>
             <param name="token">Токен</param>
             <param name="Id">Id (необязательно)</param>
             <returns>Загруженная фотография</returns>

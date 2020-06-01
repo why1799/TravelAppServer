@@ -19,6 +19,7 @@ namespace TravelAppModels.FullModels
             Name = trip.Name;
             TextField = trip.TextField;
             PhotoIds = trip.PhotoIds;
+            FileIds = trip.FileIds;
             PlaceIds = trip.PlaceIds;
             GoodIds = trip.GoodIds;
             GoalIds = trip.GoalIds;
@@ -27,7 +28,6 @@ namespace TravelAppModels.FullModels
             ToDate = trip.ToDate;
             LastUpdate = trip.LastUpdate;
             IsDeleted = trip.IsDeleted;
-            Photos = trip.Photos;
             Places = trip.Places;
             Goods = trip.Goods;
             Goals = trip.Goals;
