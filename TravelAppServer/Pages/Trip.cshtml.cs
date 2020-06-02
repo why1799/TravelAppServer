@@ -57,6 +57,11 @@ namespace TravelAppServer.Pages
             Trip.Photos = await GetElements<PhotoController, Photo>(_photos, Trip.PhotoIds, token, "Get");
             Trip.Files = await GetElements<FileController, TravelAppModels.Models.File>(_files, Trip.FileIds, token, "Get", Trip.Id);
 
+            if(Trip.Notes == null)
+            {
+                Trip.Notes = new Note[0];
+            }
+
             foreach (var place in Trip.Places)
             {
                 place.Photos = await GetElements<PhotoController, Photo>(_photos, place.PhotoIds, token, "Get");
