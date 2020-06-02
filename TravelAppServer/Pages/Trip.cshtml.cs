@@ -23,10 +23,7 @@ namespace TravelAppServer.Pages
     {
         private readonly TripController _trips;
         private readonly PhotoController _photos;
-        private readonly GoodController _goods;
-        private readonly PlaceController _places;
-        private readonly GoalController _goals;
-        private readonly PurchaseController _purchases;
+        private readonly FileController _files;
         private readonly CategoryController _categories;
 
 
@@ -41,11 +38,8 @@ namespace TravelAppServer.Pages
         {
 
             _trips = new TripController(storage);
-            _places = new PlaceController(storage);
-            _goals = new GoalController(storage);
-            _goods = new GoodController(storage);
             _photos = new PhotoController(storage);
-            _purchases = new PurchaseController(storage);
+            _files = new FileController(storage);
             _categories = new CategoryController(storage);
 
             Trip = null;
@@ -61,8 +55,9 @@ namespace TravelAppServer.Pages
             Trip.Goods = fullTrip.Goods;
             Trip.Purchases = fullTrip.Purchases;
             Trip.Photos = await GetElements<PhotoController, Photo>(_photos, Trip.PhotoIds, token, "Get");
-            
-            foreach(var place in Trip.Places)
+            Trip.Files = await GetElements<FileController, TravelAppModels.Models.File>(_files, Trip.FileIds, token, "Get", Trip.Id);
+
+            foreach (var place in Trip.Places)
             {
                 place.Photos = await GetElements<PhotoController, Photo>(_photos, place.PhotoIds, token, "Get");
             }
@@ -70,17 +65,33 @@ namespace TravelAppServer.Pages
             Categories = ((await _categories.GetAll()) as ObjectResult).Value as Category[];
         }
 
-        private async Task<Element[]> GetElements<Controller, Element>(Controller controller, Guid[] ids, string token, string method = "Read") 
+        private async Task<Element[]> GetElements<Controller, Element>(Controller controller, Guid[] ids, string token, string method = "Read", Guid TripId = new Guid())
         {
-            MethodInfo read = controller.GetType().GetMethod(method,
-            new Type[] { typeof(Guid), typeof(string) });
+            MethodInfo read;
+            if (TripId == Guid.Empty)
+            {
+                read = controller.GetType().GetMethod(method,
+                new Type[] { typeof(Guid), typeof(string) });
+            }
+            else
+            {
+                read = controller.GetType().GetMethod(method,
+                new Type[] { typeof(Guid), typeof(Guid), typeof(string) });
+            }
 
             List<Element> elements = new List<Element>();
 
-            foreach(var id in ids ?? new Guid[0])
+            foreach (var id in ids ?? new Guid[0])
             {
-                var result = (await (Task<ActionResult>)read.Invoke(controller, new object[] { id, token })) as ObjectResult;
-                elements.Add((Element)Convert.ChangeType(result.Value, typeof(Element)));
+                try
+                {
+                    var result = (await (Task<ActionResult>)read.Invoke(controller, TripId == Guid.Empty ? new object[] { id, token } : new object[] { id, TripId, token })) as ObjectResult;
+                    elements.Add((Element)Convert.ChangeType(result.Value, typeof(Element)));
+                }
+                catch (Exception ex)
+                {
+                    elements.Add((Element)Convert.ChangeType((Element)Activator.CreateInstance(typeof(Element)), typeof(Element)));
+                }
             }
 
             return elements.ToArray();

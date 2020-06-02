@@ -6,7 +6,10 @@
     ViewData["Title"] = Model.Trip.Name;
 }
 
-<script src="https://code.jquery.com/jquery-3.5.0.js"></script>
+<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
+<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
 
 <style>
 
@@ -90,11 +93,10 @@
             flex: 0 0 65%;
         }
 
-    .checkboxes{
+    .checkboxes {
     }
 
-    .editbutton:hover{
-
+    .editbutton:hover {
     }
 
     .photowrapper {
@@ -142,7 +144,7 @@
         margin-left: 0.5em;
     }
 
-    .purchasecategory{
+    .purchasecategory {
         font-size: smaller;
     }
 
@@ -157,6 +159,112 @@
     .goodcount {
         margin-left: 0.5em;
     }
+
+    .filesandtexts {
+        display: flex;
+        flex-direction: row;
+        margin-bottom: 1.2em;
+    }
+
+        .filesandtexts > div {
+            width: 45%;
+            display: flex;
+            flex-direction: row;
+        }
+
+    .filesdata {
+        margin-right: 10%;
+    }
+
+    .files {
+        display: flex;
+        flex-direction: column;
+        margin-top: 2.2em;
+        margin-left: 1em;
+        width: 240px;
+    }
+
+    .file {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        width: 100%;
+        margin-bottom: 0.3em;
+    }
+
+        .file > a {
+            width: 100%;
+        }
+
+        .file span {
+            display: inline-block;
+            white-space: nowrap;
+            overflow: hidden !important;
+            text-overflow: ellipsis;
+            width: 100%;
+            text-decoration: underline;
+        }
+
+    .notes {
+        display: flex;
+        flex-direction: column;
+        margin-top: 2.2em;
+        margin-left: 1em;
+        width: 240px;
+    }
+
+    .note {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        width: 100%;
+        margin-bottom: 0.6em;
+    }
+
+    .notename {
+        display: inline-block;
+        white-space: nowrap;
+        overflow: hidden !important;
+        text-overflow: ellipsis;
+        width: 91%;
+        text-decoration: underline;
+        color: rgb(0, 0, 238);
+        cursor: pointer;
+    }
+
+        .notename:active {
+            color: rgb(238, 0, 0);
+        }
+
+    .notedescription {
+        display: none;
+    }
+
+    .changername {
+        width: 500px;
+        margin-bottom: 1em;
+    }
+
+    .changerdescription {
+        width: 500px;
+        resize: none;
+    }
+
+    label {
+        white-space: pre-wrap;
+    }
+
+    .showername {
+        font-weight: bold;
+        display: inline-block;
+        margin-bottom: 1em;
+        font-size: larger;
+        overflow-wrap: break-word;
+    }
+
+    .showerdescription {
+        overflow-wrap: break-word;
+    }
 </style>
 
 <div id="trip_@Model.Trip.Id" class="trip center">
@@ -166,11 +274,11 @@
             <div class="photowrapper">
                 @if (Model.Trip.Photos.Length == 0)
                 {
-                    <img width="100" height="100" src="/images/nophoto.png">
+                <img width="100" height="100" src="/images/nophoto.png">
                 }
                 else
                 {
-                    <img width="100" height="100" src="/@Model.Trip.Photos[0].Location">
+                <img width="100" height="100" src="/@Model.Trip.Photos[0].Location">
                 }
             </div>
 
@@ -190,15 +298,48 @@
             <a href="/Trip/Edit?id=@Model.Trip.Id"><img title="Редактировать" class="tripicons" src="/images/edit.png" /></a>
             <input title="Удалить" type="image" class="tripicons" src="/images/rubbish.png" onclick="Delete()">
         </div>
-        
+
+    </div>
+
+    <div class="filesandtexts">
+        @if(Model.Trip.Files.Length > 0)
+        {
+        <div class="filesdata">
+            <h1 class="categoryname">Файлы:</h1>
+            <div class="files">
+                @foreach (var file in Model.Trip.Files)
+                    {
+                <div id="file_@file.Id" class="file">
+                    <a href="/@file.Location" download="@file.Name"><span>@file.Name</span></a>
+                </div>
+                    }
+            </div>
+        </div>
+        }
+
+        @if(Model.Trip.Notes.Length > 0)
+        {
+        <div>
+            <h1 class="categoryname">Заметки:</h1>
+            <div class="notes">
+                @foreach (var note in Model.Trip.Notes)
+                {
+                <div class="note">
+                    <span class="notename" onclick="ShowNote(this)">@note.Name</span>
+                    <span class="notedescription">@note.Description</span>
+                </div>
+                }
+            </div>
+        </div>
+        }
     </div>
 
     <div class="tripdata">
         @if (Model.Trip.Places.Length > 0)
         {
-            <div id="places">
-                <h1>Места:</h1>
-                @foreach (var place in Model.Trip.Places)
+        <div id="places">
+            <h1>Места:</h1>
+            @foreach (var place in Model.Trip.Places)
                 {
             <div id="place_@place.Id" class="placeheader">
 
@@ -206,89 +347,89 @@
                     <div class="photowrapper">
                         @if (place.Photos.Length == 0)
                         {
-                            <img width="100" height="100" src="/images/nophoto.png">
+                        <img width="100" height="100" src="/images/nophoto.png">
                         }
                         else
                         {
-                            <img width="100" height="100" src="/@place.Photos[0].Location">
+                        <img width="100" height="100" src="/@place.Photos[0].Location">
                         }
                     </div>
 
                     <input type="checkbox" class="placevisited" @string.Format(place.IsVisited ? "checked" : "") disabled>
                 </div>
 
-                    <div class="placetext">
+                <div class="placetext">
 
-                        <label class="placename">@place.Name</label>
-                        <br>
-                        <label class="placedescription">@place.Description</label><br>
-                        <label class="placeadress">@place.Adress</label><br>
+                    <label class="placename">@place.Name</label>
+                    <br>
+                    <label class="placedescription">@place.Description</label><br>
+                    <label class="placeadress">@place.Adress</label><br>
 
-                        @{ var placedate = place.Date == null ? "" : (new DateTime(place.Date.Value)).ToString("dd MMMM yyyy", CultureInfo.CreateSpecificCulture("ru-RU")); }
-                        <label class="placedate">@placedate</label>
+                    @{ var placedate = place.Date == null ? "" : (new DateTime(place.Date.Value)).ToString("dd MMMM yyyy", CultureInfo.CreateSpecificCulture("ru-RU")); }
+                    <label class="placedate">@placedate</label>
 
-                    </div>
                 </div>
-                }
             </div>
+                }
+        </div>
         }
 
         <div class="checkboxes">
 
-        @if (Model.Trip.Goods.Length > 0)
+            @if (Model.Trip.Goods.Length > 0)
         {
             <div id="goods">
                 <h1>Вещи:</h1>
                 @foreach (var good in Model.Trip.Goods)
                 {
-            <div id="good_@good.Id" class="good">
+                <div id="good_@good.Id" class="good">
 
-                <input type="checkbox" @string.Format(good.IsTook ? "checked" : "") disabled>
-                <label class="goodname">@good.Name</label>
-                <label class="goodcount">(@good.Count шт.)</label>
-                <br>
-                <label class="gooddescription">@good.Description</label><br>
+                    <input type="checkbox" @string.Format(good.IsTook ? "checked" : "") disabled>
+                    <label class="goodname">@good.Name</label>
+                    <label class="goodcount">(@good.Count шт.)</label>
+                    <br>
+                    <label class="gooddescription">@good.Description</label><br>
 
-            </div>
+                </div>
                 }
             </div>
         }
 
-        @if (Model.Trip.Goals.Length > 0)
+            @if (Model.Trip.Goals.Length > 0)
         {
             <div id="goals">
                 <h1>Цели:</h1>
                 @foreach (var goal in Model.Trip.Goals)
                 {
-                    <div id="goal_@goal.Id" class="goal">
+                <div id="goal_@goal.Id" class="goal">
 
-                        <input type="checkbox" @string.Format(goal.IsDone ? "checked" : "") disabled>
-                        <label class="goalname">@goal.Name</label>
-                        <br>
-                        <label class="goaldescription">@goal.Description</label><br>
+                    <input type="checkbox" @string.Format(goal.IsDone ? "checked" : "") disabled>
+                    <label class="goalname">@goal.Name</label>
+                    <br>
+                    <label class="goaldescription">@goal.Description</label><br>
 
-                    </div>
+                </div>
                 }
             </div>
         }
 
-        @if (Model.Trip.Purchases.Length > 0)
+            @if (Model.Trip.Purchases.Length > 0)
         {
             <div id="purchases">
                 <h1>Покупки:</h1>
                 @foreach (var purchase in Model.Trip.Purchases)
                 {
-                    <div id="purchase_@purchase.Id" class="purchase">
+                <div id="purchase_@purchase.Id" class="purchase">
 
-                        <input type="checkbox" @string.Format(purchase.IsBought ? "checked" : "") disabled>
+                    <input type="checkbox" @string.Format(purchase.IsBought ? "checked" : "") disabled>
 
-                        <div class="purchasedata">
-                            <label class="purchasecategory">Категория: @Model.Categories.FirstOrDefault(x => x.Id == purchase.CategoryId)?.Name</label>
-                            <label class="purchasename">@purchase.Name</label>
-                            <label class="purchaseprice">Стоимость: @purchase.Price</label>
-                        </div>
-
+                    <div class="purchasedata">
+                        <label class="purchasecategory">Категория: @Model.Categories.FirstOrDefault(x => x.Id == purchase.CategoryId)?.Name</label>
+                        <label class="purchasename">@purchase.Name</label>
+                        <label class="purchaseprice">Стоимость: @purchase.Price</label>
                     </div>
+
+                </div>
                 }
             </div>
 
@@ -297,6 +438,11 @@
     </div>
 </div>
 
+<div id="note-shower" title="Просмотр заметки" style="display:none;">
+    <label class="showername"></label>
+    <br>
+    <label class="showerdescription"></label><br>
+</div>
 
 
 <script>
@@ -312,6 +458,27 @@
             },
             error: function (xhr, ajaxOptions, thrownError) {
                 alert("Ошибка:\n" + xhr.responseText);
+            }
+        });
+    }
+
+    function ShowNote(name) {
+        $(".showername")[0].innerText = name.innerText;
+        $(".showerdescription")[0].innerText = name.parentElement.children[1].innerText;
+
+        $("#note-shower").dialog({
+            modal: true,
+            draggable: false,
+            maxWidth: 540,
+            minWidth: 540,
+            closeOnEscape: true,
+            buttons: {
+                Ok: function () {
+                    $(this).dialog("close");
+                }
+            },
+            open: function () {
+                //$(".changername").blur();
             }
         });
     }
