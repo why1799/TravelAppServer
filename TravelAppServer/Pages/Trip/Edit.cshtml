@@ -241,7 +241,7 @@
     }
 
 
-    .cropper-container{
+    .cropper-container {
         width: 583px !important;
         height: 349px !important;
     }
@@ -256,32 +256,32 @@
         margin-top: 2em;
     }
 
-    .iconsintriphead{
+    .iconsintriphead {
         width: 100px;
     }
 
-    .fixedphoto{
+    .fixedphoto {
         width: 100px;
         height: 100px;
     }
 
-    .filesandtexts{
+    .filesandtexts {
         display: flex;
         flex-direction: row;
+        margin-bottom: 1.2em;
     }
 
-    .filesandtexts > div{
-        width: 45%;
-    }
+        .filesandtexts > div {
+            width: 45%;
+        }
 
     .filesdata {
         margin-right: 10%;
-        margin-bottom: 1.2em;
     }
 
     .files {
         display: flex;
-        flex-direction: column; 
+        flex-direction: column;
     }
 
     .file {
@@ -304,193 +304,245 @@
             width: 100%;
             text-decoration: underline;
         }
+
+    .notes {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .note {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        width: 100%;
+        margin-bottom: 0.6em;
+    }
+
+    .notename {
+        display: inline-block;
+        white-space: nowrap;
+        overflow: hidden !important;
+        text-overflow: ellipsis;
+        width: 91%;
+        text-decoration: underline;
+        color: rgb(0, 0, 238);
+        cursor: pointer;
+    }
+
+        .notename:active {
+            color: rgb(238, 0, 0);
+        }
+
+    .notedescription {
+        display: none;
+    }
+
+    .changername {
+        width: 500px;
+        margin-bottom: 1em;
+    }
+
+    .changerdescription {
+        width: 500px;
+        resize: none;
+    }
 </style>
 
 
 <form onsubmit="return false;">
-<button id="submit" type="submit" style="display:none;"></button>
-<input id="photouploader" class="uploader" type="file" onchange="OnChangePhoto(this)">
-<input id="fileuploader" class="uploader" type="file" onchange="OnChangeFile(this)">
+    <button id="submit" type="submit" style="display:none;"></button>
+    <input id="photouploader" class="uploader" type="file" onchange="OnChangePhoto(this)">
+    <input id="fileuploader" class="uploader" type="file" onchange="OnChangeFile(this)">
 
 
-<div id="trip_@Model.Trip.Id" class="trip center">
+    <div id="trip_@Model.Trip.Id" class="trip center">
 
-    <div class="triphead">
-        <div class="tripphototext">
+        <div class="triphead">
+            <div class="tripphototext">
 
-            <div class="photowrapper">
-                @if (Model.Trip.Photos.Length == 0)
-                {
-                    <img width="100" height="100" class="nophoto" src="/images/nophoto.png" onerror="imgError(this)">
-                }
-                else
-                {
-                    <img width="100" height="100" class="withphoto" src="/@Model.Trip.Photos[0].Location" onerror="imgError(this)">
-                }
-                <input title="Удалить фото" class="removephoto" type="image" src="/images/cross.png" onclick="RemovePhoto(this)" />
-                <input title="Добавить фото" type="image" class="addphoto" src="~/images/add photo.png" onclick="AddPhoto(this)" />
-            </div>
-
-            <div class="triptext">
-
-                <input id="tripname" class="tripname inputline" value="@Model.Trip.Name" placeholder="Название поездки..." required />
-                <br>
-                <textarea id="tripdescription" class="tripdescription inputline" placeholder="Описание...">@Model.Trip.TextField</textarea>
-                <br><br>
-                @{ var fd = Model.Trip.FromDate == null ? "" : (new DateTime(Model.Trip.FromDate.Value)).ToString("yyyy-MM-dd");
-                    var td = Model.Trip.ToDate == null ? "" : (new DateTime(Model.Trip.ToDate.Value)).ToString("yyyy-MM-dd");}
-
-                <input id="fromdate" type="date" value="@fd" />
-                <label> - </label>
-                <input id="todate" type="date" value="@td" />
-            </div>
-        </div>
-        <div>
-            <a href="/trip?id=@Model.Id"><img title="Отмена" type="image" class="tripicons" src="/images/cross.png" /></a>
-            <input title="Сохранить" type="image" class="tripicons" src="/images/save.png" onclick="Save()">
-            <input title="Удалить" type="image" class="tripicons" src="/images/rubbish.png" onclick="Delete()">
-        </div>
-        @*<a href="/Edit?@Model.Trip.Id" class="editbutton"></a>*@
-    </div>
-
-    <div class="filesandtexts">
-        <div class="filesdata">
-            <div class="caterogyhead">
-                <h1 class="categoryname">Файлы:</h1>
-                <input title="Добавить файл" type="image" class="add" src="/images/add.png" onclick="AddFile(this)">
-            </div>
-            <div class="files">
-                @foreach (var file in Model.Trip.Files)
-                {
-                <div id="file_@file.Id" class="file">
-                    <a href="/@file.Location" download="@file.Name"><span>@file.Name</span></a>
-                    <input title="Удалить" type="image" class="remove removeplace" src="/images/rubbish.png" onclick="this.parentElement.remove()">
+                <div class="photowrapper">
+                    @if (Model.Trip.Photos.Length == 0)
+                    {
+                        <img width="100" height="100" class="nophoto" src="/images/nophoto.png" onerror="imgError(this)">
+                    }
+                    else
+                    {
+                        <img width="100" height="100" class="withphoto" src="/@Model.Trip.Photos[0].Location" onerror="imgError(this)">
+                    }
+                    <input title="Удалить фото" class="removephoto" type="image" src="/images/cross.png" onclick="RemovePhoto(this)" />
+                    <input title="Добавить фото" type="image" class="addphoto" src="~/images/add photo.png" onclick="AddPhoto(this)" />
                 </div>
-                }
+
+                <div class="triptext">
+
+                    <input id="tripname" class="tripname inputline" value="@Model.Trip.Name" placeholder="Название поездки..." required />
+                    <br>
+                    <textarea id="tripdescription" class="tripdescription inputline" placeholder="Описание...">@Model.Trip.TextField</textarea>
+                    <br><br>
+                    @{ var fd = Model.Trip.FromDate == null ? "" : (new DateTime(Model.Trip.FromDate.Value)).ToString("yyyy-MM-dd");
+                        var td = Model.Trip.ToDate == null ? "" : (new DateTime(Model.Trip.ToDate.Value)).ToString("yyyy-MM-dd");}
+
+                    <input id="fromdate" type="date" value="@fd" />
+                    <label> - </label>
+                    <input id="todate" type="date" value="@td" />
+                </div>
             </div>
+            <div>
+                <a href="/trip?id=@Model.Id"><img title="Отмена" type="image" class="tripicons" src="/images/cross.png" /></a>
+                <input title="Сохранить" type="image" class="tripicons" src="/images/save.png" onclick="Save()">
+                <input title="Удалить" type="image" class="tripicons" src="/images/rubbish.png" onclick="Delete()">
+            </div>
+            @*<a href="/Edit?@Model.Trip.Id" class="editbutton"></a>*@
         </div>
-        
 
-        <div>
-            <div class="caterogyhead">
-                <h1 class="categoryname">Заметки:</h1>
-                <input title="Добавить текст" type="image" class="add" src="/images/add.png" onclick="AddText()">
-            </div>
-        </div>
-    </div>
-
-    <div class="tripdata">
-        <div id="places">
-            <div class="caterogyhead">
-                <h1 class="categoryname">Места:</h1>
-                <input title="Добавить место" type="image" class="add" src="/images/add.png" onclick="addPlace()">
-            </div>
-            @foreach (var place in Model.Trip.Places)
-            {
-                <div id="place_@place.Id" class="placeheader">
-
-                    <div class="leftsideoftheplace">
-
-                        <div class="photowrapper">
-
-                            @if (place.Photos.Length == 0)
-                            {
-                                <img class="nophoto fixedphoto" src="/images/nophoto.png" onerror="imgError(this)">
-                            }
-                            else
-                            {
-                                <img class="withphoto fixedphoto" src="/@place.Photos[0].Location" onerror="imgError(this)">
-                            }
-                            <input title="Удалить фото" class="removephoto" type="image" src="/images/cross.png" onclick="RemovePhoto(this)" />
-                            <input title="Добавить фото" type="image" class="addphoto" src="~/images/add photo.png" onclick="AddPhoto(this)" />
+        <div class="filesandtexts">
+            <div class="filesdata">
+                <div class="caterogyhead">
+                    <h1 class="categoryname">Файлы:</h1>
+                    <input title="Добавить файл" type="image" class="add" src="/images/add.png" onclick="AddFile(this)">
+                </div>
+                <div class="files">
+                    @foreach (var file in Model.Trip.Files)
+                    {
+                        <div id="file_@file.Id" class="file">
+                            <a href="/@file.Location" download="@file.Name"><span>@file.Name</span></a>
+                            <input title="Удалить" type="image" class="remove removeplace" src="/images/rubbish.png" onclick="this.parentElement.remove()">
                         </div>
-
-                        <input type="checkbox" class="placevisited" @string.Format(place.IsVisited ? "checked" : "")>
-
-                    </div>
-
-                    <div class="placetext">
-
-                        <input class="placename inputline" value="@place.Name" placeholder="Название.." required />
-                        <br><br>
-                        <textarea class="placedescription inputline" placeholder="Описание..">@place.Description</textarea>
-                        <br><br>
-                        <input id="place_adress_@place.Id" class="placeadress inputline" value="@place.Adress" placeholder="Адрес.." required />
-                        <br><br>
-
-                        @{ var placedate = place.Date == null ? "" : (new DateTime(place.Date.Value)).ToString("yyyy-MM-dd"); }
-                        <input type="date" value="@placedate" />
-
-                    </div>
-                    <input title="Удалить" type="image" class="remove removeplace" src="/images/rubbish.png" onclick="this.parentElement.remove()">
+                    }
                 </div>
-            }
+            </div>
+
+
+            <div>
+                <div class="caterogyhead">
+                    <h1 class="categoryname">Заметки:</h1>
+                    <input title="Добавить текст" type="image" class="add" src="/images/add.png" onclick="AddText(this)">
+                </div>
+                <div class="notes">
+                    @foreach (var note in Model.Trip.Notes)
+                    {
+                        <div class="note">
+                            <span class="notename" onclick="ChangeNote(this, false)">@note.Name</span>
+                            <span class="notedescription">@note.Description</span>
+                            <input title="Удалить" type="image" class="remove removeplace" src="/images/rubbish.png" onclick="this.parentElement.remove()">
+                        </div>
+                    }
+                </div>
+            </div>
         </div>
 
-
-        <div class="checkboxes">
-
-            <div id="goods">
+        <div class="tripdata">
+            <div id="places">
                 <div class="caterogyhead">
-                    <h1 class="categoryname">Вещи:</h1>
-                    <input title="Добавить вещь" type="image" class="add" src="/images/add.png" onclick="addGood()">
+                    <h1 class="categoryname">Места:</h1>
+                    <input title="Добавить место" type="image" class="add" src="/images/add.png" onclick="addPlace()">
                 </div>
-                @foreach (var good in Model.Trip.Goods)
+                @foreach (var place in Model.Trip.Places)
                 {
-                    <div id="good_@good.Id" class="good">
+                    <div id="place_@place.Id" class="placeheader">
 
-                        <input type="checkbox" @string.Format(good.IsTook ? "checked" : "")>
-                        <input class="goodname inputline" value="@good.Name" placeholder="Название..." required>
-                        <input type="number" class="goodcount inputline" value="@good.Count" min="1" placeholder="Количество" required>
-                        <input title="Удалить" type="image" class="remove" src="/images/rubbish.png" onclick="this.parentElement.remove()">
+                        <div class="leftsideoftheplace">
 
-                    </div>
-                }
-            </div>
-            <div id="goals">
-                <div class="caterogyhead">
-                    <h1 class="categoryname">Цели:</h1>
-                    <input title="Добавить цель" type="image" class="add" src="/images/add.png" onclick="addGoal()">
-                </div>
-                @foreach (var goal in Model.Trip.Goals)
-                {
-                    <div id="goal_@goal.Id" class="goal">
+                            <div class="photowrapper">
 
-                        <input type="checkbox" @string.Format(goal.IsDone ? "checked" : "")>
-                        <input class="goalname inputline" value="@goal.Name" placeholder="Название..." required>
-                        <input title="Удалить" type="image" class="remove" src="/images/rubbish.png" onclick="this.parentElement.remove()">
-
-                    </div>
-                }
-            </div>
-            <div id="purchases">
-                <div class="caterogyhead">
-                    <h1 class="categoryname">Покупки:</h1>
-                    <input title="Добавить покупку" type="image" class="add" src="/images/add.png" onclick="addPurchase()">
-                </div>
-                @foreach (var purchase in Model.Trip.Purchases)
-                {
-                    <div id="purchase_@purchase.Id" class="purchase">
-
-                        <input type="checkbox" @string.Format(purchase.IsBought ? "checked" : "")>
-                        <div class="purchasedata">
-                            <select>
-                                @foreach (var category in Model.Categories)
+                                @if (place.Photos.Length == 0)
                                 {
-                                    <option @String.Format(category.Id == purchase.CategoryId || (purchase.CategoryId == Guid.Empty && category.Name == "Без учёта") ? "selected" : "")>@category.Name</option>
+                                    <img class="nophoto fixedphoto" src="/images/nophoto.png" onerror="imgError(this)">
                                 }
-                            </select>
-                            <input class="purchasename inputline" value="@purchase.Name" placeholder="Название..." required>
-                            <input class="purchasecost inputline" value="@purchase.Price.ToString().Replace(",", ".")" placeholder="Стоимость..." required oninput="onPriceChange(this)">
-                        </div>
-                        <input title="Удалить" type="image" class="remove" src="/images/rubbish.png" onclick="this.parentElement.remove()">
+                                else
+                                {
+                                    <img class="withphoto fixedphoto" src="/@place.Photos[0].Location" onerror="imgError(this)">
+                                }
+                                <input title="Удалить фото" class="removephoto" type="image" src="/images/cross.png" onclick="RemovePhoto(this)" />
+                                <input title="Добавить фото" type="image" class="addphoto" src="~/images/add photo.png" onclick="AddPhoto(this)" />
+                            </div>
 
+                            <input type="checkbox" class="placevisited" @string.Format(place.IsVisited ? "checked" : "")>
+
+                        </div>
+
+                        <div class="placetext">
+
+                            <input class="placename inputline" value="@place.Name" placeholder="Название.." required />
+                            <br><br>
+                            <textarea class="placedescription inputline" placeholder="Описание..">@place.Description</textarea>
+                            <br><br>
+                            <input id="place_adress_@place.Id" class="placeadress inputline" value="@place.Adress" placeholder="Адрес.." required />
+                            <br><br>
+
+                            @{ var placedate = place.Date == null ? "" : (new DateTime(place.Date.Value)).ToString("yyyy-MM-dd"); }
+                            <input type="date" value="@placedate" />
+
+                        </div>
+                        <input title="Удалить" type="image" class="remove removeplace" src="/images/rubbish.png" onclick="this.parentElement.remove()">
                     </div>
                 }
             </div>
+
+
+            <div class="checkboxes">
+
+                <div id="goods">
+                    <div class="caterogyhead">
+                        <h1 class="categoryname">Вещи:</h1>
+                        <input title="Добавить вещь" type="image" class="add" src="/images/add.png" onclick="addGood()">
+                    </div>
+                    @foreach (var good in Model.Trip.Goods)
+                    {
+                        <div id="good_@good.Id" class="good">
+
+                            <input type="checkbox" @string.Format(good.IsTook ? "checked" : "")>
+                            <input class="goodname inputline" value="@good.Name" placeholder="Название..." required>
+                            <input type="number" class="goodcount inputline" value="@good.Count" min="1" placeholder="Количество" required>
+                            <input title="Удалить" type="image" class="remove" src="/images/rubbish.png" onclick="this.parentElement.remove()">
+
+                        </div>
+                    }
+                </div>
+                <div id="goals">
+                    <div class="caterogyhead">
+                        <h1 class="categoryname">Цели:</h1>
+                        <input title="Добавить цель" type="image" class="add" src="/images/add.png" onclick="addGoal()">
+                    </div>
+                    @foreach (var goal in Model.Trip.Goals)
+                    {
+                        <div id="goal_@goal.Id" class="goal">
+
+                            <input type="checkbox" @string.Format(goal.IsDone ? "checked" : "")>
+                            <input class="goalname inputline" value="@goal.Name" placeholder="Название..." required>
+                            <input title="Удалить" type="image" class="remove" src="/images/rubbish.png" onclick="this.parentElement.remove()">
+
+                        </div>
+                    }
+                </div>
+                <div id="purchases">
+                    <div class="caterogyhead">
+                        <h1 class="categoryname">Покупки:</h1>
+                        <input title="Добавить покупку" type="image" class="add" src="/images/add.png" onclick="addPurchase()">
+                    </div>
+                    @foreach (var purchase in Model.Trip.Purchases)
+                    {
+                        <div id="purchase_@purchase.Id" class="purchase">
+
+                            <input type="checkbox" @string.Format(purchase.IsBought ? "checked" : "")>
+                            <div class="purchasedata">
+                                <select>
+                                    @foreach (var category in Model.Categories)
+                                    {
+                                        <option @String.Format(category.Id == purchase.CategoryId || (purchase.CategoryId == Guid.Empty && category.Name == "Без учёта") ? "selected" : "")>@category.Name</option>
+                                    }
+                                </select>
+                                <input class="purchasename inputline" value="@purchase.Name" placeholder="Название..." required>
+                                <input class="purchasecost inputline" value="@purchase.Price.ToString().Replace(",", ".")" placeholder="Стоимость..." required oninput="onPriceChange(this)">
+                            </div>
+                            <input title="Удалить" type="image" class="remove" src="/images/rubbish.png" onclick="this.parentElement.remove()">
+
+                        </div>
+                    }
+                </div>
+            </div>
         </div>
     </div>
-</div>
 
 </form>
 
@@ -499,21 +551,74 @@
     <img id="imagecutter" height="350" width="500" style="margin: 3em;display: block;max-width: 100%;" />
 </div>
 
-
+<div id="note-changer" title="Редактирование заметки" style="display:none;">
+    <input class="changername inputline" placeholder="Название заметки..." /><br>
+    <textarea class="changerdescription inputline" placeholder="Описание..."></textarea>
+</div>
 
 <script>
-
     var localhost = true;
 
     autosize(document.getElementById("tripdescription"));
     autosize($(".placedescription"));
+    autosize($(".changerdescription"));
     initplacenames();
 
-                var addedgoods = 0;
-                var addedgoals = 0;
+    var addedgoods = 0;
+    var addedgoals = 0;
     var addedpurchases = 0;
     var addedplaces = 0;
     var addedfiles = 0;
+
+    function AddText(button) {
+        button.blur();
+        ChangeNote(null, true);
+    }
+
+    function ChangeNote(name, newnote) {
+        if (newnote === true) {
+            $(".changername").val("");
+            $(".changerdescription").val("");
+        }
+        else {
+            $(".changername").val(name.innerText);
+            $(".changerdescription").val(name.parentElement.children[1].innerText);
+        }
+        autosize.update($(".changerdescription"));
+
+        $("#note-changer").dialog({
+            modal: true,
+            draggable: false,
+            maxWidth: 540,
+            position: { my: 'top', at: 'top+25' },
+            minWidth: 540,
+            closeOnEscape: true,
+            buttons: {
+                Ok: function () {
+                    if (newnote === true) {
+                        var note = "<div class=\"note\">\
+                            <span class=\"notename\" onclick=\"ChangeNote(this, false)\">{{NAME}}</span>\
+                            <span class=\"notedescription\">{{DESCRIPTION}}</span>\
+                            <input title=\"Удалить\" type=\"image\" class=\"remove removeplace\" src=\"/images/rubbish.png\" onclick=\"this.parentElement.remove()\">\
+                        </div>";
+
+                        note = note.replace("{{NAME}}", $(".changername").val()).replace("{{DESCRIPTION}}", $(".changerdescription").val());
+
+                        $(".notes").append(note);
+                    }
+                    else {
+                        name.parentElement.children[1].innerText = $(".changerdescription").val();
+                        name.innerText = $(".changername").val();
+                    }
+
+                    $(this).dialog("close");
+                }
+            },
+            open: function () {
+                $(".changername").blur();
+            }
+        });
+    }
 
     function initautocomplete(input) {
         if (localhost)
@@ -733,6 +838,7 @@
             minHeight: 480,
             maxWidth: 600,
             minWidth: 600,
+            closeOnEscape: true,
             buttons: {
                 Ok: function () {
                     currentimg.src = cropper.getCroppedCanvas().toDataURL();
@@ -777,6 +883,14 @@
         }
         else {
             newphoto = "yes";
+        }
+
+        var notes = [];
+        for (var i = 0; i < $(".notes").children().length; i++) {
+            var note = [];
+            note.push($(".notes").children()[i].children[0].innerHTML);
+            note.push($(".notes").children()[i].children[1].innerHTML);
+            notes.push(note);
         }
 
         var files = [];
@@ -886,7 +1000,7 @@
          $.ajax({
             type: "POST",
              url: "?handler=Save",
-             data: { Id: "@Model.Trip.Id", name: name, description: description, fromdate: fromdate, todate: todate, photo: photo, newphoto: newphoto, files: files, places: places, goods: goods, goals: goals, purchases: purchases },
+             data: { Id: "@Model.Trip.Id", name: name, description: description, fromdate: fromdate, todate: todate, photo: photo, newphoto: newphoto, files: files, notes: notes, places: places, goods: goods, goals: goals, purchases: purchases },
 
              success: function (data) {
                  //alert("saved");

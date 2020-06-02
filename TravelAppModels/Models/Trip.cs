@@ -18,6 +18,7 @@ namespace TravelAppModels.Models
         public long? FromDate { get; set; }
         public long? ToDate { get; set; }
         public long? LastUpdate { get; set; }
+        public Note[] Notes { get; set; }
 
         [JsonIgnore]
         public bool IsDeleted { get; set; }

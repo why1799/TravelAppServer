@@ -301,6 +301,9 @@ namespace TravelAppStorage.Implementations
                     entity.MapIdProperty(e => e.FromDate)
                         .SetIsRequired(false)
                         .SetElementName("FromDate");
+                    entity.MapIdProperty(e => e.Notes)
+                        .SetIsRequired(false)
+                        .SetElementName("Notes");
                     entity.MapIdProperty(e => e.UserId)
                         .SetIsRequired(true)
                         .SetElementName("UserId")
@@ -337,6 +340,7 @@ namespace TravelAppStorage.Implementations
                 Builders<Trip>.Update.Set(e => e.GoodIds, trip.GoodIds),
                 Builders<Trip>.Update.Set(e => e.PurchaseIds, trip.PurchaseIds),
                 Builders<Trip>.Update.Set(e => e.TextField, trip.TextField),
+                Builders<Trip>.Update.Set(e => e.Notes, trip.Notes),
                 Builders<Trip>.Update.Set(e => e.UserId, UserId),
                 Builders<Trip>.Update.Set(e => e.FromDate, trip.FromDate),
                 Builders<Trip>.Update.Set(e => e.ToDate, trip.ToDate),

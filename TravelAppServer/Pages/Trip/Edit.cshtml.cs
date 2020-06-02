@@ -87,15 +87,22 @@ namespace TravelAppServer.Pages.Trip
 
             foreach (var id in ids ?? new Guid[0])
             {
-                var result = (await (Task<ActionResult>)read.Invoke(controller, TripId == Guid.Empty ? new object[] { id, token } : new object[] { id, TripId, token })) as ObjectResult;
-                elements.Add((Element)Convert.ChangeType(result.Value, typeof(Element)));
+                try
+                {
+                    var result = (await (Task<ActionResult>)read.Invoke(controller, TripId == Guid.Empty ? new object[] { id, token } : new object[] { id, TripId, token })) as ObjectResult;
+                    elements.Add((Element)Convert.ChangeType(result.Value, typeof(Element)));
+                }
+                catch(Exception ex)
+                {
+                    elements.Add((Element)Convert.ChangeType((Element)Activator.CreateInstance(typeof(Element)), typeof(Element)));
+                }
             }
 
             return elements.ToArray();
         }
 
         [HttpPost]
-        public async Task<IActionResult> OnPostSave(Guid Id, string name, string description, string fromdate, string todate, string photo, string newphoto, string[][] files, string[][] places, string[][] goods, string[][] goals, string[][] purchases)
+        public async Task<IActionResult> OnPostSave(Guid Id, string name, string description, string fromdate, string todate, string photo, string newphoto, string[][] files, string[][] notes, string[][] places, string[][] goods, string[][] goals, string[][] purchases)
         {
             var token = HttpContext.Request.Cookies["TraverlApp.fun.Token"];
             Trip = ((await _trips.Read(Id, token)) as ObjectResult).Value as TravelAppModels.Models.Trip;
@@ -135,8 +142,20 @@ namespace TravelAppServer.Pages.Trip
 
                 fileid.Add(id);
             }
-
             Trip.FileIds = fileid.ToArray();
+
+            var notestoadd = new List<Note>();
+            foreach(var note in notes)
+            {
+                var n = new Note
+                {
+                    Name = note[0],
+                    Description = note[1]
+                };
+
+                notestoadd.Add(n);
+            }
+            Trip.Notes = notestoadd.ToArray();
 
             List<Place> newplaces = new List<Place>();
             foreach (var place in places)

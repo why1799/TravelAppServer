@@ -32,6 +32,7 @@ namespace TravelAppModels.FullModels
             Goods = trip.Goods;
             Goals = trip.Goals;
             Purchases = trip.Purchases;
+            Notes = trip.Notes;
         }
 
         public new Place[] Places { get; set; }
