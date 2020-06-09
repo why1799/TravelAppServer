@@ -101,7 +101,7 @@ namespace TravelAppServer.Controllers
                     var goalids = responsetrip.GoalIds?.ToList() ?? new List<Guid>();
                     goalids.Add(goal.Id);
                     responsetrip.GoalIds = goalids.ToArray();
-                    await Storage.UpsertTrip(responsetrip, Guid.Empty);
+                    await Storage.UpsertTrip(responsetrip, usertoken.UserId);
                 }
 
                 var response = await Storage.UpsertGoal(goal, usertoken.UserId);

@@ -101,7 +101,7 @@ namespace TravelAppServer.Controllers
                     var purchaseids = responsetrip.PurchaseIds?.ToList() ?? new List<Guid>();
                     purchaseids.Add(purchase.Id);
                     responsetrip.PurchaseIds = purchaseids.ToArray();
-                    await Storage.UpsertTrip(responsetrip, Guid.Empty);
+                    await Storage.UpsertTrip(responsetrip, usertoken.UserId);
                 }
 
                 var response = await Storage.UpsertPurchase(purchase, usertoken.UserId);
